@@ -124,40 +124,6 @@ public class DBCompare {
 			throw new RuntimeException("GET_DB_CONNECTION_ERROR");
 		}
 	}
-
-	/**
-	 * 数据库数据转换为CSV文件
-	 * @param csvDir CSV文件保存目录
-	 * @param DBName 数据库名称
-	 * @param tableNames 要导出的表名称数组
-	 * @return 转换的数据表数目
-	 */
-/**
-	public static int dumpDataToCSV(File csvDir, String DBName) {
-		Connection conn = getDbConnetion(DBName);
-		int table_count = 0;
-		try {
-			for (String tableName : VerManageConfig.tableNames) {
-				final Writer wr = new FileWriter(new File(csvDir, tableName	+ ".csv"));
-				String sql = "select * from " + tableName;
-				ResultSet rs = conn.createStatement().executeQuery(sql);
-				Csv.getInstance().write(wr, rs);
-				table_count++;
-			}
-		} catch (Exception e) {
-			throw new RuntimeException("DUMP_DATE_ERROR");
-		} finally{
-			try {
-				if(conn != null){
-					conn.close();
-				}
-			} catch (SQLException e) {
-				throw new RuntimeException("CLOSE_CONNECTION_ERROR");
-			}
-		}
-		return table_count;
-	}
-*/
 	
 	/**
 	 * 数据库内容比较,直接连接数据库进行对比
