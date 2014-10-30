@@ -77,6 +77,7 @@ public class DBCompare {
 			"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\"><style type=\"text/css\">"+
 			"#bodys\r\n{\r\nfont-size:0.95em;\r\n}\r\n</style>\r\n</head>\r\n<body id=\"bodys\"><ol>";
 	private static final String modifytableBegin = "<table id=\"tables\"><tr class=\"modify\" align=\"center\"><td>修改项</td><td>修改前</td><td>修改后</td></tr>";
+	private static final String noChange = "<tr><td colspan=\"3\">无</td></tr>";
 	private static final String tableEnd = "</td></tr></table></td></tr>";
 	private static final String pageEnd = "</body></html>";
 	private static boolean isComparing = true;
@@ -220,6 +221,7 @@ public class DBCompare {
 				if(!oldlist.contains(string)){
 					num.incrementAndGet();
 					add.append("["+string+"] ");
+					recordTableId(channelName, string, "insert");
 				}else{
 					samelist.add(string);
 				}
@@ -237,6 +239,7 @@ public class DBCompare {
 				if(!newlist.contains(string)){
 					num.incrementAndGet();
 					delete.append("["+string+"] ");
+					recordTableId(channelName, string, "delete");
 				}
 			}
 			if(delete.length()>0){
@@ -263,6 +266,7 @@ public class DBCompare {
 					if(oldcolumn!=null&&!oldcolumn.equals(newcolumn)){
 						num.incrementAndGet();
 						modifyed.append("<tr class=\"modify\"><td>["+string+"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
+						recordTableId(channelName, string, "modify");
 					}
 				}
 			}
@@ -321,12 +325,15 @@ public class DBCompare {
 	private static String compareComm(String flagStr,String code, AtomicInteger modNum){
 		String tableName = "";
 		String channelName = "";
+		String commFlag = "";
 		if("endpoint".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_CHANNEL";
 			channelName = "CHANNEL_CODE";
+			commFlag = "comm_channel";
 		}else if("server".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_SERVER";
 			channelName = "SERVER_CODE";
+			commFlag = "comm_server";
 		}else{
 			throw new SystemException("SYS_CHANNEL_NAME_NOT_EXIST");
 		}
@@ -368,6 +375,7 @@ public class DBCompare {
 				if(!oldcolumn.equals(newcolumn)){
 					modNum.incrementAndGet();
 					modifyed.append("<tr class=\"modify\"><td>["+ code +"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
+					recordTableId(commFlag, code, "modify");
 				}
 			}
 			return modifyed.toString();
@@ -446,15 +454,19 @@ public class DBCompare {
 		StringBuilder config = new StringBuilder();
 		String tableName = "";
 		String channelName = "";
+		String configFlag = "";
 		if("endpoint".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_CHANNEL";
 			channelName = "CHANNEL_CODE";
+			configFlag = "config_endpoint";
 		}else if("server".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_SERVER";
 			channelName = "SERVER_CODE";
+			configFlag = "config_server";
 		}else if("service".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_SERVICE";
 			channelName = "SERVICE_CODE";
+			configFlag = "config_service";
 		}else{
 			throw new SystemException("SYS_CHANNEL_NAME_NOT_EXIST").addScene("ChannelName", flagStr);
 		}
@@ -480,14 +492,17 @@ public class DBCompare {
 			String old_config_id = old_config_rs.getString(configColumnName);
 			if(!StringUtil.isEmpty(new_config_id)&&StringUtil.isEmpty(old_config_id)){
 				config.append("<tr><td colspan=\"3\">新增["+code+"]>["+configNameMap.get(configColumnName)+"]</td></tr>");
+				recordTableId(configFlag, code, "insert");
 			}else if(StringUtil.isEmpty(new_config_id)&&!StringUtil.isEmpty(old_config_id)){
 				config.append("<tr class=\"delete\"><td colspan=\"3\">删除 ["+code+"]>["+configNameMap.get(configColumnName)+"]</td></tr>");
+				recordTableId(configFlag, code, "delete");
 			}else if(StringUtil.isEmpty(new_config_id)&&StringUtil.isEmpty(old_config_id)){
 				return "";
 			}else{
 				String result = _compareConfig(old_config_id, new_config_id);
 				if(result.length()>0){
 					config.append("<tr class=\"modify\"><td>["+code+"]>["+configNameMap.get(configColumnName)+"]</td>"+result+"</tr>");
+					recordTableId(configFlag, code, "modify");
 				}
 			}
 			return config.toString();
@@ -564,21 +579,26 @@ public class DBCompare {
 		String tableName = "";
 		String channel_Name = "";
 		String tran_name = "系统";
+		String mapFlag = "";
 		Map<String, String> configNameMap = new HashMap<String, String>();
 		if("endpoint".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_CHANNEL";
 			channel_Name = "CHANNEL_CODE";
+			mapFlag = "map_endpoint";
 		}else if("server".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_SERVER";
 			channel_Name = "SERVER_CODE";
+			mapFlag = "map_server";
 		}else if("tranEndpoint".equalsIgnoreCase(flagStr)){
 			tableName = "SYS_TRAN_CHANNEL_PACKAGE ";
 			channel_Name = "CHANNEL_CODE";
 			tran_name = "交易";
+			mapFlag = "map_tran_endpoint";
 		}else if("tranServer".equalsIgnoreCase(flagStr)){
 			tableName = "sys_tran_server_package ";
 			channel_Name = "SERVER_CODE";
 			tran_name = "交易";
+			mapFlag = "map_tran_server";
 		}else {
 			throw new SystemException("SYS_CHANNEL_NAME_NOT_EXIST").addScene("tableName", tableName);
 		}
@@ -607,9 +627,11 @@ public class DBCompare {
 			if(!StringUtil.isEmpty(new_map_id)&&StringUtil.isEmpty(old_map_id)){
 				modNum.incrementAndGet();
 				map.append("<tr><td colspan=\"3\">新增["+code+"]>["+configNameMap.get(mappingName)+"]</td></tr>");
+				recordTableId(mapFlag, code, "insert");
 			}else if(StringUtil.isEmpty(new_map_id)&&!StringUtil.isEmpty(old_map_id)){
 				modNum.incrementAndGet();
 				map.append("<tr class=\"delete\"><td colspan=\"3\">删除 ["+code+"]>["+configNameMap.get(mappingName)+"]</td></tr>");
+				recordTableId(mapFlag, code, "delete");
 			}else if(StringUtil.isEmpty(new_map_id)&&StringUtil.isEmpty(old_map_id)){
 				return "";
 			}else{
@@ -632,6 +654,7 @@ public class DBCompare {
 						if(!oldcolumn.equals(newcolumn)){
 							modNum.incrementAndGet();
 							mapModifyed.append("<tr class=\"modify\"><td>["+code+"]>["+configNameMap.get(mappingName)+"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
+							recordTableId(mapFlag, code, "modify");
 						}
 					}else {
 						//对比映射的属性
@@ -642,6 +665,7 @@ public class DBCompare {
 						if(!old_map_parameter.equals(new_map_parameter)){
 							modNum.incrementAndGet();
 							mapModifyed.append("<tr class=\"modify\"><td>["+code+"]>["+configNameMap.get(mappingName)+"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
+							recordTableId(mapFlag, code, "modify");
 						}
 					}
 				}
@@ -873,6 +897,7 @@ public class DBCompare {
 		String sql="select SERVICE_CODE from sys_service";
 		ResultSet old_service_rs = null;
 		ResultSet new_service_rs = null;
+		boolean isChanged = false;
 		try {
 			String channelName = "服&nbsp;&nbsp;&nbsp;&nbsp;务";
 			menuwriter.write(liHref(channelName));
@@ -906,6 +931,7 @@ public class DBCompare {
 				addServer.append("</td></tr>");
 				menuwriter.write("&nbsp;新增"+gethrefStr(channelName, num.get(), "add"));
 				writer.write(addServer.toString());
+				isChanged = true;
 			}
 			StringBuilder delServer = new StringBuilder();
 			num.set(0);
@@ -920,6 +946,7 @@ public class DBCompare {
 				delServer.append("</td></tr>");
 				menuwriter.write("&nbsp;删除"+gethrefStr(channelName, num.get(), "del"));
 				writer.write(delServer.toString());
+				isChanged = true;
 			}
 			
 			StringBuilder modifyServer = new StringBuilder();
@@ -983,7 +1010,12 @@ public class DBCompare {
 				modifyServer.insert(0, "<tr id=\""+channelName+"_mod\"><td>修改服务</td><td colspan=\"2\">");
 				modifyServer.append(tableEnd);
 				menuwriter.write("&nbsp;修改"+gethrefStr(channelName, num.get(), "mod"));
-				writer.write(modifyServer.toString());			}
+				writer.write(modifyServer.toString());
+				isChanged = true;
+			}
+			if(!isChanged){
+				writer.write(noChange);
+			}
 			writer.write("</table></br>");
 			writer.flush();
 		} catch (SQLException e) {
@@ -1780,6 +1812,31 @@ public class DBCompare {
 	
 	private static String liNoHref(String channelNameCh){
 		return "<li>"+channelNameCh+"</li>";
+	}
+	
+	/**
+	 * 记录表中改变过的主键
+	 * @param channelName 渠道标志
+	 * @param id 主键id
+	 * @param operation 操作：增删改
+	 */
+	private static void recordTableId(String channelName, String id, String operation){
+		if(channelName.equals("EndPoint")){
+			DataMapConstant.SYS_ENDPOINT.put(id, operation);
+		}else if(channelName.equals("Server")){
+			DataMapConstant.SYS_SERVER.put(id, operation);
+		}else if(channelName.equalsIgnoreCase("comm_channel")){
+			DataMapConstant.ENDPOINT_COMM_ID.put(id, operation);
+		}else if(channelName.equalsIgnoreCase("comm_server")){
+			DataMapConstant.SERVER_COMM_ID.put(id, operation);
+		}else if(channelName.equalsIgnoreCase("config_endpoint")){
+			DataMapConstant.ENDPOINT_CONFIG_ID.put(id, operation);
+		}else if(channelName.equalsIgnoreCase("config_server")){
+			DataMapConstant.SERVER_CONFIG_ID.put(id, operation);
+		}else if(channelName.equalsIgnoreCase("config_service")){
+			DataMapConstant.SERVICE_CONFIG_ID.put(id, operation);
+		}
+//		map_tran_server map_tran_endpoint map_server map_endpoint
 	}
 	
 	private static void printMark(){

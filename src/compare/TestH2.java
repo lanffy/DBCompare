@@ -1,5 +1,6 @@
 package compare;
 
+import java.io.File;
 import java.sql.SQLException;
 
 /**
@@ -9,8 +10,8 @@ import java.sql.SQLException;
  */
 public class TestH2 {
 	public static void main(String[] args) throws SQLException, Exception {
-		String a = "00000.00";
-		double b = Double.parseDouble(a);
-		System.out.println(b);
+		String a = "D:\\appblocks\\DBCompare\\dbcompare\\result\\frame\\compare_report.html";
+		File file = new File(a);
+		System.out.println(file.getParent());
 	}
 }
