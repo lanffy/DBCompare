@@ -22,16 +22,16 @@ public class TestImportTranDatasTotable extends TestCase {
 		System.out.println("********华丽丽的测试案例分割线************");
 	}
 	
-	public void atest_insertOneTranEndPoint(){
-		ServiceData tranEndPoint = exportService.getChannelTran("npCHL", "8802");
+	public void test_insertOneTranEndPoint(){
+		ServiceData tranEndPoint = exportService.getChannelTran("npCHL", "8809");
 		tranEndPoint.putString("CHANNEL_CODE", "testCHL");
-		tranEndPoint.putString("TRAN_CODE", "8802");
-		tranEndPoint.putString("TRAN_NAME", "8802测试关联交易");
+		tranEndPoint.putString("TRAN_CODE", "8809");
+		tranEndPoint.putString("TRAN_NAME", "8809测试关联交易");
 		System.out.println(tranEndPoint);
 		int num = importService.insertTranEndPoint(tranEndPoint);
 		assertEquals(num, 1);
-		tranEndPoint = exportService.getChannelTran("testCHL", "8802");
-		assertEquals(tranEndPoint.getString("TRAN_NAME"), "8802测试关联交易");
+		tranEndPoint = exportService.getChannelTran("testCHL", "8809");
+		assertEquals(tranEndPoint.getString("TRAN_NAME"), "8809测试关联交易");
 	}
 	
 	public void atest_insertOneTranServer(){
