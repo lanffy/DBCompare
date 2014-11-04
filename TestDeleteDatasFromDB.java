@@ -26,7 +26,7 @@ public class TestDeleteDatasFromDB extends TestCase {
 		assertEquals(tranEndPoint.getString("TRAN_NAME"), "8809测试关联交易");
 		int delnum = deleteDatasFromDB.deleteOneTranEndPoint("testCHL", "8809");
 		assertEquals(delnum, 1);
-	}
+	} 
 	
 	@Override
 	protected void tearDown() throws java.lang.Exception {
