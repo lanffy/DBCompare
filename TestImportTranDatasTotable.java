@@ -22,7 +22,7 @@ public class TestImportTranDatasTotable extends TestCase {
 		System.out.println("********华丽丽的测试案例分割线************");
 	}
 	
-	public void test_insertOneTranEndPoint(){
+	public void atest_insertOneTranEndPoint(){
 		ServiceData tranEndPoint = exportService.getChannelTran("npCHL", "8809");
 		tranEndPoint.putString("CHANNEL_CODE", "testCHL");
 		tranEndPoint.putString("TRAN_CODE", "8809");
