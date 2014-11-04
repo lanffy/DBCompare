@@ -1,7 +1,8 @@
 package compare;
 
+import com.wk.db.DBSource;
+import com.wk.db.Session;
 import com.wk.lang.Inject;
-import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
 
 
@@ -15,17 +16,24 @@ public class TestDeleteDatasFromDB extends TestCase {
 	@Inject  ImportDatasToDB importService;
 	@Inject  ExportDatasFromDB exportService;
 	
-	public void test_删除一个EndPoint的关联交易(){
-		ServiceData tranEndPoint = exportService.getChannelTran("npCHL", "8809");
-		tranEndPoint.putString("CHANNEL_CODE", "testCHL");
-		tranEndPoint.putString("TRAN_CODE", "8809");
-		tranEndPoint.putString("TRAN_NAME", "8809测试关联交易");
-		int addnum = importService.insertTranEndPoint(tranEndPoint);
-		assertEquals(addnum, 1);
-		tranEndPoint = exportService.getChannelTran("testCHL", "8809");
-		assertEquals(tranEndPoint.getString("TRAN_NAME"), "8809测试关联交易");
+	public void atest_删除一个EndPoint的关联交易(){
 		int delnum = deleteDatasFromDB.deleteOneTranEndPoint("testCHL", "8809");
 		assertEquals(delnum, 1);
+	}
+	
+	public void atest_删除一个Server的关联交易(){
+		int delnum = deleteDatasFromDB.deleteOneTranServerByTranCode("3002");
+		assertEquals(delnum, 1);
+	}
+	
+	public void atest_删除一个EndPoint(){
+		int num = deleteDatasFromDB.deleteOneEndPoint("testCHL");
+		assertEquals(num, 1);
+	}
+	
+	public void atest删除一个Server(){
+		int num = deleteDatasFromDB.deleteOneServer("testSRV");
+		assertEquals(num, 1);
 	}
 	
 	@Override
@@ -35,8 +43,8 @@ public class TestDeleteDatasFromDB extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-		Session session = DBSource.getDefault().getSession();
-		session.commit();
-		session.close();
+//		Session session = DBSource.getDefault().getSession();
+//		session.commit();
+//		session.close();
 	}
 }
