@@ -8,6 +8,7 @@ import com.wk.eai.webide.dao.MappingDaoService;
 import com.wk.eai.webide.dao.SaveDatasDao;
 import com.wk.eai.webide.dao.SaveDatasDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
+import com.wk.eai.webide.dao.ServiceDaoService;
 import com.wk.eai.webide.dao.StructureDaoService;
 import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
@@ -16,6 +17,7 @@ import com.wk.eai.webide.info.CommInfo;
 import com.wk.eai.webide.info.MappingInfo;
 import com.wk.eai.webide.info.SaveDatasInfo;
 import com.wk.eai.webide.info.ServerInfo;
+import com.wk.eai.webide.info.ServiceInfo;
 import com.wk.eai.webide.info.StructureInfo;
 import com.wk.eai.webide.info.TranChannelPackageInfo;
 import com.wk.eai.webide.info.TranServerPackageInfo;
@@ -39,6 +41,7 @@ public class ExportDatasFromDB {
 	@Inject static TranServerPackageDaoService tranServerPackageDaoService;
 	@Inject static ChannelDaoService channelSevice;
 	@Inject static ServerDaoService serverSevice;
+	@Inject static ServiceDaoService serviceDaoService;
 	
 	public static void main(String[] args) {
 	}
@@ -142,6 +145,34 @@ public class ExportDatasFromDB {
 		data.putServiceData("OUT_MAPPING", getMap(info.getOut_mapping()));
 		data.putServiceData("ERROR_MAPPING", getMap(info.getError_mapping()));
 		data.putString("VERNO", info.getVerno());
+		return data;
+	}
+	
+	/**
+	* @description 的搭配指定服务名称的单元数据
+	* @param service_code 服务名称
+	* @return 服务单元数据
+	* @author raoliang
+	* @version 2014年11月4日 下午7:40:42
+	*/
+	public ServiceData getOneService(String service_code) {
+		ServiceInfo info = serviceDaoService.getOneServiceByCode(service_code);
+		if (info == null) {
+			throw new SystemException("SYS_DB_COMPARE_SERVICE_IS_NOT_EXIST")
+					.addScene("service_code", service_code);
+		}
+		ServiceData data = new ServiceData();
+		data.putString("SERVICE_CODE", info.getService_code());
+		data.putString("SERVICE_TYPE", info.getService_type());
+		data.putString("CATEGORY_CODE", info.getCategory_code());
+		data.putString("SERVICE_NAME", info.getService_name());
+		data.putString("SERVER_CODE", info.getServer_code());
+		data.putString("EXTEND_SERVICE_NAME", info.getExtend_service_name());
+		data.putServiceData("REQ_STRU", getStructure(info.getReq_stru()));
+		data.putServiceData("RESP_STRU", getStructure(info.getResp_stru()));
+		data.putServiceData("ERR_STRU", getStructure(info.getErr_stru()));
+		data.putString("VERNO", info.getVerno());
+		data.putString("IS_PUBLISHED", info.getIs_published());
 		return data;
 	}
 

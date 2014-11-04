@@ -3,12 +3,14 @@ package compare;
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.MappingDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
+import com.wk.eai.webide.dao.ServiceDaoService;
 import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.eai.webide.info.ChannelInfo;
 import com.wk.eai.webide.info.CommInfo;
 import com.wk.eai.webide.info.MappingInfo;
 import com.wk.eai.webide.info.ServerInfo;
+import com.wk.eai.webide.info.ServiceInfo;
 import com.wk.eai.webide.info.TranChannelPackageInfo;
 import com.wk.eai.webide.info.TranServerPackageInfo;
 import com.wk.lang.Inject;
@@ -25,6 +27,7 @@ public class ImportDatasToDB {
 	@Inject static ChannelDaoService channelDaoService;
 	@Inject static TranChannelPackageDaoService tranChannelPackageDaoService;
 	@Inject static ServerDaoService serverDaoService;
+	@Inject static ServiceDaoService serviceDaoService;
 	
 	/**
 	* @description 向数据库插入一个EndPoint
@@ -116,6 +119,18 @@ public class ImportDatasToDB {
 		return tranServerPackageDaoService.updateOneTranAll(tranServerInfo);
 	}
 	
+	/**
+	* @description 向数据库插入一条服务数据
+	* @param serviceData 服务单元数据
+	* @return 成功插入条数
+	* @author raoliang
+	* @version 2014年11月4日 下午8:00:14
+	*/
+	public int insertOneService(ServiceData serviceData){
+		//TODO:
+		ServiceInfo info = getServiceInfoFromServiceData(serviceData);
+		return serviceDaoService.insertOneServiceAll(info);
+	}
 	
 	private ChannelInfo getChannelInfoFromserviceData(ServiceData data){
 		ChannelInfo info = new ChannelInfo();
@@ -185,6 +200,23 @@ public class ImportDatasToDB {
 		tranInfo.setOut_mapping(getMappingId(tranServerData.getServiceData("OUT_MAPPING")));
 		tranInfo.setError_mapping(getMappingId(tranServerData.getServiceData("ERROR_MAPPING")));
 		return tranInfo;
+	}
+	
+	private ServiceInfo getServiceInfoFromServiceData(ServiceData serviceData){
+		ServiceInfo serviceInfo = new ServiceInfo();
+		serviceInfo.setService_code(serviceData.getString("SERVICE_CODE"));
+		serviceInfo.setService_type(serviceData.getString("SERVICE_TYPE"));
+		serviceInfo.setCategory_code(serviceData.getString("CATEGORY_CODE"));
+		serviceInfo.setService_name(serviceData.getString("SERVICE_NAME"));
+		serviceInfo.setServer_code(serviceData.getString("SERVER_CODE"));
+		serviceInfo.setExtend_service_name(serviceData.getString("EXTEND_SERVICE_NAME"));
+		//接口配置
+		serviceInfo.setReq_stru(getServiceReqConfigStr(serviceData));
+		serviceInfo.setResp_stru(getServiceRespConfigStr(serviceData));
+		serviceInfo.setErr_stru(getServiceErrConfigStr(serviceData));
+		
+		serviceInfo.setIs_published(serviceData.getString("IS_PUBLISHED"));
+		return serviceInfo;
 	}
 	
 	private CommInfo getCommInfoFromServiceData(ServiceData data){
@@ -263,6 +295,33 @@ public class ImportDatasToDB {
 	*/
 	private String getErrConfigStr(ServiceData data){
 		return getConfigSaveData(data.getServiceData("ERR_PACKAGE_CONFIG"));
+	}
+	
+	/**
+	 * @description 得到服务请求接口数据
+	 * @author raoliang
+	 * @version 2014年10月31日 下午3:31:53
+	 */
+	private String getServiceReqConfigStr(ServiceData data){
+		return getConfigSaveData(data.getServiceData("REQ_STRU"));
+	}
+	
+	/**
+	 * @description 得到服务响应接口数据
+	 * @author raoliang
+	 * @version 2014年10月31日 下午3:34:41
+	 */
+	private String getServiceRespConfigStr(ServiceData data){
+		return getConfigSaveData(data.getServiceData("RESP_STRU"));
+	}
+	
+	/**
+	 * @description 得到服务错误接口数据
+	 * @author raoliang
+	 * @version 2014年10月31日 下午3:34:43
+	 */
+	private String getServiceErrConfigStr(ServiceData data){
+		return getConfigSaveData(data.getServiceData("ERR_STRU"));
 	}
 	
 	private String getConfigSaveData(ServiceData data){
