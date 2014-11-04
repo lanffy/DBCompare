@@ -1,7 +1,7 @@
 DBCompare
 =========
 
-Compare tables' different in most database銆�
+Compare tables' different in most database
 
 ##一：对比数据库操作步骤
 ###1.将要对比的数据库文件放入db文件夹中；老版本的db文件放入/db/old文件夹；新版本的db文件放入/db/new文件夹。
