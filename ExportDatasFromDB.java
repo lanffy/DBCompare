@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.CommDaoService;
+import com.wk.eai.webide.dao.GroupSvcChartDaoService;
 import com.wk.eai.webide.dao.MappingDaoService;
 import com.wk.eai.webide.dao.SaveDatasDao;
 import com.wk.eai.webide.dao.SaveDatasDaoService;
@@ -42,6 +43,7 @@ public class ExportDatasFromDB {
 	@Inject static ChannelDaoService channelSevice;
 	@Inject static ServerDaoService serverSevice;
 	@Inject static ServiceDaoService serviceDaoService;
+	@Inject static GroupSvcChartDaoService groupSvcChartDaoService;
 	
 	public static void main(String[] args) {
 	}
@@ -149,7 +151,7 @@ public class ExportDatasFromDB {
 	}
 	
 	/**
-	* @description 的搭配指定服务名称的单元数据
+	* @description 得到指定服务名称的单元数据
 	* @param service_code 服务名称
 	* @return 服务单元数据
 	* @author raoliang
@@ -163,7 +165,8 @@ public class ExportDatasFromDB {
 		}
 		ServiceData data = new ServiceData();
 		data.putString("SERVICE_CODE", info.getService_code());
-		data.putString("SERVICE_TYPE", info.getService_type());
+		String service_type = info.getService_type();
+		data.putString("SERVICE_TYPE", service_type);
 		data.putString("CATEGORY_CODE", info.getCategory_code());
 		data.putString("SERVICE_NAME", info.getService_name());
 		data.putString("SERVER_CODE", info.getServer_code());
@@ -173,6 +176,10 @@ public class ExportDatasFromDB {
 		data.putServiceData("ERR_STRU", getStructure(info.getErr_stru()));
 		data.putString("VERNO", info.getVerno());
 		data.putString("IS_PUBLISHED", info.getIs_published());
+		//组合服务
+		if("2".equals(service_type)){
+			data.putString("CONTENT", groupSvcChartDaoService.getChartContent(service_code));
+		}
 		return data;
 	}
 

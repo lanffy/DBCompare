@@ -1,6 +1,7 @@
 package compare;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
+import com.wk.eai.webide.dao.GroupSvcChartDaoService;
 import com.wk.eai.webide.dao.MappingDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
 import com.wk.eai.webide.dao.ServiceDaoService;
@@ -15,6 +16,7 @@ import com.wk.eai.webide.info.TranChannelPackageInfo;
 import com.wk.eai.webide.info.TranServerPackageInfo;
 import com.wk.lang.Inject;
 import com.wk.sdo.ServiceData;
+import com.wk.util.StringUtil;
 
 /**
  * @description 从文件中读取数据导入到数据库表中
@@ -28,6 +30,7 @@ public class ImportDatasToDB {
 	@Inject static TranChannelPackageDaoService tranChannelPackageDaoService;
 	@Inject static ServerDaoService serverDaoService;
 	@Inject static ServiceDaoService serviceDaoService;
+	@Inject static GroupSvcChartDaoService groupSvcChartDaoService;
 	
 	/**
 	* @description 向数据库插入一个EndPoint
@@ -47,7 +50,7 @@ public class ImportDatasToDB {
 	*/
 	public int insertTranEndPoint(ServiceData tranEndPointData){
 		TranChannelPackageInfo info = getTranChannelPackageInfoFromserviceData(tranEndPointData);
-		return tranChannelPackageDaoService.insertOneTran(info);
+		return tranChannelPackageDaoService.insertOneTranAll(info);
 	}
 	
 	/**
@@ -127,8 +130,11 @@ public class ImportDatasToDB {
 	* @version 2014年11月4日 下午8:00:14
 	*/
 	public int insertOneService(ServiceData serviceData){
-		//TODO:
 		ServiceInfo info = getServiceInfoFromServiceData(serviceData);
+		//如果是组合服务
+		if("2".equals(info.getService_type())){
+			groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
+		}
 		return serviceDaoService.insertOneServiceAll(info);
 	}
 	
@@ -209,13 +215,13 @@ public class ImportDatasToDB {
 		serviceInfo.setCategory_code(serviceData.getString("CATEGORY_CODE"));
 		serviceInfo.setService_name(serviceData.getString("SERVICE_NAME"));
 		serviceInfo.setServer_code(serviceData.getString("SERVER_CODE"));
-		serviceInfo.setExtend_service_name(serviceData.getString("EXTEND_SERVICE_NAME"));
+		serviceInfo.setExtend_service_name(StringUtil.isEmpty(serviceData.getString("EXTEND_SERVICE_NAME")) ? "" : serviceData.getString("EXTEND_SERVICE_NAME"));
 		//接口配置
 		serviceInfo.setReq_stru(getServiceReqConfigStr(serviceData));
 		serviceInfo.setResp_stru(getServiceRespConfigStr(serviceData));
 		serviceInfo.setErr_stru(getServiceErrConfigStr(serviceData));
-		
-		serviceInfo.setIs_published(serviceData.getString("IS_PUBLISHED"));
+		//强制发布服务
+		serviceInfo.setIs_published("1");
 		return serviceInfo;
 	}
 	
@@ -248,7 +254,7 @@ public class ImportDatasToDB {
 	}
 	
 	private String getMappingId(ServiceData mapData){
-		return mapData == null ? "" : mappingDaoService.insertOneMappingInfo(serviceDataToInMappingInfo(mapData));
+		return (mapData == null || mapData.size() == 0) ? "" : mappingDaoService.insertOneMappingInfo(serviceDataToInMappingInfo(mapData));
 	}
 	
 	private MappingInfo serviceDataToInMappingInfo(ServiceData data){
@@ -325,7 +331,7 @@ public class ImportDatasToDB {
 	}
 	
 	private String getConfigSaveData(ServiceData data){
-		return data.getServiceData("STRUCTURE_CONTENT").getString("SDATAS");
+		return (data == null || data.size() == 0) ? "" : data.getServiceData("STRUCTURE_CONTENT").getString("SDATAS");
 	}
 	
 }

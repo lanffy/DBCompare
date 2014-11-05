@@ -1,11 +1,13 @@
 package compare;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import com.wk.Controller;
-import com.wk.beans.Injector;
-import com.wk.db.DBSource;
-import com.wk.db.Session;
-import com.wk.eai.webide.dao.DictDaoService;
-import com.wk.eai.webide.dao.DictDetailDaoService;
+import com.wk.lang.Inject;
+import com.wk.sdo.ServiceData;
 
 /**
  * @description
@@ -13,29 +15,39 @@ import com.wk.eai.webide.dao.DictDetailDaoService;
  * @version 2014年10月16日 上午11:23:25
  */
 public class TestH2 {
-	private static final Injector injector = Controller.getInstance().getInjector();
-	private static final DictDetailDaoService dser = injector.getBean(DictDetailDaoService.class);
-	private static final DictDaoService ser = injector.getBean(DictDaoService.class);
-	public static void main(String[] args) {
-		System.out.println(ser.deleteOneDict("test"));
-		DBSource d = DBSource.getDefault();
-		Session s = d.getSession();
-		s.commit();
-//		DictDetailInfo d = new DictDetailInfo();
-//		d.setDict_code("global");
-//		d.setField_code("aaaaaa");
-//		d.setField_length(1);
-//		d.setField_name("a测试");
-//		d.setField_scale(0);
-//		d.setField_type("string");
-//		d.setVerno("1.00");
-//		
-//		DictDetailInfo detail = new DictDetailInfo();
-//		detail.setDict_code("dict1");
-//		detail.setField_code("field_float");
-//		detail.setField_length(7);
-//		detail.setField_scale(4);
-//		detail.setField_type("float");
-//		System.out.println(dser.insertOneDictDetail(detail));
+	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
+	@Inject static ExportDatasFromDB exporter;
+	@Inject static ImportDatasToDB importer;
+	
+	public static void main(String[] args) throws IOException {
+		ServiceData data = exporter.getServerTran("inbankSRV", "0052");
+		ServiceData inmap = data.getServiceData("IN_MAPPING");
+		System.out.println(data+"\n***************8");
+		System.out.println(inmap == null);
+		JSONFileUtil.storeServiceDataToJsonFile(data, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		System.out.println(fileData);
+		inmap = fileData.getServiceData("IN_MAPPING");
+		System.out.println(inmap == null);
+		System.out.println(inmap.size());
+	}
+	
+	private static String readFileToString(File file) throws IOException{
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		String line = "";
+		StringBuilder sb = new StringBuilder();
+		while((line = reader.readLine()) != null){
+			sb.append(line);
+		}
+		reader.close();
+		return sb.toString();
+	}
+	
+	private void init() {
+		Controller.getInstance().getInjector().inject(this);
+	}
+
+	static {
+		new TestH2().init();
 	}
 }

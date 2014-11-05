@@ -15,6 +15,7 @@ import com.wk.test.TestCase;
 public class TestImportDatasTotable extends TestCase {
 	@Inject  ExportDatasFromDB exportService;
 	@Inject  ImportDatasToDB importService;
+	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	public void atest_insertEndPoint(){
 		ServiceData endPoint = exportService.getEndPoint("npCHL");;
@@ -30,7 +31,7 @@ public class TestImportDatasTotable extends TestCase {
 		System.out.println(testChl);
 	}
 	
-	public void test_insertServer(){
+	public void atest_insertServer(){
 		ServiceData serverData = exportService.getServer("inbankSRV");
 		System.out.println("\n***修改前***\n"+serverData);
 		assertEquals(serverData.getString("SERVER_CODE"), "inbankSRV");
@@ -57,6 +58,68 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(commData.getString("CCODE"), "test_srv");
 	}
 	
+	public void atest_insert原子Service(){
+		ServiceData serviceData = exportService.getOneService("0001");
+		System.out.println("\n****导出数据****\n"+serviceData);
+		JSONFileUtil.storeServiceDataToJsonFile(serviceData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("SERVICE_CODE", "0011");
+		fileData.putString("SERVICE_NAME", "0011");
+		fileData.getServiceData("REQ_STRU").putString("SERVICE_CODE", "0011");
+		fileData.getServiceData("RESP_STRU").putString("SERVICE_CODE", "0011");
+		System.out.println("\n****插入数据****\n"+fileData);
+		int num = importService.insertOneService(fileData);
+		assertEquals(num, 1);
+	}
+	
+	public void atest_insert扩展Service(){
+		ServiceData serviceData = exportService.getOneService("0002");
+		System.out.println("\n****导出数据****\n"+serviceData);
+		JSONFileUtil.storeServiceDataToJsonFile(serviceData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("SERVICE_CODE", "0022");
+		fileData.putString("SERVICE_NAME", "0022");
+		ServiceData req = fileData.getServiceData("REQ_STRU");
+		if(req.size()>0){
+			req.putString("SERVICE_CODE", "0022");
+		}
+		ServiceData resp = fileData.getServiceData("RESP_STRU");
+		if(resp.size()>0){
+			resp.putString("SERVICE_CODE", "0022");
+		}
+		ServiceData err = fileData.getServiceData("ERR_STRU");
+		if(err.size()>0){
+			err.putString("SERVICE_CODE", "0022");
+		}
+		System.out.println("\n****插入数据****\n"+fileData);
+		int num = importService.insertOneService(fileData);
+		assertEquals(num, 1);
+	}
+	
+	public void test_insert组合Service(){
+		ServiceData serviceData = exportService.getOneService("0003");
+		System.out.println("\n****导出数据****\n"+serviceData);
+		JSONFileUtil.storeServiceDataToJsonFile(serviceData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("SERVICE_CODE", "0033");
+		fileData.putString("SERVICE_NAME", "0033");
+		ServiceData req = fileData.getServiceData("REQ_STRU");
+		if(req.size()>0){
+			req.putString("SERVICE_CODE", "0033");
+		}
+		ServiceData resp = fileData.getServiceData("RESP_STRU");
+		if(resp.size()>0){
+			resp.putString("SERVICE_CODE", "0033");
+		}
+		ServiceData err = fileData.getServiceData("ERR_STRU");
+		if(err.size()>0){
+			err.putString("SERVICE_CODE", "0033");
+		}
+		System.out.println("\n****插入数据****\n"+fileData);
+		int num = importService.insertOneService(fileData);
+		assertEquals(num, 1);
+	}
+	
 	@Override
 	protected void setUp() throws java.lang.Exception {
 		System.out.println("********华丽丽的测试案例分割线************");
@@ -64,9 +127,9 @@ public class TestImportDatasTotable extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-//		Session session = DBSource.getDefault().getSession();
-//		session.commit();
-//		session.close();
-//		System.out.println("Commited!");
+		Session session = DBSource.getDefault().getSession();
+		session.commit();
+		session.close();
+		System.out.println("Commited!");
 	}
 }
