@@ -2,19 +2,27 @@ package compare;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.GroupSvcChartDaoService;
+import com.wk.eai.webide.dao.InstanceDaoService;
+import com.wk.eai.webide.dao.MachineDaoService;
 import com.wk.eai.webide.dao.MappingDaoService;
+import com.wk.eai.webide.dao.ProcessInstanceDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
 import com.wk.eai.webide.dao.ServiceDaoService;
 import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.eai.webide.info.ChannelInfo;
 import com.wk.eai.webide.info.CommInfo;
+import com.wk.eai.webide.info.InstanceInfo;
+import com.wk.eai.webide.info.MachineInfo;
 import com.wk.eai.webide.info.MappingInfo;
+import com.wk.eai.webide.info.ProcessInstanceInfo;
 import com.wk.eai.webide.info.ServerInfo;
 import com.wk.eai.webide.info.ServiceInfo;
 import com.wk.eai.webide.info.TranChannelPackageInfo;
 import com.wk.eai.webide.info.TranServerPackageInfo;
 import com.wk.lang.Inject;
+import com.wk.logging.Log;
+import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.util.StringUtil;
 
@@ -24,6 +32,7 @@ import com.wk.util.StringUtil;
  * @version 2014年10月30日 下午7:51:06
  */
 public class ImportDatasToDB {
+	private final Log logger = LogFactory.getLog("dbcompare");
 	@Inject static TranServerPackageDaoService tranServerPackageDaoService;
 	@Inject static MappingDaoService mappingDaoService;
 	@Inject static ChannelDaoService channelDaoService;
@@ -31,6 +40,9 @@ public class ImportDatasToDB {
 	@Inject static ServerDaoService serverDaoService;
 	@Inject static ServiceDaoService serviceDaoService;
 	@Inject static GroupSvcChartDaoService groupSvcChartDaoService;
+	@Inject static ProcessInstanceDaoService processInstanceDaoService;
+	@Inject static MachineDaoService machineDaoService;
+	@Inject static InstanceDaoService instanceDaoService;
 	
 	/**
 	* @description 向数据库插入一个EndPoint
@@ -38,8 +50,8 @@ public class ImportDatasToDB {
 	* @version 2014年11月2日 下午2:38:40
 	*/
 	public int insertEndPoint(ServiceData endPointData){
-		ChannelInfo channelInfo = getChannelInfoFromserviceData(endPointData);
-		CommInfo commInfo = getCommInfoFromServiceData(endPointData);
+		ChannelInfo channelInfo = getChannelInfo(endPointData);
+		CommInfo commInfo = getCommInfo(endPointData);
 		return channelDaoService.insertOneChannel(channelInfo, commInfo);
 	}
 	
@@ -49,7 +61,7 @@ public class ImportDatasToDB {
 	* @version 2014年11月2日 下午2:37:21
 	*/
 	public int insertTranEndPoint(ServiceData tranEndPointData){
-		TranChannelPackageInfo info = getTranChannelPackageInfoFromserviceData(tranEndPointData);
+		TranChannelPackageInfo info = getTranChannelPackageInfo(tranEndPointData);
 		return tranChannelPackageDaoService.insertOneTranAll(info);
 	}
 	
@@ -60,8 +72,8 @@ public class ImportDatasToDB {
 	* @return
 	*/
 	public int updateEndPoint(ServiceData endPointData){
-		ChannelInfo channelInfo = getChannelInfoFromserviceData(endPointData);
-		CommInfo commInfo = getCommInfoFromServiceData(endPointData);
+		ChannelInfo channelInfo = getChannelInfo(endPointData);
+		CommInfo commInfo = getCommInfo(endPointData);
 		return channelDaoService.updateOneChannelAll(channelInfo, commInfo);
 	}
 	
@@ -72,7 +84,7 @@ public class ImportDatasToDB {
 	* @return
 	*/
 	public int updateTranEndPoint(ServiceData tranEndPointData){
-		TranChannelPackageInfo tranEndPointInfo = getTranChannelPackageInfoFromserviceData(tranEndPointData);
+		TranChannelPackageInfo tranEndPointInfo = getTranChannelPackageInfo(tranEndPointData);
 		return tranChannelPackageDaoService.updateOneTranAll(tranEndPointInfo);
 	}
 	
@@ -83,8 +95,8 @@ public class ImportDatasToDB {
 	* @return
 	*/
 	public int insertServer(ServiceData serverData){
-		ServerInfo serverInfo = getServerInfoFromServiceData(serverData);
-		CommInfo commInfo = getCommInfoFromServiceData(serverData);
+		ServerInfo serverInfo = getServerInfo(serverData);
+		CommInfo commInfo = getCommInfo(serverData);
 		return serverDaoService.insertOneServerAll(serverInfo, commInfo);
 	}
 	
@@ -95,7 +107,7 @@ public class ImportDatasToDB {
 	* @return
 	*/
 	public int insertTranServer(ServiceData tranServerData){
-		TranServerPackageInfo tranServerInfo = getTranServerPackageInfoFromServiceData(tranServerData);
+		TranServerPackageInfo tranServerInfo = getTranServerPackageInfo(tranServerData);
 		return tranServerPackageDaoService.insertOneTranAll(tranServerInfo);
 	}
 	
@@ -106,8 +118,8 @@ public class ImportDatasToDB {
 	* @return
 	*/
 	public int updateServer(ServiceData serverData){
-		ServerInfo serverInfo = getServerInfoFromServiceData(serverData);
-		CommInfo commInfo = getCommInfoFromServiceData(serverData);
+		ServerInfo serverInfo = getServerInfo(serverData);
+		CommInfo commInfo = getCommInfo(serverData);
 		return serverDaoService.updateOneServerAll(serverInfo, commInfo);
 	}
 	
@@ -118,7 +130,7 @@ public class ImportDatasToDB {
 	* @return
 	*/
 	public int updateTranServer(ServiceData tranServerData){
-		TranServerPackageInfo tranServerInfo = getTranServerPackageInfoFromServiceData(tranServerData);
+		TranServerPackageInfo tranServerInfo = getTranServerPackageInfo(tranServerData);
 		return tranServerPackageDaoService.updateOneTranAll(tranServerInfo);
 	}
 	
@@ -130,7 +142,7 @@ public class ImportDatasToDB {
 	* @version 2014年11月4日 下午8:00:14
 	*/
 	public int insertOneService(ServiceData serviceData){
-		ServiceInfo info = getServiceInfoFromServiceData(serviceData);
+		ServiceInfo info = getServiceInfo(serviceData);
 		//如果是组合服务
 		if("2".equals(info.getService_type())){
 			groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
@@ -138,7 +150,87 @@ public class ImportDatasToDB {
 		return serviceDaoService.insertOneServiceAll(info);
 	}
 	
-	private ChannelInfo getChannelInfoFromserviceData(ServiceData data){
+	/**
+	* @description 插入服务器信息
+	* @param machineData 服务器单元数据
+	* @return 成功插入条数
+	* @author raoliang
+	* @version 2014年11月6日 下午1:08:02
+	*/
+	public int insertOneMachine(ServiceData machineData){
+		int count = 0;
+		if(machineData == null || machineData.size() == 0){
+			logger.warn("插入服务器列表的数据源无数据，方法名：insertOneMachine");
+			logger.info("插入服务器条数：{}", count);
+			return count;
+		}
+		MachineInfo info = getMachineInfo(machineData);
+		count = machineDaoService.saveOneMachine(info);
+		//插入服务器下的进程列表
+		if(machineData.size() > 5){
+			insertAllInstance(machineData.getServiceData("INSTANCE"));
+		}
+		//如果此服务器下部署了进程
+		if(machineData.size() == 6){
+			insertAllProcessInstance(machineData.getServiceData("PROCESSINSTANCE"));
+		}
+		logger.info("插入服务器条数：{}", count);
+		return count;
+	}
+	
+	/**
+	* @description 插入服务器下的进程列表
+	* @param instanceData 进程列表数据源
+	* @return 成功插入条数
+	* @author raoliang
+	* @version 2014年11月6日 下午3:29:07
+	*/
+	public int insertAllInstance(ServiceData instanceData){
+		int count = 0;
+		if(instanceData == null || instanceData.size() == 0){
+			logger.warn("插入服务器下的进程列表的数据源无数据，方法名：insertAllInstance");
+			return count;
+		}
+		String[] keys = instanceData.getKeys();
+		for (String key : keys) {
+			ServiceData data = instanceData.getServiceData(key);
+			//得到单个进程列表的Info
+			InstanceInfo info = getInstanceInfo(data);
+			//插入单个进程列表
+			count += instanceDaoService.saveOneInstance(info);
+		}
+		logger.info("成功插入进程列表{}个", count);
+		return count;
+	}
+	
+	/**
+	* @description 插入某个服务器下部署的所有进程
+	* @param instanceData 进程列表数据源
+	* @return 成功插入条数
+	* @author raoliang
+	* @version 2014年11月6日 上午11:38:43
+	*/
+	public int insertAllProcessInstance(ServiceData datas){
+		int count = 0;
+		if(datas == null || datas.size() == 0){
+			logger.warn("插入部署进程列表的数据源无数据，方法名：insertAllProcessInstance");
+			return count;
+		}
+		String[] keys = datas.getKeys();
+		String keysStr = "";
+		for (String key : keys) {
+			keysStr += key+" ";
+			ServiceData data = datas.getServiceData(key);
+			//得到单个进程的Info
+			ProcessInstanceInfo info = getProcessInstanceInfo(data);
+			//插入单个进程
+			count += processInstanceDaoService.insertOneRecord(info);
+		}
+		logger.info("成功插入部署进程{}个，部署渠道有：{}", count, keysStr);
+		return count;
+	}
+	
+	private ChannelInfo getChannelInfo(ServiceData data){
 		ChannelInfo info = new ChannelInfo();
 		info.setChannel_code(data.getString("CHANNEL_CODE"));
 		info.setChannel_name(data.getString("CHANNEL_NAME"));
@@ -158,7 +250,7 @@ public class ImportDatasToDB {
 		return info;
 	}
 	
-	private TranChannelPackageInfo getTranChannelPackageInfoFromserviceData(ServiceData tranEndPointData){
+	private TranChannelPackageInfo getTranChannelPackageInfo(ServiceData tranEndPointData){
 		TranChannelPackageInfo tranInfo = new TranChannelPackageInfo();
 		tranInfo.setChannel_code(tranEndPointData.getString("CHANNEL_CODE"));
 		tranInfo.setTran_code(tranEndPointData.getString("TRAN_CODE"));
@@ -174,7 +266,7 @@ public class ImportDatasToDB {
 		return tranInfo;
 	}
 	
-	private ServerInfo getServerInfoFromServiceData(ServiceData data){
+	private ServerInfo getServerInfo(ServiceData data){
 		ServerInfo info = new ServerInfo();
 		info.setServer_code(data.getString("SERVER_CODE"));
 		info.setServer_name(data.getString("SERVER_NAME"));
@@ -193,7 +285,7 @@ public class ImportDatasToDB {
 		return info;
 	}
 	
-	private TranServerPackageInfo getTranServerPackageInfoFromServiceData(ServiceData tranServerData){
+	private TranServerPackageInfo getTranServerPackageInfo(ServiceData tranServerData){
 		TranServerPackageInfo tranInfo = new TranServerPackageInfo();
 		tranInfo.setServer_code(tranServerData.getString("SERVER_CODE"));
 		tranInfo.setTran_code(tranServerData.getString("TRAN_CODE"));
@@ -208,7 +300,7 @@ public class ImportDatasToDB {
 		return tranInfo;
 	}
 	
-	private ServiceInfo getServiceInfoFromServiceData(ServiceData serviceData){
+	private ServiceInfo getServiceInfo(ServiceData serviceData){
 		ServiceInfo serviceInfo = new ServiceInfo();
 		serviceInfo.setService_code(serviceData.getString("SERVICE_CODE"));
 		serviceInfo.setService_type(serviceData.getString("SERVICE_TYPE"));
@@ -225,7 +317,32 @@ public class ImportDatasToDB {
 		return serviceInfo;
 	}
 	
-	private CommInfo getCommInfoFromServiceData(ServiceData data){
+	private MachineInfo getMachineInfo(ServiceData machineData){
+		MachineInfo info = new MachineInfo();
+		info.setMachine_code(machineData.getString("MACHINE_CODE"));
+		info.setMachine_ip(machineData.getString("MACHINE_IP"));
+		info.setMachine_name(machineData.getString("MACHINE_NAME"));
+		return info;
+	}
+	
+	private InstanceInfo getInstanceInfo(ServiceData instanceData){
+		InstanceInfo info = new InstanceInfo();
+		info.setMachine_code(instanceData.getString("MACHINE_CODE"));
+		info.setSkeyc(instanceData.getString("SKEYC"));
+		info.setSkeyd(instanceData.getString("SKEYD"));
+		return info;
+	}
+	
+	private ProcessInstanceInfo getProcessInstanceInfo(ServiceData processInstanceData){
+		ProcessInstanceInfo info = new ProcessInstanceInfo();
+		info.setSkeyc(processInstanceData.getString("SKEYC"));
+		info.setChannel_code(processInstanceData.getString("CHANNEL_CODE"));
+		info.setBind_address(processInstanceData.getString("BIND_ADDRESS"));
+		info.setRemote_address(processInstanceData.getString("REMOTE_ADDRESS"));
+		return info;
+	}
+	
+	private CommInfo getCommInfo(ServiceData data){
 		ServiceData commData = data.getServiceData("COMM_ID");
 		CommInfo info = new CommInfo();
 		info.setCategory(commData.getString("CATEGORY"));

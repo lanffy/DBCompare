@@ -5,6 +5,8 @@ import com.wk.db.Session;
 import com.wk.lang.Inject;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
+import com.wk.util.JSON;
+import com.wk.util.JSONCaseType;
 
 
 /**
@@ -96,7 +98,7 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void test_insert组合Service(){
+	public void atest_insert组合Service(){
 		ServiceData serviceData = exportService.getOneService("0003");
 		System.out.println("\n****导出数据****\n"+serviceData);
 		JSONFileUtil.storeServiceDataToJsonFile(serviceData, filePath);
@@ -117,6 +119,30 @@ public class TestImportDatasTotable extends TestCase {
 		}
 		System.out.println("\n****插入数据****\n"+fileData);
 		int num = importService.insertOneService(fileData);
+		assertEquals(num, 1);
+	}
+	
+	public void test_insert部署(){
+		ServiceData expandData = exportService.getMachine("001");
+		System.out.println("***修改前***\n"+expandData);
+		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("MACHINE_CODE", "002");
+		fileData.putString("MACHINE_IP", "127.0.0.1");
+		fileData.putString("MACHINE_NAME", "002");
+		
+		ServiceData instance = fileData.getServiceData("INSTANCE");
+		String instanceStr = JSON.fromServiceData(instance, JSONCaseType.DEFAULT).replace("001", "002");
+		instance = JSON.toServiceDataByType(instanceStr, JSONCaseType.DEFAULT);
+		fileData.putServiceData("INSTANCE", instance);
+		
+		ServiceData processInstance = fileData.getServiceData("PROCESSINSTANCE");
+		String processinstanceStr = JSON.fromServiceData(processInstance, JSONCaseType.DEFAULT).replace("001", "002");
+		processInstance = JSON.toServiceDataByType(processinstanceStr, JSONCaseType.DEFAULT);
+		fileData.putServiceData("PROCESSINSTANCE", processInstance);
+		
+		System.out.println("***修改后***\n"+fileData);
+		int num = importService.insertOneMachine(fileData);
 		assertEquals(num, 1);
 	}
 	

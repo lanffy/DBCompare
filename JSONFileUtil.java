@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import com.wk.lang.SystemException;
+import com.wk.logging.Log;
+import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.util.JSON;
 import com.wk.util.JSONCaseType;
@@ -21,7 +23,7 @@ import com.wk.util.JSONCaseType;
  * @version 2014年11月5日 上午11:18:30
  */
 public class JSONFileUtil {
-	
+	private static final Log logger = LogFactory.getLog("dbcompare");
 	/**
 	* @description ServiceData格式数据转换成json字符串
 	* @param data 数据源
@@ -101,6 +103,10 @@ public class JSONFileUtil {
 		} catch (IOException e) {
 			throw new SystemException("SYS_DB_COMPARE_READ_FILE_TO_SERVICEDATA_ERROR")
 				.addScene("filePath", file.getAbsolutePath());
+		}
+		if(json.length() == 0){
+			logger.warn("JSON文件中无数据,文件:{}", file.getAbsolutePath());
+			return null;
 		}
 		return JSON.toServiceDataByType(json, JSONCaseType.DEFAULT);
     }

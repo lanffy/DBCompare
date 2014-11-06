@@ -5,7 +5,10 @@ import java.util.List;
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.CommDaoService;
 import com.wk.eai.webide.dao.GroupSvcChartDaoService;
+import com.wk.eai.webide.dao.InstanceDaoService;
+import com.wk.eai.webide.dao.MachineDaoService;
 import com.wk.eai.webide.dao.MappingDaoService;
+import com.wk.eai.webide.dao.ProcessInstanceDaoService;
 import com.wk.eai.webide.dao.SaveDatasDao;
 import com.wk.eai.webide.dao.SaveDatasDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
@@ -15,7 +18,10 @@ import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.eai.webide.info.ChannelInfo;
 import com.wk.eai.webide.info.CommInfo;
+import com.wk.eai.webide.info.InstanceInfo;
+import com.wk.eai.webide.info.MachineInfo;
 import com.wk.eai.webide.info.MappingInfo;
+import com.wk.eai.webide.info.ProcessInstanceInfo;
 import com.wk.eai.webide.info.SaveDatasInfo;
 import com.wk.eai.webide.info.ServerInfo;
 import com.wk.eai.webide.info.ServiceInfo;
@@ -24,6 +30,8 @@ import com.wk.eai.webide.info.TranChannelPackageInfo;
 import com.wk.eai.webide.info.TranServerPackageInfo;
 import com.wk.lang.Inject;
 import com.wk.lang.SystemException;
+import com.wk.logging.Log;
+import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.util.StringUtil;
 
@@ -33,6 +41,7 @@ import com.wk.util.StringUtil;
  * @version 2014年10月30日 上午11:49:46
  */
 public class ExportDatasFromDB {
+	private final Log logger = LogFactory.getLog("dbcompare");
 	@Inject static CommDaoService commDaoSevice;
 	@Inject static StructureDaoService structureDaoSevice;
 	@Inject static SaveDatasDaoService saveDatasDaoSevice;
@@ -44,6 +53,9 @@ public class ExportDatasFromDB {
 	@Inject static ServerDaoService serverSevice;
 	@Inject static ServiceDaoService serviceDaoService;
 	@Inject static GroupSvcChartDaoService groupSvcChartDaoService;
+	@Inject static MachineDaoService machineDaoService;
+	@Inject static ProcessInstanceDaoService processInstanceDaoService;
+	@Inject static InstanceDaoService instanceDaoService;
 	
 	public static void main(String[] args) {
 	}
@@ -183,6 +195,80 @@ public class ExportDatasFromDB {
 		return data;
 	}
 
+	/**
+	* @description 得到服务器列表单元数据和部署数据
+	* @param machine_code 机器号
+	* @return 单元数据
+	* @author raoliang
+	* @version 2014年11月6日 上午10:05:46
+	*/
+	public ServiceData getMachine(String machine_code){
+		MachineInfo info = machineDaoService.getOneMachine(machine_code);
+		if (info == null) {
+			throw new SystemException("SYS_DB_COMPARE_MACHINE_IS_NOT_EXIST")
+					.addScene("machine_code", machine_code);
+		}
+		ServiceData data = new ServiceData();
+		data.putString("MACHINE_CODE", info.getMachine_code());
+		data.putString("MACHINE_IP", info.getMachine_ip());
+		data.putString("MACHINE_NAME", info.getMachine_name());
+		data.putString("VERNO", info.getVerno());
+		data.putServiceData("INSTANCE", getInstance(info.getMachine_code()));
+		data.putServiceData("PROCESSINSTANCE", getAllProcessInstance(info.getMachine_code()));
+		return data;
+	}
+	
+	/**
+	* @description 得到服务器下的进程列表
+	* @param machineCode 服务器编码
+	* @return 单元数据
+	* @author raoliang
+	* @version 2014年11月6日 下午3:18:21
+	*/
+	public ServiceData getInstance(String machineCode){
+		List<InstanceInfo> infos = instanceDaoService.getInstances(machineCode);
+		if(infos == null){
+			logger.info("vrouter实例不存在，进程标识代码:{}", machineCode);
+			return null;
+		}
+		ServiceData datas = new ServiceData();
+		for (InstanceInfo info : infos) {
+			ServiceData data = new ServiceData();
+			data.putString("MACHINE_CODE", info.getMachine_code());
+			data.putString("SKEYC", info.getSkeyc());
+			data.putString("SKEYD", info.getSkeyd());
+			data.putString("VERNO", info.getVerno());
+			datas.putServiceData(info.getSkeyc(), data);
+		}
+		return datas;
+	}
+	
+	/**
+	* @description 返回执行机器号下部署的EndPoint
+	* @param skeyc 服务器编码
+	* @return 单元数据
+	* @author raoliang
+	* @version 2014年11月6日 上午11:16:16
+	*/
+	public ServiceData getAllProcessInstance(String skeyc){
+		List<ProcessInstanceInfo> infos = processInstanceDaoService.getInstancesByInsCode(skeyc);
+		if (infos == null || infos.size() == 0) {
+			logger.warn("进程列表无数据，进程编号：{}", skeyc);
+			return null;
+		}
+		ServiceData datas = new ServiceData();
+		for (ProcessInstanceInfo info : infos) {
+			ServiceData data = new ServiceData();
+			data.putString("SKEYC", info.getSkeyc());
+			data.putString("CHANNEL_CODE", info.getChannel_code());
+			data.putString("BIND_ADDRESS", info.getBind_address());
+			data.putString("REMOTE_ADDRESS", info.getRemote_address());
+			data.putString("VERNO", info.getVerno());
+			datas.putServiceData(info.getChannel_code(), data);
+		}
+		return datas;
+	}
+	
 	private static void putChannelBasicPar(ServiceData data, ChannelInfo info){
 		data.putString("CHANNEL_CODE", info.getChannel_code());
 		data.putString("CHANNEL_NAME", info.getChannel_name());

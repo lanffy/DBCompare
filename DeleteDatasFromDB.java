@@ -7,7 +7,7 @@ import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.lang.Inject;
 
 /**
- * @description 删除指定的相关数据
+ * @description 删除指定的相关数据,目前能删除EndPoint和服务系统相关的数据
  * @author raoliang
  * @version 2014年11月4日 下午2:55:17
  */
