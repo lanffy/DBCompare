@@ -146,6 +146,7 @@ public class ImportDatasToDB {
 		//如果是组合服务
 		if("2".equals(info.getService_type())){
 			groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
+			logger.info("成功插入一条组合服务流程图,服务名称:{}", info.getService_code());
 		}
 		return serviceDaoService.insertOneServiceAll(info);
 	}
@@ -159,11 +160,6 @@ public class ImportDatasToDB {
 	*/
 	public int insertOneMachine(ServiceData machineData){
 		int count = 0;
-		if(machineData == null || machineData.size() == 0){
-			logger.warn("插入服务器列表的数据源无数据，方法名：insertOneMachine");
-			logger.info("插入服务器条数：{}", count);
-			return count;
-		}
 		MachineInfo info = getMachineInfo(machineData);
 		count = machineDaoService.saveOneMachine(info);
 		//插入服务器下的进程列表
@@ -174,7 +170,8 @@ public class ImportDatasToDB {
 		if(machineData.size() == 6){
 			insertAllProcessInstance(machineData.getServiceData("PROCESSINSTANCE"));
 		}
-		logger.info("插入服务器条数：{}", count);
+		//TODO:
+//		logger.info("插入服务器条数:{}", count);
 		return count;
 	}
 	
@@ -187,10 +184,6 @@ public class ImportDatasToDB {
 	*/
 	public int insertAllInstance(ServiceData instanceData){
 		int count = 0;
-		if(instanceData == null || instanceData.size() == 0){
-			logger.warn("插入服务器下的进程列表的数据源无数据，方法名：insertAllInstance");
-			return count;
-		}
 		String[] keys = instanceData.getKeys();
 		for (String key : keys) {
 			ServiceData data = instanceData.getServiceData(key);
@@ -212,10 +205,6 @@ public class ImportDatasToDB {
 	*/
 	public int insertAllProcessInstance(ServiceData datas){
 		int count = 0;
-		if(datas == null || datas.size() == 0){
-			logger.warn("插入部署进程列表的数据源无数据，方法名：insertAllProcessInstance");
-			return count;
-		}
 		String[] keys = datas.getKeys();
 		String keysStr = "";
 		for (String key : keys) {
@@ -226,7 +215,7 @@ public class ImportDatasToDB {
 			//插入单个进程
 			count += processInstanceDaoService.insertOneRecord(info);
 		}
-		logger.info("成功插入部署进程{}个，部署渠道有：{}", count, keysStr);
+		logger.info("成功插入部署进程{}个,部署渠道有:{}", count, keysStr);
 		return count;
 	}
 	

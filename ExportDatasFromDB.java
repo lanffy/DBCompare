@@ -68,7 +68,8 @@ public class ExportDatasFromDB {
 	public ServiceData getEndPoint(String channel_code){
 		ChannelInfo channelInfo = channelSevice.getOneChannel(channel_code);
 		if(channelInfo == null){
-			throw new SystemException("SYS_DB_COMPARE_ENDPOINT_IS_NOT_EXIST").addScene("channel_code", channel_code);
+			logger.warn("此ENdPoint不存在，channel_code：{}", channel_code);
+			return null;
 		}
 		ServiceData channelData = new ServiceData();
 		putChannelBasicPar(channelData, channelInfo);
@@ -93,7 +94,8 @@ public class ExportDatasFromDB {
 	public ServiceData getServer(String server_code){
 		ServerInfo serverInfo = serverSevice.getOneServer(server_code);
 		if(serverInfo == null){
-			throw new SystemException("SYS_DB_COMPARE_SERVER_IS_NOT_EXIST").addScene("server_code", server_code);
+			logger.warn("服务系统不存在，server_code：{}", server_code);
+			return null;
 		}
 		ServiceData serverData = new ServiceData();
 		putServerBasicPar(serverData, serverInfo);
@@ -119,9 +121,8 @@ public class ExportDatasFromDB {
 	public ServiceData getChannelTran(String channel_code, String tran_code){
 		TranChannelPackageInfo info = tranChannelPackageDaoService.getOneTran(channel_code, tran_code);
 		if(info == null){
-			throw new SystemException("SYS_DB_COMPARE_ENDPOINT_RELATED_TRANSACTION_IS_NOT_EXIST")
-				.addScene("channel_code", channel_code)
-				.addScene("tran_code", tran_code);
+			logger.warn("ENdPoint下无此关联交易，channel_code：{},tran_code:{}", channel_code, tran_code);
+			return null;
 		}
 		ServiceData data = new ServiceData();
 		data.putString("CHANNEL_CODE", info.getChannel_code());
@@ -145,9 +146,8 @@ public class ExportDatasFromDB {
 	public ServiceData getServerTran(String server_code, String tran_code){
 		TranServerPackageInfo info = tranServerPackageDaoService.getOneTran(server_code, tran_code);
 		if(info == null){
-			throw new SystemException("SYS_DB_COMPARE_SERVER_RELATED_TRANSACTION_IS_NOT_EXIST")
-				.addScene("server_code", server_code)
-				.addScene("tran_code", tran_code);
+			logger.warn("服务系统关联交易不存在，server_code：{}，tran_code：{}", server_code, tran_code);
+			return null;
 		}
 		ServiceData data = new ServiceData();
 		data.putString("SERVER_CODE", info.getServer_code());
@@ -172,8 +172,8 @@ public class ExportDatasFromDB {
 	public ServiceData getOneService(String service_code) {
 		ServiceInfo info = serviceDaoService.getOneServiceByCode(service_code);
 		if (info == null) {
-			throw new SystemException("SYS_DB_COMPARE_SERVICE_IS_NOT_EXIST")
-					.addScene("service_code", service_code);
+			logger.warn("服务不存在，service_code：{}", service_code);
+			return null;
 		}
 		ServiceData data = new ServiceData();
 		data.putString("SERVICE_CODE", info.getService_code());
@@ -205,8 +205,8 @@ public class ExportDatasFromDB {
 	public ServiceData getMachine(String machine_code){
 		MachineInfo info = machineDaoService.getOneMachine(machine_code);
 		if (info == null) {
-			throw new SystemException("SYS_DB_COMPARE_MACHINE_IS_NOT_EXIST")
-					.addScene("machine_code", machine_code);
+			logger.warn("服务器列表下无此服务器，machine_code：{}", machine_code);
+			return null;
 		}
 		ServiceData data = new ServiceData();
 		data.putString("MACHINE_CODE", info.getMachine_code());
@@ -228,7 +228,7 @@ public class ExportDatasFromDB {
 	public ServiceData getInstance(String machineCode){
 		List<InstanceInfo> infos = instanceDaoService.getInstances(machineCode);
 		if(infos == null){
-			logger.info("vrouter实例不存在，进程标识代码:{}", machineCode);
+			logger.warn("vrouter实例不存在，进程标识代码:{}", machineCode);
 			return null;
 		}
 		ServiceData datas = new ServiceData();
@@ -244,7 +244,7 @@ public class ExportDatasFromDB {
 	}
 	
 	/**
-	* @description 返回执行机器号下部署的EndPoint
+	* @description 返回此机器号下部署的EndPoint
 	* @param skeyc 服务器编码
 	* @return 单元数据
 	* @author raoliang

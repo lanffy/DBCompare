@@ -56,6 +56,7 @@ public class JSONFileUtil {
 	*/
 	private static void storeServiceDataToJsonFile(ServiceData data, File file) {
 		String json = convertServiceDataToJson(data);
+		logger.warn("向文件{}中写数据\n{}", file.getAbsolutePath(), data);
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(file);
@@ -108,7 +109,9 @@ public class JSONFileUtil {
 			logger.warn("JSON文件中无数据,文件:{}", file.getAbsolutePath());
 			return null;
 		}
-		return JSON.toServiceDataByType(json, JSONCaseType.DEFAULT);
+		ServiceData data = JSON.toServiceDataByType(json, JSONCaseType.DEFAULT);
+		logger.info("从文件{}中读取数据\n{}", file.getAbsolutePath(), data);
+		return data;
     }
 	
 	private static String readFileToString(File file) throws IOException{

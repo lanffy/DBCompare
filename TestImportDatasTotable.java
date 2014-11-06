@@ -122,7 +122,7 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void test_insert部署(){
+	public void atest_insert部署(){
 		ServiceData expandData = exportService.getMachine("001");
 		System.out.println("***修改前***\n"+expandData);
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
@@ -153,9 +153,9 @@ public class TestImportDatasTotable extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-		Session session = DBSource.getDefault().getSession();
-		session.commit();
-		session.close();
-		System.out.println("Commited!");
+//		Session session = DBSource.getDefault().getSession();
+//		session.commit();
+//		session.close();
+//		System.out.println("Commited!");
 	}
 }
