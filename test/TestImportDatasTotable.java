@@ -1,4 +1,4 @@
-package compare;
+package compare.test;
 
 import com.wk.db.DBSource;
 import com.wk.db.Session;
@@ -9,6 +9,9 @@ import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
 import com.wk.util.JSON;
 import com.wk.util.JSONCaseType;
+import compare.ExportDatasFromDB;
+import compare.ImportDatasToDB;
+import compare.JSONFileUtil;
 
 
 /**

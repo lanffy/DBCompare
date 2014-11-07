@@ -1,4 +1,4 @@
-package compare;
+package compare.test;
 
 import com.wk.db.DBSource;
 import com.wk.db.Session;
@@ -6,6 +6,8 @@ import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.lang.Inject;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
+import compare.ExportDatasFromDB;
+import compare.ImportDatasToDB;
 
 
 /**

@@ -1,10 +1,12 @@
-package compare;
+package compare.test;
 
 import com.wk.lang.Inject;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
+import compare.ExportDatasFromDB;
+import compare.JSONFileUtil;
 
 
 /**
