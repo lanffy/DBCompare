@@ -1,9 +1,12 @@
 package compare;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.CommDaoService;
+import com.wk.eai.webide.dao.DictDaoService;
+import com.wk.eai.webide.dao.DictDetailDao;
 import com.wk.eai.webide.dao.GroupSvcChartDaoService;
 import com.wk.eai.webide.dao.InstanceDaoService;
 import com.wk.eai.webide.dao.MachineDaoService;
@@ -18,6 +21,8 @@ import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.eai.webide.info.ChannelInfo;
 import com.wk.eai.webide.info.CommInfo;
+import com.wk.eai.webide.info.DictDetailInfo;
+import com.wk.eai.webide.info.DictInfo;
 import com.wk.eai.webide.info.InstanceInfo;
 import com.wk.eai.webide.info.MachineInfo;
 import com.wk.eai.webide.info.MappingInfo;
@@ -56,6 +61,8 @@ public class ExportDatasFromDB {
 	@Inject static MachineDaoService machineDaoService;
 	@Inject static ProcessInstanceDaoService processInstanceDaoService;
 	@Inject static InstanceDaoService instanceDaoService;
+	@Inject static DictDaoService dictDaoService;
+	@Inject static DictDetailDao dictDetailDao;
 	
 	public static void main(String[] args) {
 	}
@@ -213,8 +220,14 @@ public class ExportDatasFromDB {
 		data.putString("MACHINE_IP", info.getMachine_ip());
 		data.putString("MACHINE_NAME", info.getMachine_name());
 		data.putString("VERNO", info.getVerno());
-		data.putServiceData("INSTANCE", getInstance(info.getMachine_code()));
-		data.putServiceData("PROCESSINSTANCE", getAllProcessInstance(info.getMachine_code()));
+		ServiceData instanceData = getInstance(info.getMachine_code());
+		if(instanceData.size() > 0){
+			data.putServiceData("INSTANCE", instanceData);
+		}
+		ServiceData processInstanceData = getAllProcessInstance(info.getMachine_code());
+		if(processInstanceData.size() > 0){
+			data.putServiceData("PROCESSINSTANCE", processInstanceData);
+		}
 		return data;
 	}
 	
@@ -265,6 +278,54 @@ public class ExportDatasFromDB {
 			data.putString("REMOTE_ADDRESS", info.getRemote_address());
 			data.putString("VERNO", info.getVerno());
 			datas.putServiceData(info.getChannel_code(), data);
+		}
+		return datas;
+	}
+	
+	/**
+	* @description 得到一个数据字典以及该字典下的所有数据字段
+	* @param dict_code 数据字典编码
+	* @return 单元数据
+	* @author raoliang
+	* @version 2014年11月7日 上午9:30:16
+	*/
+	public ServiceData getOneDict(String dict_code){
+		DictInfo info = dictDaoService.findOneDict(dict_code);
+		ServiceData data = new ServiceData();
+		//TODO:
+		data.putString("DICT_CODE", info.getDict_code());
+		data.putString("DICT_NAME", info.getDict_name());
+		data.putString("IS_GLOBAL", info.getIs_global());
+		data.putString("VERNO", info.getVerno());
+		ServiceData dictDetail = getAllDictDetail(info.getDict_code());
+		if(dictDetail.size() > 0){
+			data.putServiceData("DICT_DETAIL", dictDetail);
+		}
+		return data;
+	}
+	
+	/**
+	* @description 得到指定数据字典下的所有数据字段的单元数据
+	* @param dict_code 数据字典编码
+	* @return 详细数据字段单元数据
+	* @author raoliang
+	* @version 2014年11月7日 上午9:30:54
+	*/
+	public ServiceData getAllDictDetail(String dict_code){
+		Iterator<DictDetailInfo> iterator = dictDetailDao.iteratorFeildsByCode(dict_code);
+		ServiceData datas = new ServiceData();
+		DictDetailInfo info = null;
+		while(iterator.hasNext()){
+			info = iterator.next();
+			ServiceData data = new ServiceData();
+			data.putString("DICT_CODE", info.getDict_code());
+			data.putString("FIELD_CODE", info.getField_code());
+			data.putString("FIELD_NAME", info.getField_name());
+			data.putString("FIELD_TYPE", info.getField_type());
+			data.putInt("FIELD_LENGTH", info.getField_length());
+			data.putInt("FIELD_SCALE", info.getField_scale());
+			data.putString("VERNO", info.getVerno());
+			datas.putServiceData(info.getField_code(), data);
 		}
 		return datas;
 	}

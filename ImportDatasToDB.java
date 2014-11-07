@@ -1,6 +1,8 @@
 package compare;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
+import com.wk.eai.webide.dao.DictDaoService;
+import com.wk.eai.webide.dao.DictDetailDaoService;
 import com.wk.eai.webide.dao.GroupSvcChartDaoService;
 import com.wk.eai.webide.dao.InstanceDaoService;
 import com.wk.eai.webide.dao.MachineDaoService;
@@ -12,6 +14,8 @@ import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.eai.webide.info.ChannelInfo;
 import com.wk.eai.webide.info.CommInfo;
+import com.wk.eai.webide.info.DictDetailInfo;
+import com.wk.eai.webide.info.DictInfo;
 import com.wk.eai.webide.info.InstanceInfo;
 import com.wk.eai.webide.info.MachineInfo;
 import com.wk.eai.webide.info.MappingInfo;
@@ -43,6 +47,8 @@ public class ImportDatasToDB {
 	@Inject static ProcessInstanceDaoService processInstanceDaoService;
 	@Inject static MachineDaoService machineDaoService;
 	@Inject static InstanceDaoService instanceDaoService;
+	@Inject static DictDaoService dictDaoService;
+	@Inject static DictDetailDaoService dictDetailDaoService;
 	
 	/**
 	* @description 向数据库插入一个EndPoint
@@ -163,7 +169,7 @@ public class ImportDatasToDB {
 		MachineInfo info = getMachineInfo(machineData);
 		count = machineDaoService.saveOneMachine(info);
 		//插入服务器下的进程列表
-		if(machineData.size() > 5){
+		if(machineData.size() >= 5){
 			insertAllInstance(machineData.getServiceData("INSTANCE"));
 		}
 		//如果此服务器下部署了进程
@@ -217,6 +223,51 @@ public class ImportDatasToDB {
 		}
 		logger.info("成功插入部署进程{}个,部署渠道有:{}", count, keysStr);
 		return count;
+	}
+	
+	/**
+	* @description 插入一个数据字典，如果该字典下有字段，则同时插入该字典下的所有字段
+	* @return 成功插入的条数
+	* @author raoliang
+	* @version 2014年11月7日 上午10:13:25
+	*/
+	public int insertOneDict(ServiceData datas){
+		DictInfo dictInfo = getDictInfo(datas);
+		int count = dictDaoService.insertOneDict(dictInfo);
+		if(datas.size() == 5){
+			int details = insertAllDictDetail(datas.getServiceData("DICT_DETAIL"));
+			logger.info("成功插入数据字典{}的数据字段{}个", dictInfo.getDict_code(), details);
+		}
+		return count;
+	}
+	
+	/**
+	* @description 插入某个数据字典下的所有数据字段
+	* @param datas 数据源
+	* @return 成功插入条数
+	* @author raoliang
+	* @version 2014年11月7日 上午10:42:27
+	*/
+	public int insertAllDictDetail(ServiceData datas){
+		int count = 0;
+		String[] keys = datas.getKeys();
+		for (String key : keys) {
+			ServiceData data = datas.getServiceData(key);
+			count += insertOneDictDetail(data);
+		}
+		return count;
+	}
+	
+	/**
+	* @description 插入一条数据字段
+	* @param data 数据源
+	* @return 成功插入条数
+	* @author raoliang
+	* @version 2014年11月7日 上午10:42:04
+	*/
+	public int insertOneDictDetail(ServiceData data){
+		DictDetailInfo info = getDiceDetailInfo(data);
+		return dictDetailDaoService.insertOneDictDetail(info);
 	}
 	
 	private ChannelInfo getChannelInfo(ServiceData data){
@@ -328,6 +379,25 @@ public class ImportDatasToDB {
 		info.setChannel_code(processInstanceData.getString("CHANNEL_CODE"));
 		info.setBind_address(processInstanceData.getString("BIND_ADDRESS"));
 		info.setRemote_address(processInstanceData.getString("REMOTE_ADDRESS"));
+		return info;
+	}
+	
+	private DictInfo getDictInfo(ServiceData dictInfoData){
+		DictInfo info = new DictInfo();
+		info.setDict_code(dictInfoData.getString("DICT_CODE"));
+		info.setDict_name(dictInfoData.getString("DICT_NAME"));
+		info.setIs_global(dictInfoData.getString("IS_GLOBAL"));
+		return info;
+	}
+	
+	private DictDetailInfo getDiceDetailInfo(ServiceData dictDeailInfo){
+		DictDetailInfo info = new DictDetailInfo();
+		info.setDict_code(dictDeailInfo.getString("DICT_CODE"));
+		info.setField_code(dictDeailInfo.getString("FIELD_CODE"));
+		info.setField_name(dictDeailInfo.getString("FIELD_NAME"));
+		info.setField_type(dictDeailInfo.getString("FIELD_TYPE"));
+		info.setField_length(dictDeailInfo.getInt("FIELD_LENGTH"));
+		info.setField_scale(dictDeailInfo.getInt("FIELD_SCALE"));
 		return info;
 	}
 	
