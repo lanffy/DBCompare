@@ -167,6 +167,23 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
+	public void test_insertMode(){
+		ServiceData modeData = exportService.getMode("appblocks_mode");
+		logger.info("导出数据:\n{}", modeData);
+		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("MODE_CODE", "test_mode");
+		fileData.putString("MODE_NAME", "test_mode模式");
+		ServiceData paramData = fileData.getServiceData("MODE_PARAM");
+		String detailStr = JSON.fromServiceData(paramData, JSONCaseType.DEFAULT).replace("appblocks", "test");
+		paramData = JSON.toServiceDataByType(detailStr, JSONCaseType.DEFAULT);
+		fileData.putServiceData("MODE_PARAM", paramData);
+		logger.info("导入数据:\n{}", fileData);
+		int num = importService.insertOneMode(fileData);
+		logger.info("成功插入模式{}个", num);
+		assertEquals(num, 1);
+	}
+	
 	@Override
 	protected void setUp() throws java.lang.Exception {
 		System.out.println("********华丽丽的测试案例分割线************");

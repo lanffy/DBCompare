@@ -7,6 +7,8 @@ import com.wk.eai.webide.dao.GroupSvcChartDaoService;
 import com.wk.eai.webide.dao.InstanceDaoService;
 import com.wk.eai.webide.dao.MachineDaoService;
 import com.wk.eai.webide.dao.MappingDaoService;
+import com.wk.eai.webide.dao.ModeDaoService;
+import com.wk.eai.webide.dao.ModeParamDaoService;
 import com.wk.eai.webide.dao.ProcessInstanceDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
 import com.wk.eai.webide.dao.ServiceDaoService;
@@ -19,6 +21,8 @@ import com.wk.eai.webide.info.DictInfo;
 import com.wk.eai.webide.info.InstanceInfo;
 import com.wk.eai.webide.info.MachineInfo;
 import com.wk.eai.webide.info.MappingInfo;
+import com.wk.eai.webide.info.ModeInfo;
+import com.wk.eai.webide.info.ModeParamInfo;
 import com.wk.eai.webide.info.ProcessInstanceInfo;
 import com.wk.eai.webide.info.ServerInfo;
 import com.wk.eai.webide.info.ServiceInfo;
@@ -49,6 +53,8 @@ public class ImportDatasToDB {
 	@Inject static InstanceDaoService instanceDaoService;
 	@Inject static DictDaoService dictDaoService;
 	@Inject static DictDetailDaoService dictDetailDaoService;
+	@Inject static ModeDaoService modeDaoService;
+	@Inject static ModeParamDaoService modeParamDaoService;
 	
 	/**
 	* @description 向数据库插入一个EndPoint
@@ -176,7 +182,6 @@ public class ImportDatasToDB {
 		if(machineData.size() == 6){
 			insertAllProcessInstance(machineData.getServiceData("PROCESSINSTANCE"));
 		}
-		//TODO:
 //		logger.info("插入服务器条数:{}", count);
 		return count;
 	}
@@ -268,6 +273,28 @@ public class ImportDatasToDB {
 	public int insertOneDictDetail(ServiceData data){
 		DictDetailInfo info = getDiceDetailInfo(data);
 		return dictDetailDaoService.insertOneDictDetail(info);
+	}
+	
+	/**
+	* @description 插入一个数据字典，当字典下有字段时，会将所有的字段插入
+	* @return 成功插入的字典条数
+	* @author raoliang
+	* @version 2014年11月7日 下午5:43:40
+	*/
+	public int insertOneMode(ServiceData modeDatas){
+		ModeInfo modeInfo = getModeInfo(modeDatas);
+		int count = modeDaoService.insertOneMode(modeInfo);
+		if(modeDatas.size() == 7){
+			ServiceData paramModeData = modeDatas.getServiceData("MODE_PARAM");
+			String[] keys = paramModeData.getKeys();
+			int paramCount = 0;
+			for (String key : keys) {
+				ModeParamInfo paramInfo = getModeParamInfo(paramModeData.getServiceData(key));
+				paramCount += modeParamDaoService.addOneModeParam(paramInfo);
+			}
+			logger.info("成功插入模式{}，模式参数{}个", modeInfo.getMode_code(), paramCount);
+		}
+		return count;
 	}
 	
 	private ChannelInfo getChannelInfo(ServiceData data){
@@ -390,14 +417,34 @@ public class ImportDatasToDB {
 		return info;
 	}
 	
-	private DictDetailInfo getDiceDetailInfo(ServiceData dictDeailInfo){
+	private DictDetailInfo getDiceDetailInfo(ServiceData dictDeailData){
 		DictDetailInfo info = new DictDetailInfo();
-		info.setDict_code(dictDeailInfo.getString("DICT_CODE"));
-		info.setField_code(dictDeailInfo.getString("FIELD_CODE"));
-		info.setField_name(dictDeailInfo.getString("FIELD_NAME"));
-		info.setField_type(dictDeailInfo.getString("FIELD_TYPE"));
-		info.setField_length(dictDeailInfo.getInt("FIELD_LENGTH"));
-		info.setField_scale(dictDeailInfo.getInt("FIELD_SCALE"));
+		info.setDict_code(dictDeailData.getString("DICT_CODE"));
+		info.setField_code(dictDeailData.getString("FIELD_CODE"));
+		info.setField_name(dictDeailData.getString("FIELD_NAME"));
+		info.setField_type(dictDeailData.getString("FIELD_TYPE"));
+		info.setField_length(dictDeailData.getInt("FIELD_LENGTH"));
+		info.setField_scale(dictDeailData.getInt("FIELD_SCALE"));
+		return info;
+	}
+	
+	private ModeInfo getModeInfo(ServiceData data) {
+		ModeInfo info = new ModeInfo();
+		info.setMode_code(data.getString("MODE_CODE"));
+		info.setMode_name(data.getString("MODE_NAME"));
+		info.setMode_type(data.getString("MODE_TYPE"));
+		info.setMode_class(data.getString("MODE_CLASS"));
+		info.setIs_sys_mode(data.getString("IS_SYS_MODE"));
+		return info;
+	}
+	
+	private ModeParamInfo getModeParamInfo(ServiceData data){
+		ModeParamInfo info = new ModeParamInfo();
+		info.setMode_code(data.getString("MODE_CODE"));
+		info.setMode_type(data.getString("MODE_TYPE"));
+		info.setParam_code(data.getString("PARAM_CODE"));
+		info.setParam_class(data.getString("PARAM_CLASS"));
+		info.setParam_value(data.getString("PARAM_VALUE"));
 		return info;
 	}
 	

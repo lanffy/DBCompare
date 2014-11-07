@@ -170,14 +170,25 @@ public class TestExportDatasFromTable extends TestCase {
 		assertEquals(fileData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("REMOTE_ADDRESS"), "");
 	}
 	
-	public void test_导出数据字典到文件(){
+	public void atest_导出数据字典到文件(){
 		ServiceData dictData = exporter.getOneDict("global");
 		logger.info("test_导出数据字典到文件:\n{}", dictData);
 		JSONFileUtil.storeServiceDataToJsonFile(dictData, filePath);
 	}
 	
-	public void test_从文件读取数据字典(){
+	public void atest_从文件读取数据字典(){
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		logger.info("test_从文件读取数据字典:\n{}", fileData);
+	}
+	
+	public void test_导出模式数据到文件(){
+		ServiceData dictData = exporter.getMode("appblocks_mode");
+		logger.info("test_导出模式数据到文件:\n{}", dictData);
+		JSONFileUtil.storeServiceDataToJsonFile(dictData, filePath);
+	}
+	
+	public void test_从文件中读取模式数据(){
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		logger.info("test_从文件中读取模式数据:\n{}", fileData);
 	}
 }

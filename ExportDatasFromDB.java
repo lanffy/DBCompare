@@ -11,6 +11,8 @@ import com.wk.eai.webide.dao.GroupSvcChartDaoService;
 import com.wk.eai.webide.dao.InstanceDaoService;
 import com.wk.eai.webide.dao.MachineDaoService;
 import com.wk.eai.webide.dao.MappingDaoService;
+import com.wk.eai.webide.dao.ModeDaoService;
+import com.wk.eai.webide.dao.ModeParamDaoService;
 import com.wk.eai.webide.dao.ProcessInstanceDaoService;
 import com.wk.eai.webide.dao.SaveDatasDao;
 import com.wk.eai.webide.dao.SaveDatasDaoService;
@@ -26,6 +28,8 @@ import com.wk.eai.webide.info.DictInfo;
 import com.wk.eai.webide.info.InstanceInfo;
 import com.wk.eai.webide.info.MachineInfo;
 import com.wk.eai.webide.info.MappingInfo;
+import com.wk.eai.webide.info.ModeInfo;
+import com.wk.eai.webide.info.ModeParamInfo;
 import com.wk.eai.webide.info.ProcessInstanceInfo;
 import com.wk.eai.webide.info.SaveDatasInfo;
 import com.wk.eai.webide.info.ServerInfo;
@@ -63,6 +67,8 @@ public class ExportDatasFromDB {
 	@Inject static InstanceDaoService instanceDaoService;
 	@Inject static DictDaoService dictDaoService;
 	@Inject static DictDetailDao dictDetailDao;
+	@Inject static ModeDaoService modeDaoService;
+	@Inject static ModeParamDaoService modeParamDaoService;
 	
 	public static void main(String[] args) {
 	}
@@ -297,7 +303,6 @@ public class ExportDatasFromDB {
 		data.putString("IS_GLOBAL", info.getIs_global());
 		data.putString("VERNO", info.getVerno());
 		ServiceData dictDetail = getAllDictDetail(info.getDict_code());
-//		System.out.println("***dictDetail***\n"+dictDetail);
 		if(dictDetail.size() > 0){
 			data.putServiceData("DICT_DETAIL", dictDetail);
 		}
@@ -326,6 +331,54 @@ public class ExportDatasFromDB {
 			data.putInt("FIELD_SCALE", info.getField_scale());
 			data.putString("VERNO", info.getVerno());
 			datas.putServiceData(info.getField_code(), data);
+		}
+		return datas;
+	}
+	
+	/**
+	* @description 根据mode_code得到模式和对应的模式参数
+	* @param mode_code 模式编码
+	* @return 单元数据
+	* @author raoliang
+	* @version 2014年11月7日 下午3:24:01
+	*/
+	public ServiceData getMode(String mode_code) {
+		ModeInfo info = modeDaoService.getOneMode(mode_code);
+		ServiceData data = new ServiceData();
+		data.putString("MODE_CODE", info.getMode_code());
+		data.putString("MODE_NAME", info.getMode_name());
+		data.putString("MODE_TYPE", info.getMode_type());
+		data.putString("MODE_CLASS", info.getMode_class());
+		data.putString("IS_SYS_MODE", info.getIs_sys_mode());
+		data.putString("VERNO", info.getVerno());
+		//模式参数
+		ServiceData modeParam = getModeParam(mode_code);
+		if(modeParam.size() > 0){
+			data.putServiceData("MODE_PARAM", modeParam);
+		}
+		return data;
+	}
+	
+	/**
+	* @description 根据模式编码查询该模式下所有的模式参数
+	* @param mode_code 模式编码
+	* @return 该模式下的所有模式参数数据
+	* @author raoliang
+	* @version 2014年11月7日 下午5:04:50
+	*/
+	public ServiceData getModeParam(String mode_code){
+		Iterator<ModeParamInfo> iterator = modeParamDaoService.getModeParamByModeCode(mode_code);
+		ServiceData datas = new ServiceData();
+		while(iterator.hasNext()){
+			ModeParamInfo info = iterator.next();
+			ServiceData data = new ServiceData();
+			data.putString("MODE_CODE", info.getMode_code());
+			data.putString("MODE_TYPE", info.getMode_type());
+			data.putString("PARAM_CODE", info.getParam_code());
+			data.putString("PARAM_CLASS", info.getParam_class());
+			data.putString("PARAM_VALUE", info.getParam_value());
+			data.putString("VERNO", info.getVerno());
+			datas.putServiceData(info.getParam_code(), data);
 		}
 		return datas;
 	}
