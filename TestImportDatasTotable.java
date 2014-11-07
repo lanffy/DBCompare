@@ -3,6 +3,8 @@ package compare;
 import com.wk.db.DBSource;
 import com.wk.db.Session;
 import com.wk.lang.Inject;
+import com.wk.logging.Log;
+import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
 import com.wk.util.JSON;
@@ -17,6 +19,7 @@ import com.wk.util.JSONCaseType;
 public class TestImportDatasTotable extends TestCase {
 	@Inject  ExportDatasFromDB exportService;
 	@Inject  ImportDatasToDB importService;
+	private final Log logger = LogFactory.getLog("dbcompare");
 	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	public void atest_insertEndPoint(){
@@ -146,6 +149,24 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
+	public void atest_insertDict(){
+		ServiceData dictData = exportService.getOneDict("global");
+		logger.info("导出数据:\n{}", dictData);
+		JSONFileUtil.storeServiceDataToJsonFile(dictData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("DICT_CODE", "test");
+		fileData.putString("DICT_NAME", "testname");
+		fileData.putString("IS_GLOBAL", "0");
+		ServiceData detailData = fileData.getServiceData("DICT_DETAIL");
+		String detailStr = JSON.fromServiceData(detailData, JSONCaseType.DEFAULT).replace("global", "test");
+		detailData = JSON.toServiceDataByType(detailStr, JSONCaseType.DEFAULT);
+		fileData.putServiceData("DICT_DETAIL", detailData);
+		logger.info("导入数据:\n{}", fileData);
+		int num = importService.insertOneDict(fileData);
+		logger.info("成功插入数据字典{}个", num);
+		assertEquals(num, 1);
+	}
+	
 	@Override
 	protected void setUp() throws java.lang.Exception {
 		System.out.println("********华丽丽的测试案例分割线************");
@@ -153,9 +174,9 @@ public class TestImportDatasTotable extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-//		Session session = DBSource.getDefault().getSession();
-//		session.commit();
-//		session.close();
-//		System.out.println("Commited!");
+		Session session = DBSource.getDefault().getSession();
+		session.commit();
+		session.close();
+		System.out.println("Commited!");
 	}
 }

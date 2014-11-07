@@ -1,6 +1,8 @@
 package compare;
 
 import com.wk.lang.Inject;
+import com.wk.logging.Log;
+import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
 
@@ -15,6 +17,7 @@ public class TestExportDatasFromTable extends TestCase {
 	ServiceData data;
 	ServiceData tran_data;
 	ServiceData service_data;
+	private final Log logger = LogFactory.getLog("dbcompare");
 	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	@Override
 	protected void setUpOnce() throws java.lang.Exception {
@@ -147,13 +150,13 @@ public class TestExportDatasFromTable extends TestCase {
 		assertEquals(fileData.getString("CONTENT"), "{nodes:[{id:\"node_0\", name:\"开始\", code:\"cstart\", node_type:\"img\", left:-2, top:0, width:64, height:64, img_url:\"cstart.png\", point_type:2, in_nums:0, out_nums:1, can_resize:true, bindable:false, properties:{}}, {id:\"node_2\", name:\"映射(int a = 0;)(R S E)\", code:\"cmap\", node_type:\"img\", left:133, top:29, width:64, height:64, img_url:\"cmapping.png\", point_type:2, in_nums:1, out_nums:1, can_resize:true, bindable:false, properties:{mapping_code:\"int a = 0;\"}}, {id:\"node_3\", name:\"服务(0052)\", code:\"cservice\", node_type:\"img\", left:40, top:128, width:64, height:64, img_url:\"cservice.png\", point_type:2, in_nums:10, out_nums:0, can_resize:true, bindable:false, properties:{select_mode:\"1\", service_code:\"0052\"}}], lines:[{from:\"node_0\", to:\"node_2\", type:\"line\", properties:{}}, {from:\"node_2\", to:\"node_3\", type:\"line\", properties:{}}]}");
 	}
 	
-	public void test_导出部署数据到文件(){
+	public void atest_导出部署数据到文件(){
 		ServiceData expandData = exporter.getMachine("001");
 		System.out.println(expandData);
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 	}
 	
-	public void test_从文件读取部署数据(){
+	public void atest_从文件读取部署数据(){
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		System.out.println(fileData);
 		assertEquals(fileData.getString("MACHINE_CODE"), "001");
@@ -165,5 +168,16 @@ public class TestExportDatasFromTable extends TestCase {
 		assertEquals(fileData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("CHANNEL_CODE"), "tbCHL");
 		assertEquals(fileData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("BIND_ADDRESS"), "9447");
 		assertEquals(fileData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("REMOTE_ADDRESS"), "");
+	}
+	
+	public void test_导出数据字典到文件(){
+		ServiceData dictData = exporter.getOneDict("global");
+		logger.info("test_导出数据字典到文件:\n{}", dictData);
+		JSONFileUtil.storeServiceDataToJsonFile(dictData, filePath);
+	}
+	
+	public void test_从文件读取数据字典(){
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		logger.info("test_从文件读取数据字典:\n{}", fileData);
 	}
 }

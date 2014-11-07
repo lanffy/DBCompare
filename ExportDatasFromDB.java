@@ -292,12 +292,12 @@ public class ExportDatasFromDB {
 	public ServiceData getOneDict(String dict_code){
 		DictInfo info = dictDaoService.findOneDict(dict_code);
 		ServiceData data = new ServiceData();
-		//TODO:
 		data.putString("DICT_CODE", info.getDict_code());
 		data.putString("DICT_NAME", info.getDict_name());
 		data.putString("IS_GLOBAL", info.getIs_global());
 		data.putString("VERNO", info.getVerno());
 		ServiceData dictDetail = getAllDictDetail(info.getDict_code());
+//		System.out.println("***dictDetail***\n"+dictDetail);
 		if(dictDetail.size() > 0){
 			data.putServiceData("DICT_DETAIL", dictDetail);
 		}
@@ -312,7 +312,7 @@ public class ExportDatasFromDB {
 	* @version 2014年11月7日 上午9:30:54
 	*/
 	public ServiceData getAllDictDetail(String dict_code){
-		Iterator<DictDetailInfo> iterator = dictDetailDao.iteratorFeildsByCode(dict_code);
+		Iterator<DictDetailInfo> iterator = dictDetailDao.iteratorFeildsByDictCode(dict_code);
 		ServiceData datas = new ServiceData();
 		DictDetailInfo info = null;
 		while(iterator.hasNext()){

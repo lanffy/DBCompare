@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.wk.Controller;
 import com.wk.lang.Inject;
+import com.wk.logging.Log;
+import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 
 /**
@@ -19,24 +21,11 @@ public class TestH2 {
 //	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 //	@Inject static ExportDatasFromDB exporter;
 //	@Inject static ImportDatasToDB importer;
-	
+	private static final Log logger = LogFactory.getLog("dbcompare");
+	private static final Log logger2 = LogFactory.getLog();
 	public static void main(String[] args) throws IOException {
-		ServiceData dataall = new ServiceData();
-		ServiceData datas = new ServiceData();
-		ServiceData dataa = new ServiceData();
-		ServiceData datab = new ServiceData();
-		dataa.putString("a1", "av1");
-		dataa.putString("a2", "av2");
-		datab.putString("b1", "bv1");
-		datab.putString("b2", "bv2");
-		datas.putServiceData("dataa", dataa);
-		datas.putServiceData("datab", datab);
-		dataall.putServiceData("dataall", datas);
-		System.out.println(dataall+"\n******");
-		String[] keys = dataall.getServiceData("dataall").getKeys();
-		for (String string : keys) {
-			System.out.println(string);
-		}
+		logger.info("aaaaaaaaaaa");
+		logger2.info("bbbbbbbbbbb");
 	}
 	
 	private static String readFileToString(File file) throws IOException{
