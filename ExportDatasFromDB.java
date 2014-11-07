@@ -227,11 +227,11 @@ public class ExportDatasFromDB {
 		data.putString("MACHINE_NAME", info.getMachine_name());
 		data.putString("VERNO", info.getVerno());
 		ServiceData instanceData = getInstance(info.getMachine_code());
-		if(instanceData.size() > 0){
+		if(instanceData != null && instanceData.size() > 0){
 			data.putServiceData("INSTANCE", instanceData);
 		}
 		ServiceData processInstanceData = getAllProcessInstance(info.getMachine_code());
-		if(processInstanceData.size() > 0){
+		if(processInstanceData != null && processInstanceData.size() > 0){
 			data.putServiceData("PROCESSINSTANCE", processInstanceData);
 		}
 		return data;
@@ -297,13 +297,17 @@ public class ExportDatasFromDB {
 	*/
 	public ServiceData getOneDict(String dict_code){
 		DictInfo info = dictDaoService.findOneDict(dict_code);
+		if(info == null){
+			logger.warn("数据字典{}不存在", dict_code);
+			return null;
+		}
 		ServiceData data = new ServiceData();
 		data.putString("DICT_CODE", info.getDict_code());
 		data.putString("DICT_NAME", info.getDict_name());
 		data.putString("IS_GLOBAL", info.getIs_global());
 		data.putString("VERNO", info.getVerno());
 		ServiceData dictDetail = getAllDictDetail(info.getDict_code());
-		if(dictDetail.size() > 0){
+		if(dictDetail != null && dictDetail.size() > 0){
 			data.putServiceData("DICT_DETAIL", dictDetail);
 		}
 		return data;
@@ -318,6 +322,10 @@ public class ExportDatasFromDB {
 	*/
 	public ServiceData getAllDictDetail(String dict_code){
 		Iterator<DictDetailInfo> iterator = dictDetailDao.iteratorFeildsByDictCode(dict_code);
+		if(iterator == null){
+			logger.warn("数据字典{}中无字段", dict_code);
+			return null;
+		}
 		ServiceData datas = new ServiceData();
 		DictDetailInfo info = null;
 		while(iterator.hasNext()){
@@ -344,6 +352,10 @@ public class ExportDatasFromDB {
 	*/
 	public ServiceData getMode(String mode_code) {
 		ModeInfo info = modeDaoService.getOneMode(mode_code);
+		if(info == null){
+			logger.warn("模式不存在，模式名称:{}", mode_code);
+			return null;
+		}
 		ServiceData data = new ServiceData();
 		data.putString("MODE_CODE", info.getMode_code());
 		data.putString("MODE_NAME", info.getMode_name());
@@ -353,7 +365,7 @@ public class ExportDatasFromDB {
 		data.putString("VERNO", info.getVerno());
 		//模式参数
 		ServiceData modeParam = getModeParam(mode_code);
-		if(modeParam.size() > 0){
+		if(modeParam != null && modeParam.size() > 0){
 			data.putServiceData("MODE_PARAM", modeParam);
 		}
 		return data;
@@ -368,6 +380,10 @@ public class ExportDatasFromDB {
 	*/
 	public ServiceData getModeParam(String mode_code){
 		Iterator<ModeParamInfo> iterator = modeParamDaoService.getModeParamByModeCode(mode_code);
+		if(iterator == null){
+			logger.warn("模式下不模式参数，模式名称:{}", mode_code);
+			return null;
+		}
 		ServiceData datas = new ServiceData();
 		while(iterator.hasNext()){
 			ModeParamInfo info = iterator.next();

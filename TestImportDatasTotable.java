@@ -167,7 +167,7 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void test_insertMode(){
+	public void atest_insertMode(){
 		ServiceData modeData = exportService.getMode("appblocks_mode");
 		logger.info("导出数据:\n{}", modeData);
 		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
@@ -191,9 +191,9 @@ public class TestImportDatasTotable extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-		Session session = DBSource.getDefault().getSession();
-		session.commit();
-		session.close();
-		System.out.println("Commited!");
+//		Session session = DBSource.getDefault().getSession();
+//		session.commit();
+//		session.close();
+//		System.out.println("Commited!");
 	}
 }
