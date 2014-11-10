@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.h2.tools.Csv;
 import org.h2.tools.Server;
 
 import com.wk.lang.SystemException;
@@ -79,6 +77,7 @@ public class DBCompareBack {
 			"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\"><style type=\"text/css\">"+
 			"#bodys\r\n{\r\nfont-size:0.95em;\r\n}\r\n</style>\r\n</head>\r\n<body id=\"bodys\"><ol>";
 	private static final String modifytableBegin = "<table id=\"tables\"><tr class=\"modify\" align=\"center\"><td>修改项</td><td>修改前</td><td>修改后</td></tr>";
+	private static final String noChange = "<tr><td colspan=\"3\">无</td></tr>";
 	private static final String tableEnd = "</td></tr></table></td></tr>";
 	private static final String pageEnd = "</body></html>";
 	private static boolean isComparing = true;
@@ -327,7 +326,7 @@ public class DBCompareBack {
 			//关联交易
 			menuwriter.write("&nbsp;关联交易<br/>");
 			if(!(compareTranPackage(channelName) || isChanged)){
-				writer.write("<tr><td colspan=\"3\">无</td></tr>");
+				writer.write(noChange);
 			}
 			writer.write("</table></br>");
 			writer.flush();
@@ -909,6 +908,7 @@ public class DBCompareBack {
 		String sql="select SERVICE_CODE from sys_service";
 		ResultSet old_service_rs = null;
 		ResultSet new_service_rs = null;
+		boolean isChanged = false;
 		try {
 			String channelName = "服&nbsp;&nbsp;&nbsp;&nbsp;务";
 			menuwriter.write(liHref(channelName));
@@ -942,6 +942,7 @@ public class DBCompareBack {
 				addServer.append("</td></tr>");
 				menuwriter.write("&nbsp;新增"+gethrefStr(channelName, num.get(), "add"));
 				writer.write(addServer.toString());
+				isChanged = true;
 			}
 			StringBuilder delServer = new StringBuilder();
 			num.set(0);
@@ -956,6 +957,7 @@ public class DBCompareBack {
 				delServer.append("</td></tr>");
 				menuwriter.write("&nbsp;删除"+gethrefStr(channelName, num.get(), "del"));
 				writer.write(delServer.toString());
+				isChanged = true;
 			}
 			
 			StringBuilder modifyServer = new StringBuilder();
@@ -984,12 +986,12 @@ public class DBCompareBack {
 							modifyServer.append("<tr class=\"modify\"><td>["+string+"]>["+columnNamesCh[i]+"]</td><td>启动</td><td>停止</td></tr>");
 						}
 					}else {
-						if(oldcolumn == null && newcolumn == null){
+						if(StringUtil.isEmpty(oldcolumn) && StringUtil.isEmpty(newcolumn)){
 							continue;
-						}else if(oldcolumn != null && newcolumn == null){
+						}else if(!StringUtil.isEmpty(oldcolumn) && StringUtil.isEmpty(newcolumn)){
 							num.incrementAndGet();
 							modifyServer.append("<tr class=\"delete\"><td colspan=\"3\">删除["+string+"]>["+columnNamesCh[i]+"]</td></tr>");
-						}else if(oldcolumn == null && newcolumn != null){
+						}else if(StringUtil.isEmpty(oldcolumn) && !StringUtil.isEmpty(newcolumn)){
 							num.incrementAndGet();
 							modifyServer.append("<tr><td colspan=\"3\">新增["+string+"]>["+columnNamesCh[i]+"]:["+newcolumn+"]</td></tr>");
 						}else if(!oldcolumn.equals(newcolumn)){
@@ -1019,7 +1021,12 @@ public class DBCompareBack {
 				modifyServer.insert(0, "<tr id=\""+channelName+"_mod\"><td>修改服务</td><td colspan=\"2\">");
 				modifyServer.append(tableEnd);
 				menuwriter.write("&nbsp;修改"+gethrefStr(channelName, num.get(), "mod"));
-				writer.write(modifyServer.toString());			}
+				writer.write(modifyServer.toString());	
+				isChanged = true;
+			}
+			if(!isChanged){
+				writer.write(noChange);
+			}
 			writer.write("</table></br>");
 			writer.flush();
 		} catch (SQLException e) {
@@ -1303,7 +1310,7 @@ public class DBCompareBack {
 			if (string.length() > 0) {
 				writer.write(string);
 			}else {
-				writer.write("<tr><td colspan=\"3\">无</td></tr>");
+				writer.write(noChange);
 			}
 			writer.write("</table></br>");
 			writer.flush();

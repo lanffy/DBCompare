@@ -1,7 +1,5 @@
 package compare.test;
 
-import com.wk.db.DBSource;
-import com.wk.db.Session;
 import com.wk.lang.Inject;
 import com.wk.test.TestCase;
 import compare.DeleteDatasFromDB;

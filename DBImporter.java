@@ -15,8 +15,8 @@ import com.wk.util.FileUtil;
  */
 public class DBImporter extends DBporter{
 	private static Session session = DBSource.getDefault().openSession();
-	public static void main(String[] args) {
-		logger.info("Begin开始向数据库导入数据,开始时间:{}",getTime());
+	public static void doImport() {
+		logger.info("***Begin开始向数据库导入数据,开始时间:{}***",getTime());
 		//清空数据库
 		/**
 		 * 需要清空的表： SYS_CHANNEL SYS_COMM SYS_DICT SYS_DICT_DETAIL
@@ -38,7 +38,7 @@ public class DBImporter extends DBporter{
 		insertDict();
 		insertMode();
 		commit();
-		logger.info("End向数据库导入数据结束,结束时间:{}", getTime());
+		logger.info("***End向数据库导入数据结束,结束时间:{}***", getTime());
 		System.out.println("Import done!");
 	}
 	

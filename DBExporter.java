@@ -12,8 +12,8 @@ import com.wk.sdo.ServiceData;
  */
 public class DBExporter extends DBporter{
 	
-	public static void main(String[] args) {
-		logger.info("Begin开始导出数据,开始时间:{}",getTime());
+	public static void doExport() {
+		logger.info("***Begin开始导出数据,开始时间:{}***",getTime());
 		/** 导出顺序：EndPoint、服务系统、EndPoint关联交易、服务系统关联交易
 		 * 服务、部署、数据字典、模式
 		 */
@@ -25,7 +25,7 @@ public class DBExporter extends DBporter{
 		exportMachine();
 		exportDict();
 		exportMode();
-		logger.info("End导出数据结束,结束时间:{}", getTime());
+		logger.info("***End导出数据结束,结束时间:{}***", getTime());
 		System.out.println("Export done!");
 	}
 	
