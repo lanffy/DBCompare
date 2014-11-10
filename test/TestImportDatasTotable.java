@@ -1,11 +1,5 @@
 package compare.test;
 
-import java.io.UnsupportedEncodingException;
-
-import com.wk.db.DBSource;
-import com.wk.db.DBTransaction;
-import com.wk.db.Session;
-import com.wk.db.SessionHandle;
 import com.wk.lang.Inject;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
@@ -13,7 +7,6 @@ import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
 import com.wk.util.JSON;
 import com.wk.util.JSONCaseType;
-
 import compare.ExportDatasFromDB;
 import compare.ImportDatasToDB;
 import compare.JSONFileUtil;
@@ -175,7 +168,7 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void atest_insertMode() {
+	public void test_insertMode() {
 		ServiceData modeData = exportService.getOneMode("vrouterclient_lu");
 		logger.info("导出数据:\n{}", modeData);
 		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);

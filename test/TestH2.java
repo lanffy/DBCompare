@@ -1,21 +1,15 @@
 package compare.test;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.wk.Controller;
 import com.wk.db.DBSource;
+import com.wk.db.DBTransaction;
 import com.wk.db.Session;
-import com.wk.eai.webide.dao.ChannelDaoService;
-import com.wk.eai.webide.info.ModeInfo;
-import com.wk.lang.Inject;
+import com.wk.db.SessionHandle;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
-
-import compare.ExportDatasFromDB;
-import compare.ImportDatasToDB;
-import compare.JSONFileUtil;
 
 /**
  * @description
@@ -23,26 +17,31 @@ import compare.JSONFileUtil;
  * @version 2014年10月16日 上午11:23:25
  */
 public class TestH2 {
-	@Inject static ExportDatasFromDB exportService;
-	@Inject static ImportDatasToDB importService;
+//	@Inject static ExportDatasFromDB exportService;
+//	@Inject static ImportDatasToDB importService;
 	private static final Log logger = LogFactory.getLog("dbcompare");
-	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
+//	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	public static void main(String[] args) throws IOException {
-		ServiceData modeData = exportService.getOneMode("vrouterclient_lu");
-		logger.info("导出数据:\n{}", modeData);
-		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
-		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
-//		String str = JSON.fromServiceData(fileData, JSONCaseType.DEFAULT);
-//		fileData = JSON.toServiceDataByType(str.replaceAll("，", ","), JSONCaseType.DEFAULT);
-		fileData.putString("MODE_CODE", "test_mode1");
-		System.out.println(fileData.getString("MODE_NAME"));
-//		fileData.putString("MODE_NAME", "VRouter客户端包模式,请求小写,响应大大");
-		logger.info("导入数据:\n{}", fileData);
-		
-		int num = importService.insertOneMode(fileData);
-		commit();
-		logger.info("成功插入模式{}个", num);
+		String sql = "delete from SYS_CHANNEL;"
+				+ "delete from SYS_COMM;"
+				+ "delete from SYS_DICT;"
+				+ "delete from SYS_DICT_DETAIL;"
+				+ "delete from SYS_GROUP_SVC_CHART;"
+				+ "delete from SYS_INSTANCE;"
+				+ "delete from SYS_MACHINE;"
+				+ "delete from SYS_MAPPING;"
+				+ "delete from SYS_MODE;"
+				+ "delete from SYS_MODE_PARAM;"
+				+ "delete from SYS_PROCESS_INSTANCE;"
+				+ "delete from SYS_SAVE_DATAS;"
+				+ "delete from SYS_SERVER;"
+				+ "delete from SYS_SERVICE;"
+				+ "delete from SYS_STRUCTURE;"
+				+ "delete from SYS_TRAN_CHANNEL_PACKAGE;"
+				+ "delete from SYS_TRAN_SERVER_PACKAGE;";
+		Session session = DBSource.getDefault().openSession();
+		int num = session.execute(sql);
 		System.out.println(num);
 	}
 	

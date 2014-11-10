@@ -26,7 +26,7 @@ public class DBExporter extends DBporter{
 		exportDict();
 		exportMode();
 		logger.info("End导出数据结束,结束时间:{}", getTime());
-		System.out.println("done!");
+		System.out.println("Export done!");
 	}
 	
 	public static void exportEndPoint(){
