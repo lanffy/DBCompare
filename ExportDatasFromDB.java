@@ -1,5 +1,6 @@
 package compare;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,11 +75,106 @@ public class ExportDatasFromDB {
 	}
 	
 	/**
+	* @description 得到所有EndPoint的channel_code
+	* @return
+	* @author raoliang
+	* @version 2014年11月9日 下午2:21:46
+	*/
+	public List<String> getAllChannelCode(){
+		return channelSevice.getAllChannelCode();
+	}
+	
+	/**
+	* @description 得到所有服务系统的server_code
+	* @return
+	* @author raoliang
+	* @version 2014年11月9日 下午2:22:07
+	*/
+	public List<String> getAllServerCode(){
+		return serverSevice.getAllServerCode();
+	}
+	
+	/**
+	* @description 得到所有EndPoint关联交易表的主键，主键有channel_code和tran_code，中间用">"分隔
+	* @return 装有主键的队列
+	* @author raoliang
+	* @version 2014年11月9日 下午2:33:40
+	*/
+	public List<String> getAllChannelTranChannelCodeAndTranCode(){
+		return tranChannelPackageDaoService.getAllChannelCodeAndTranCode();
+	}
+	
+	/**
+	* @description 得到所有服务系统关联交易表的主键，主键有server_code和tran_code，中间用">"分隔
+	* @return 装有主键的队列
+	* @author raoliang
+	* @version 2014年11月9日 下午2:43:43
+	*/
+	public List<String> getAllServerTranServerCodeAndTranCode(){
+		return tranServerPackageDaoService.getAllServerCodeAndeTranCode();
+	}
+	
+	/**
+	* @description 得到所有服务的服务编码
+	* @return
+	* @author raoliang
+	* @version 2014年11月9日 下午3:25:09
+	*/
+	public List<String> getAllServiceCode(){
+		return serviceDaoService.getAllServiceCode();
+	}
+	
+	/**
+	* @description 得到所有的机器编码
+	* @return
+	* @author raoliang
+	* @version 2014年11月9日 下午3:30:22
+	*/
+	public List<String> getAllMachineCode(){
+		List<MachineInfo> machineList = machineDaoService.getAllMachines();
+		List<String> list = new ArrayList<String>();
+		for (MachineInfo info : machineList) {
+			list.add(info.getMachine_code());
+		}
+		return list;
+	}
+	
+	/**
+	* @description 得到所有的数据字典编码
+	* @return
+	* @author raoliang
+	* @version 2014年11月9日 下午3:35:28
+	*/
+	public List<String> getAllDictCode(){
+		List<DictInfo> listInfo = dictDaoService.getAllDict();
+		List<String> list = new ArrayList<String>();
+		for (DictInfo info : listInfo) {
+			list.add(info.getDict_code());
+		}
+		return list;
+	}
+	
+	/**
+	* @description 得到所有的模式编码
+	* @return
+	* @author raoliang
+	* @version 2014年11月9日 下午3:39:23
+	*/
+	public List<String> getAllModeCode(){
+		List<ModeInfo> listInfo = modeDaoService.getAllModeInfo();
+		List<String> list = new ArrayList<String>();
+		for (ModeInfo info : listInfo) {
+			list.add(info.getMode_code());
+		}
+		return list;
+	}
+	
+	/**
 	* @description 得到指定EndPoint的单元数据
 	* @author raoliang
 	* @version 2014年11月2日 下午3:02:47
 	*/
-	public ServiceData getEndPoint(String channel_code){
+	public ServiceData getOneEndPoint(String channel_code){
 		ChannelInfo channelInfo = channelSevice.getOneChannel(channel_code);
 		if(channelInfo == null){
 			logger.warn("此ENdPoint不存在，channel_code：{}", channel_code);
@@ -104,7 +200,7 @@ public class ExportDatasFromDB {
 	* @author raoliang
 	* @version 2014年11月2日 下午3:03:13
 	*/
-	public ServiceData getServer(String server_code){
+	public ServiceData getOneServer(String server_code){
 		ServerInfo serverInfo = serverSevice.getOneServer(server_code);
 		if(serverInfo == null){
 			logger.warn("服务系统不存在，server_code：{}", server_code);
@@ -131,7 +227,7 @@ public class ExportDatasFromDB {
 	 * @param tran_code 关键交易名称
 	 * @return 相关数据
 	 */
-	public ServiceData getChannelTran(String channel_code, String tran_code){
+	public ServiceData getOneChannelTran(String channel_code, String tran_code){
 		TranChannelPackageInfo info = tranChannelPackageDaoService.getOneTran(channel_code, tran_code);
 		if(info == null){
 			logger.warn("ENdPoint下无此关联交易，channel_code：{},tran_code:{}", channel_code, tran_code);
@@ -156,7 +252,7 @@ public class ExportDatasFromDB {
 	 * @param tran_code 关联交易名称
 	 * @return 关联交易相关数据
 	 */
-	public ServiceData getServerTran(String server_code, String tran_code){
+	public ServiceData getOneServerTran(String server_code, String tran_code){
 		TranServerPackageInfo info = tranServerPackageDaoService.getOneTran(server_code, tran_code);
 		if(info == null){
 			logger.warn("服务系统关联交易不存在，server_code：{}，tran_code：{}", server_code, tran_code);
@@ -215,7 +311,7 @@ public class ExportDatasFromDB {
 	* @author raoliang
 	* @version 2014年11月6日 上午10:05:46
 	*/
-	public ServiceData getMachine(String machine_code){
+	public ServiceData getOneMachine(String machine_code){
 		MachineInfo info = machineDaoService.getOneMachine(machine_code);
 		if (info == null) {
 			logger.warn("服务器列表下无此服务器，machine_code：{}", machine_code);
@@ -226,14 +322,16 @@ public class ExportDatasFromDB {
 		data.putString("MACHINE_IP", info.getMachine_ip());
 		data.putString("MACHINE_NAME", info.getMachine_name());
 		data.putString("VERNO", info.getVerno());
-		ServiceData instanceData = getInstance(info.getMachine_code());
+		ServiceData instanceData = getOneInstance(info.getMachine_code());
 		if(instanceData != null && instanceData.size() > 0){
 			data.putServiceData("INSTANCE", instanceData);
 		}
+		logger.info("导出服务器:{}下的进程列表数据{}条", machine_code, instanceData.size());
 		ServiceData processInstanceData = getAllProcessInstance(info.getMachine_code());
 		if(processInstanceData != null && processInstanceData.size() > 0){
 			data.putServiceData("PROCESSINSTANCE", processInstanceData);
 		}
+		logger.info("导出机器号:{}下部署的EndPoint数据{}条", machine_code, processInstanceData.size());
 		return data;
 	}
 	
@@ -244,7 +342,7 @@ public class ExportDatasFromDB {
 	* @author raoliang
 	* @version 2014年11月6日 下午3:18:21
 	*/
-	public ServiceData getInstance(String machineCode){
+	public ServiceData getOneInstance(String machineCode){
 		List<InstanceInfo> infos = instanceDaoService.getInstances(machineCode);
 		if(infos == null){
 			logger.warn("vrouter实例不存在，进程标识代码:{}", machineCode);
@@ -310,6 +408,7 @@ public class ExportDatasFromDB {
 		if(dictDetail != null && dictDetail.size() > 0){
 			data.putServiceData("DICT_DETAIL", dictDetail);
 		}
+		logger.info("导出数据字典:{}下的字段{}条", dict_code, dictDetail.size());
 		return data;
 	}
 	
@@ -350,7 +449,7 @@ public class ExportDatasFromDB {
 	* @author raoliang
 	* @version 2014年11月7日 下午3:24:01
 	*/
-	public ServiceData getMode(String mode_code) {
+	public ServiceData getOneMode(String mode_code) {
 		ModeInfo info = modeDaoService.getOneMode(mode_code);
 		if(info == null){
 			logger.warn("模式不存在，模式名称:{}", mode_code);
@@ -368,6 +467,7 @@ public class ExportDatasFromDB {
 		if(modeParam != null && modeParam.size() > 0){
 			data.putServiceData("MODE_PARAM", modeParam);
 		}
+		logger.info("导出模式:{}的参数{}条", mode_code, modeParam.size());
 		return data;
 	}
 	

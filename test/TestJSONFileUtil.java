@@ -20,7 +20,7 @@ public class TestJSONFileUtil extends TestCase {
 	
 	@Override
 	protected void setUpOnce() throws java.lang.Exception {
-		data = exporter.getEndPoint("vmenu2cardCHL");
+		data = exporter.getOneEndPoint("vmenu2cardCHL");
 	}
 	
 	@Override
@@ -87,7 +87,7 @@ public class TestJSONFileUtil extends TestCase {
 	}
 
 	public void atest_写ServerServiceData到文件(){
-		ServiceData serverData = exporter.getServer("inbankSRV");
+		ServiceData serverData = exporter.getOneServer("inbankSRV");
 		System.out.println(serverData);
 		JSONFileUtil.storeServiceDataToJsonFile(serverData, filePath);
 	}
@@ -110,7 +110,7 @@ public class TestJSONFileUtil extends TestCase {
 	}
 	
 	public void test_写EndPoint关联交易到文件(){
-		ServiceData tranEndPoint = exporter.getChannelTran("cardCHL", "0052");
+		ServiceData tranEndPoint = exporter.getOneChannelTran("cardCHL", "0052");
 		System.out.println(tranEndPoint);
 		JSONFileUtil.storeServiceDataToJsonFile(tranEndPoint, filePath);
 	}
@@ -127,7 +127,7 @@ public class TestJSONFileUtil extends TestCase {
 	}
 	
 	public void test_写Server关联交易到文件(){
-		ServiceData serverdata = exporter.getServerTran("inbankSRV", "0052");
+		ServiceData serverdata = exporter.getOneServerTran("inbankSRV", "0052");
 		System.out.println(serverdata);
 		JSONFileUtil.storeServiceDataToJsonFile(serverdata, filePath);
 	}

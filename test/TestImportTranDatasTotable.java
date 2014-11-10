@@ -25,26 +25,26 @@ public class TestImportTranDatasTotable extends TestCase {
 	}
 	
 	public void atest_insertOneTranEndPoint(){
-		ServiceData tranEndPoint = exportService.getChannelTran("npCHL", "8809");
+		ServiceData tranEndPoint = exportService.getOneChannelTran("npCHL", "8809");
 		tranEndPoint.putString("CHANNEL_CODE", "testCHL");
 		tranEndPoint.putString("TRAN_CODE", "8809");
 		tranEndPoint.putString("TRAN_NAME", "8809测试关联交易");
 		System.out.println(tranEndPoint);
-		int num = importService.insertTranEndPoint(tranEndPoint);
+		int num = importService.insertOneTranEndPoint(tranEndPoint);
 		assertEquals(num, 1);
-		tranEndPoint = exportService.getChannelTran("testCHL", "8809");
+		tranEndPoint = exportService.getOneChannelTran("testCHL", "8809");
 		assertEquals(tranEndPoint.getString("TRAN_NAME"), "8809测试关联交易");
 	}
 	
 	public void atest_insertOneTranServer(){
-		ServiceData tranData = exportService.getServerTran("bzfwptSRV", "3001");
+		ServiceData tranData = exportService.getOneServerTran("bzfwptSRV", "3001");
 		System.out.println("\n***修改前***\n"+tranData);
 		tranData.putString("SERVER_CODE", "testSRV");
 		tranData.putString("TRAN_CODE", "3002");
 		System.out.println("\n***修改后***\n"+tranData);
-		int num = importService.insertTranServer(tranData);
+		int num = importService.insertOneTranServer(tranData);
 		assertEquals(num, 1);
-		ServiceData confirmData =  exportService.getServerTran("testSRV", "3002");
+		ServiceData confirmData =  exportService.getOneServerTran("testSRV", "3002");
 		assertEquals(confirmData.getString("SERVER_CODE"), "testSRV");
 		assertEquals(confirmData.getString("TRAN_CODE"), "3002");
 	}

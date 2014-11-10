@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.h2.tools.Server;
 
 import com.wk.lang.SystemException;
-import com.wk.sdo.ServiceData;
 import com.wk.util.StringUtil;
 
 /**
@@ -987,12 +986,12 @@ public class DBCompare {
 							modifyServer.append("<tr class=\"modify\"><td>["+string+"]>["+columnNamesCh[i]+"]</td><td>Æô¶¯</td><td>Í£Ö¹</td></tr>");
 						}
 					}else {
-						if(oldcolumn == null && newcolumn == null){
+						if(StringUtil.isEmpty(oldcolumn) && StringUtil.isEmpty(newcolumn)){
 							continue;
-						}else if(oldcolumn != null && newcolumn == null){
+						}else if(!StringUtil.isEmpty(oldcolumn) && StringUtil.isEmpty(newcolumn)){
 							num.incrementAndGet();
 							modifyServer.append("<tr class=\"delete\"><td colspan=\"3\">É¾³ý["+string+"]>["+columnNamesCh[i]+"]</td></tr>");
-						}else if(oldcolumn == null && newcolumn != null){
+						}else if(StringUtil.isEmpty(oldcolumn) && !StringUtil.isEmpty(newcolumn)){
 							num.incrementAndGet();
 							modifyServer.append("<tr><td colspan=\"3\">ÐÂÔö["+string+"]>["+columnNamesCh[i]+"]:["+newcolumn+"]</td></tr>");
 						}else if(!oldcolumn.equals(newcolumn)){

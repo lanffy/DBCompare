@@ -61,7 +61,7 @@ public class ImportDatasToDB {
 	* @author raoliang
 	* @version 2014年11月2日 下午2:38:40
 	*/
-	public int insertEndPoint(ServiceData endPointData){
+	public int insertOneEndPoint(ServiceData endPointData){
 		ChannelInfo channelInfo = getChannelInfo(endPointData);
 		CommInfo commInfo = getCommInfo(endPointData);
 		return channelDaoService.insertOneChannel(channelInfo, commInfo);
@@ -72,7 +72,7 @@ public class ImportDatasToDB {
 	* @author raoliang
 	* @version 2014年11月2日 下午2:37:21
 	*/
-	public int insertTranEndPoint(ServiceData tranEndPointData){
+	public int insertOneTranEndPoint(ServiceData tranEndPointData){
 		TranChannelPackageInfo info = getTranChannelPackageInfo(tranEndPointData);
 		return tranChannelPackageDaoService.insertOneTranAll(info);
 	}
@@ -106,7 +106,7 @@ public class ImportDatasToDB {
 	* @version 2014年11月3日 下午2:33:14
 	* @return
 	*/
-	public int insertServer(ServiceData serverData){
+	public int insertOneServer(ServiceData serverData){
 		ServerInfo serverInfo = getServerInfo(serverData);
 		CommInfo commInfo = getCommInfo(serverData);
 		return serverDaoService.insertOneServerAll(serverInfo, commInfo);
@@ -118,7 +118,7 @@ public class ImportDatasToDB {
 	* @version 2014年11月3日 下午2:34:48
 	* @return
 	*/
-	public int insertTranServer(ServiceData tranServerData){
+	public int insertOneTranServer(ServiceData tranServerData){
 		TranServerPackageInfo tranServerInfo = getTranServerPackageInfo(tranServerData);
 		return tranServerPackageDaoService.insertOneTranAll(tranServerInfo);
 	}
@@ -238,7 +238,7 @@ public class ImportDatasToDB {
 	*/
 	public int insertOneDict(ServiceData datas){
 		DictInfo dictInfo = getDictInfo(datas);
-		int count = dictDaoService.insertOneDict(dictInfo);
+		int count = dictDaoService._insertOneDict(dictInfo);
 		if(datas.size() == 5){
 			int details = insertAllDictDetail(datas.getServiceData("DICT_DETAIL"));
 			logger.info("成功插入数据字典{}的数据字段{}个", dictInfo.getDict_code(), details);
@@ -374,13 +374,16 @@ public class ImportDatasToDB {
 		serviceInfo.setCategory_code(serviceData.getString("CATEGORY_CODE"));
 		serviceInfo.setService_name(serviceData.getString("SERVICE_NAME"));
 		serviceInfo.setServer_code(serviceData.getString("SERVER_CODE"));
-		serviceInfo.setExtend_service_name(StringUtil.isEmpty(serviceData.getString("EXTEND_SERVICE_NAME")) ? "" : serviceData.getString("EXTEND_SERVICE_NAME"));
+		//TODO:BUG
+//		serviceInfo.setExtend_service_name(StringUtil.isEmpty(serviceData.getString("EXTEND_SERVICE_NAME")) ? "" : serviceData.getString("EXTEND_SERVICE_NAME"));
+		serviceInfo.setExtend_service_name(serviceData.getString("EXTEND_SERVICE_NAME"));
 		//接口配置
 		serviceInfo.setReq_stru(getServiceReqConfigStr(serviceData));
 		serviceInfo.setResp_stru(getServiceRespConfigStr(serviceData));
 		serviceInfo.setErr_stru(getServiceErrConfigStr(serviceData));
 		//强制发布服务
-		serviceInfo.setIs_published("1");
+//		serviceInfo.setIs_published("1");
+		serviceInfo.setIs_published(StringUtil.isEmpty(serviceData.getString("IS_PUBLISHED")) ? null : serviceData.getString("IS_PUBLISHED"));
 		return serviceInfo;
 	}
 	
@@ -431,7 +434,9 @@ public class ImportDatasToDB {
 	private ModeInfo getModeInfo(ServiceData data) {
 		ModeInfo info = new ModeInfo();
 		info.setMode_code(data.getString("MODE_CODE"));
-		info.setMode_name(data.getString("MODE_NAME"));
+		//TODO:>23个长度的字符串时报超长错误
+//		info.setMode_name(data.getString("MODE_NAME"));
+		info.setMode_name(data.getString("MODE_NAME").substring(0, data.getString("MODE_NAME").length()>22 ? 22 : data.getString("MODE_NAME").length()));
 		info.setMode_type(data.getString("MODE_TYPE"));
 		info.setMode_class(data.getString("MODE_CLASS"));
 		info.setIs_sys_mode(data.getString("IS_SYS_MODE"));

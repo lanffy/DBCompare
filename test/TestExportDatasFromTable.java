@@ -23,9 +23,9 @@ public class TestExportDatasFromTable extends TestCase {
 	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	@Override
 	protected void setUpOnce() throws java.lang.Exception {
-		data = exporter.getEndPoint("vmenu2cardCHL");
+		data = exporter.getOneEndPoint("vmenu2cardCHL");
 //		System.out.println("\n******data******\n"+data);
-		tran_data = exporter.getChannelTran("cardCHL", "0052");
+		tran_data = exporter.getOneChannelTran("cardCHL", "0052");
 		service_data = exporter.getOneService("8808");
 //		System.out.println("\n******service_data******\n"+service_data);
 	}
@@ -41,7 +41,7 @@ public class TestExportDatasFromTable extends TestCase {
 	
 	public void atest_不存在的EndPoint(){
 		try {
-			exporter.getEndPoint("vmenu2cardCHLaaa");
+			exporter.getOneEndPoint("vmenu2cardCHLaaa");
 		} catch (Exception e) {
 			assertTrue(true);
 		}
@@ -84,6 +84,11 @@ public class TestExportDatasFromTable extends TestCase {
 	public void atest_tran_map(){
 		ServiceData tran_map_data = tran_data.getServiceData("IN_MAPPING");
 		assertEquals(tran_map_data.getString("MAPPING_NAME"), "0052请求映射");
+	}
+	
+	public void atest_导出服务系统关联交易(){
+		ServiceData data = exporter.getOneServerTran("", "9219");
+		System.out.println(data);
 	}
 	
 	public void atest_原子服务服务基本参数(){
@@ -153,7 +158,7 @@ public class TestExportDatasFromTable extends TestCase {
 	}
 	
 	public void atest_导出部署数据到文件(){
-		ServiceData expandData = exporter.getMachine("001");
+		ServiceData expandData = exporter.getOneMachine("001");
 		System.out.println(expandData);
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 	}
@@ -183,13 +188,13 @@ public class TestExportDatasFromTable extends TestCase {
 		logger.info("test_从文件读取数据字典:\n{}", fileData);
 	}
 	
-	public void test_导出模式数据到文件(){
-		ServiceData dictData = exporter.getMode("appblocks_mode");
+	public void atest_导出模式数据到文件(){
+		ServiceData dictData = exporter.getOneMode("appblocks_mode");
 		logger.info("test_导出模式数据到文件:\n{}", dictData);
 		JSONFileUtil.storeServiceDataToJsonFile(dictData, filePath);
 	}
 	
-	public void test_从文件中读取模式数据(){
+	public void atest_从文件中读取模式数据(){
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		logger.info("test_从文件中读取模式数据:\n{}", fileData);
 	}

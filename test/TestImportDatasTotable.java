@@ -1,7 +1,11 @@
 package compare.test;
 
+import java.io.UnsupportedEncodingException;
+
 import com.wk.db.DBSource;
+import com.wk.db.DBTransaction;
 import com.wk.db.Session;
+import com.wk.db.SessionHandle;
 import com.wk.lang.Inject;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
@@ -9,6 +13,7 @@ import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
 import com.wk.util.JSON;
 import com.wk.util.JSONCaseType;
+
 import compare.ExportDatasFromDB;
 import compare.ImportDatasToDB;
 import compare.JSONFileUtil;
@@ -26,21 +31,21 @@ public class TestImportDatasTotable extends TestCase {
 	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	public void atest_insertEndPoint(){
-		ServiceData endPoint = exportService.getEndPoint("npCHL");;
+		ServiceData endPoint = exportService.getOneEndPoint("npCHL");;
 		endPoint.putString("CHANNEL_CODE", "testCHL");
 		endPoint.putString("CHANNEL_NAME", "测试EndPoint");
 		ServiceData commData = endPoint.getServiceData("COMM_ID");
 		commData.putString("CCODE", "test_tcp");
 		endPoint.putServiceData("COMM_ID", commData);
-		int i = importService.insertEndPoint(endPoint);
+		int i = importService.insertOneEndPoint(endPoint);
 		assertEquals(i, 1);
-		ServiceData testChl = exportService.getEndPoint("testCHL");
+		ServiceData testChl = exportService.getOneEndPoint("testCHL");
 		assertEquals(testChl.getString("CHANNEL_CODE"), "testCHL");
 		System.out.println(testChl);
 	}
 	
 	public void atest_insertServer(){
-		ServiceData serverData = exportService.getServer("inbankSRV");
+		ServiceData serverData = exportService.getOneServer("inbankSRV");
 		System.out.println("\n***修改前***\n"+serverData);
 		assertEquals(serverData.getString("SERVER_CODE"), "inbankSRV");
 		serverData.putString("SERVER_CODE", "testSRV");
@@ -57,9 +62,9 @@ public class TestImportDatasTotable extends TestCase {
 		serverData.getServiceData("OUT_MAPPING").putString("MAPPING_CODE", "testSRV_req");
 		serverData.getServiceData("ERROR_MAPPING").putString("MAPPING_CODE", "testSRV_err");
 		System.out.println("\n***修改后***\n"+serverData);
-		int num = importService.insertServer(serverData);
+		int num = importService.insertOneServer(serverData);
 		assertEquals(num, 1);
-		serverData = exportService.getServer("testSRV");
+		serverData = exportService.getOneServer("testSRV");
 		assertEquals("testSRV", serverData.getString("SERVER_CODE"));
 		assertEquals(serverData.getString("SERVER_NAME"), "test服务系统");
 		commData = serverData.getServiceData("COMM_ID");
@@ -129,7 +134,7 @@ public class TestImportDatasTotable extends TestCase {
 	}
 	
 	public void atest_insert部署(){
-		ServiceData expandData = exportService.getMachine("001");
+		ServiceData expandData = exportService.getOneMachine("001");
 		System.out.println("***修改前***\n"+expandData);
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
@@ -170,18 +175,18 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void atest_insertMode(){
-		ServiceData modeData = exportService.getMode("appblocks_mode");
+	public void test_insertMode() throws UnsupportedEncodingException{
+		
+		ServiceData modeData = exportService.getOneMode("vrouterclient_lu");
 		logger.info("导出数据:\n{}", modeData);
 		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
-		fileData.putString("MODE_CODE", "test_mode");
-		fileData.putString("MODE_NAME", "test_mode模式");
-		ServiceData paramData = fileData.getServiceData("MODE_PARAM");
-		String detailStr = JSON.fromServiceData(paramData, JSONCaseType.DEFAULT).replace("appblocks", "test");
-		paramData = JSON.toServiceDataByType(detailStr, JSONCaseType.DEFAULT);
-		fileData.putServiceData("MODE_PARAM", paramData);
+//		String str = JSON.fromServiceData(fileData, JSONCaseType.DEFAULT);
+//		fileData = JSON.toServiceDataByType(str.replaceAll("，", ","), JSONCaseType.DEFAULT);
+		fileData.putString("MODE_CODE", "test_mode1");
+//		fileData.putString("MODE_NAME", "VRouter客户端包模式,请求小写,响应大大");
 		logger.info("导入数据:\n{}", fileData);
+		
 		int num = importService.insertOneMode(fileData);
 		logger.info("成功插入模式{}个", num);
 		assertEquals(num, 1);
@@ -194,9 +199,16 @@ public class TestImportDatasTotable extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-//		Session session = DBSource.getDefault().getSession();
-//		session.commit();
-//		session.close();
-//		System.out.println("Commited!");
+		Session session = DBSource.getDefault().getSession();
+		session.commit();
+		session.close();
+		System.out.println("Commited!");
+//
+//		SessionHandle handle = new SessionHandle();
+//        DBTransaction tran = DBTransaction.get();
+//        tran.start(handle);
+//        tran.commit(handle);
+//        tran.closeAllSession(handle, true);
+        System.out.println("Commited!");
 	}
 }

@@ -31,7 +31,7 @@ public class JSONFileUtil {
 	* @author raoliang
 	* @version 2014年11月5日 上午10:27:58
 	*/
-	public static String convertServiceDataToJson(ServiceData data){
+	public static String convertServiceDataToJson(ServiceData data) {
 		return JSON.fromServiceData(data, JSONCaseType.DEFAULT);
 	}
 	
@@ -54,11 +54,12 @@ public class JSONFileUtil {
 	* @author raoliang
 	* @version 2014年11月5日 上午11:15:58
 	*/
-	private static void storeServiceDataToJsonFile(ServiceData data, File file) {
-		String json = convertServiceDataToJson(data);
+	public static void storeServiceDataToJsonFile(ServiceData data, File file) {
+		String json = "";
 //		logger.warn("向文件{}中写数据\n{}", file.getAbsolutePath(), data);
 		FileWriter writer = null;
 		try {
+			json = convertServiceDataToJson(data);
 			writer = new FileWriter(file);
 			writer.write(json);
 		} catch (IOException e) {
