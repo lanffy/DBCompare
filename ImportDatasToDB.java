@@ -1,5 +1,7 @@
 package compare;
 
+import com.wk.db.DBSource;
+import com.wk.db.Session;
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.DictDaoService;
 import com.wk.eai.webide.dao.DictDetailDaoService;
@@ -282,8 +284,10 @@ public class ImportDatasToDB {
 	* @version 2014年11月7日 下午5:43:40
 	*/
 	public int insertOneMode(ServiceData modeDatas){
-		ModeInfo modeInfo = getModeInfo(modeDatas);
-		int count = modeDaoService.insertOneMode(modeInfo);
+		//TODO:此处使用下面的方法会报错，实际上没有错误
+//		ModeInfo modeInfo = getModeInfo(modeDatas);
+//		int count = modeDaoService.insertOneMode(modeInfo);
+		int count = executeSqlToInsertMode(modeDatas);
 		if(modeDatas.size() == 7){
 			ServiceData paramModeData = modeDatas.getServiceData("MODE_PARAM");
 			String[] keys = paramModeData.getKeys();
@@ -292,7 +296,7 @@ public class ImportDatasToDB {
 				ModeParamInfo paramInfo = getModeParamInfo(paramModeData.getServiceData(key));
 				paramCount += modeParamDaoService.addOneModeParam(paramInfo);
 			}
-			logger.info("成功插入模式{}，模式参数{}个", modeInfo.getMode_code(), paramCount);
+			logger.info("成功插入模式{}，模式参数{}个", modeDatas.getString("MODE_CODE"), paramCount);
 		}
 		return count;
 	}
@@ -434,9 +438,7 @@ public class ImportDatasToDB {
 	private ModeInfo getModeInfo(ServiceData data) {
 		ModeInfo info = new ModeInfo();
 		info.setMode_code(data.getString("MODE_CODE"));
-		//TODO:>23个长度的字符串时报超长错误
-//		info.setMode_name(data.getString("MODE_NAME"));
-		info.setMode_name(data.getString("MODE_NAME").substring(0, data.getString("MODE_NAME").length()>22 ? 22 : data.getString("MODE_NAME").length()));
+		info.setMode_name(data.getString("MODE_NAME"));
 		info.setMode_type(data.getString("MODE_TYPE"));
 		info.setMode_class(data.getString("MODE_CLASS"));
 		info.setIs_sys_mode(data.getString("IS_SYS_MODE"));
@@ -451,6 +453,17 @@ public class ImportDatasToDB {
 		info.setParam_class(data.getString("PARAM_CLASS"));
 		info.setParam_value(data.getString("PARAM_VALUE"));
 		return info;
+	}
+	
+	private static int executeSqlToInsertMode(ServiceData modeData){
+		String sql = "insert into sys_mode values('"+modeData.getString("MODE_CODE")+
+				"','"+modeData.getString("MODE_NAME")+
+				"','"+modeData.getString("MODE_TYPE")+
+				"','"+modeData.getString("MODE_CLASS")+
+				"','"+modeData.getString("IS_SYS_MODE")+
+				"','"+modeData.getString("VERNO")+"')";
+		Session session = DBSource.getDefault().getSession();
+		return session.execute(sql);
 	}
 	
 	private CommInfo getCommInfo(ServiceData data){

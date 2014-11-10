@@ -40,6 +40,17 @@ public class TestH2 {
 //		fileData.putString("MODE_NAME", "VRouter客户端包模式,请求小写,响应大大");
 		logger.info("导入数据:\n{}", fileData);
 		
+		int num = importService.insertOneMode(fileData);
+		commit();
+		logger.info("成功插入模式{}个", num);
+		System.out.println(num);
+	}
+	
+	private static String replace(String fileName){
+		return fileName.replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_");
+	}
+	
+	private static int executeSql(ServiceData fileData){
 		String sql = "insert into sys_mode values('"+fileData.getString("MODE_CODE")+
 				"','"+fileData.getString("MODE_NAME")+
 				"','"+fileData.getString("MODE_TYPE")+
@@ -51,13 +62,7 @@ public class TestH2 {
 		session.commit();
 		session.close();
 		System.out.println("Commited!");
-//		int num = importService.insertOneMode(fileData);
-		logger.info("成功插入模式{}个", num);
-		System.out.println(num);
-	}
-	
-	private static String replace(String fileName){
-		return fileName.replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_");
+		return num;
 	}
 	
 	private static void commit(){

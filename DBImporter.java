@@ -7,8 +7,6 @@ import com.wk.db.DBSource;
 import com.wk.db.Session;
 import com.wk.sdo.ServiceData;
 import com.wk.util.FileUtil;
-import com.wk.util.JSON;
-import com.wk.util.JSONCaseType;
 
 /**
  * @description VRouter数据库导入类
@@ -126,9 +124,6 @@ public class DBImporter extends DBporter{
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
-			//TODO:bug
-			String str = JSON.fromServiceData(data, JSONCaseType.DEFAULT);
-			data = JSON.toServiceDataByType(str.replaceAll("，", ","), JSONCaseType.DEFAULT);
 			count += impoter.insertOneMode(data);
 		}
 		logger.info("成功插入模式{}条", count);
