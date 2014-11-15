@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import com.wk.Controller;
-import com.wk.lang.Inject;
 import com.wk.lang.SystemException;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
@@ -20,8 +19,10 @@ import com.wk.util.JaDateTime;
  * @version 2014年11月9日 下午4:47:27
  */
 public class DBporter {
-	@Inject static ExportDatasFromDB exporter;
-	@Inject static ImportDatasToDB impoter;
+//	@Inject static ExportDatasFromDB exporter;
+//	@Inject static ImportDatasToDB impoter;
+	static ExportDatasFromDB exporter = Controller.getInstance().getInjector().getBean(ExportDatasFromDB.class);
+	static ImportDatasToDB impoter = Controller.getInstance().getInjector().getBean(ImportDatasToDB.class);
 	protected static final Log logger = LogFactory.getLog("dbcompare");
 	protected static final Properties prop = new Properties();
 	protected static final String dbfile = "/dbcompare.properties";
@@ -60,11 +61,11 @@ public class DBporter {
 		return fileName.replaceAll("\\\\|/|:|\\*|\\?|\"|<|>|\\|", "_");
 	}
 	
-	protected void init() {
-		Controller.getInstance().getInjector().inject(this);
-	}
-
-	static {
-		new DBporter().init();
-	}
+//	protected void init() {
+//		Controller.getInstance().getInjector().inject(this);
+//	}
+//
+//	static {
+//		new DBporter().init();
+//	}
 }

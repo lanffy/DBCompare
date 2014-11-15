@@ -49,7 +49,7 @@ public class DBCompare {
 			+ "#tables td, #tables th \n"
 			+ "  {\n"
 			+ "  font-size:0.95em;\n"
-			+ "  border:1px solid #98bf21;\n"
+			+ "  border:1px solid #999999;\n"
 			+ "  padding:3px 7px 2px 7px;\n"
 			+ "  }\n"
 			+ "\n"
@@ -59,14 +59,14 @@ public class DBCompare {
 			+ "  text-align:left;\n"
 			+ "  padding-top:5px;\n"
 			+ "  padding-bottom:4px;\n"
-			+ "  background-color:#f60;\n"
-			+ "  color:#ffffff;\n"
+			+ "  background-color:#B0B0B0;\n"
+			+ "  color:#000000;\n"
 			+ "  }\n"
 			+ "\n"
 			+ "#tables tr.modify td \n"
 			+ "  {\n"
 			+ "  color:#000000;\n"
-			+ "  background-color:#EAF2D3;\n"
+			+ "  background-color:#EDEDED;\n"
 			+ "  }\n"
 			+ "#tables tr.delete td \n"
 			+ "  {\n"
@@ -104,6 +104,8 @@ public class DBCompare {
 			throw new RuntimeException("LOAD_DBPROPERTIES_FILE_ERROR");
 		}
 	}
+	private static final String oldTcpPort = prop.getProperty("oldDb.jdbc.tcpPort");
+	private static final String newTcpPort = prop.getProperty("newDb.jdbc.tcpPort");
 	//被修改项对应的主键列表
 	private static List<String> samelist = new ArrayList<String>();
 	
@@ -1676,7 +1678,6 @@ public class DBCompare {
 			StringBuilder modifyDictDetail = new StringBuilder();
 			num.set(0);
 			modifyDictDetail.append(modifytableBegin);
-			//获得报文配置结果集,进行比较
 			String oldcolumn = "";
 			String newcolumn = "";
 			for (String string : samelist) {
@@ -1761,56 +1762,49 @@ public class DBCompare {
 	private static void startH2DB(){
 		String oldDbDir = prop.getProperty("oldDb.jdbc.basedir");
 		String newDbDir = prop.getProperty("newDb.jdbc.basedir");
-		String oldWebPort = prop.getProperty("oldDb.jdbc.webPort");
-		String newWebPort = prop.getProperty("newDb.jdbc.webPort");
-		String oldTcpPort = prop.getProperty("oldDb.jdbc.tcpPort");
-		String newTcpPort = prop.getProperty("newDb.jdbc.tcpPort");
-		String oldH2MainParameters = getH2MainParameters(oldDbDir, oldTcpPort, oldWebPort);
-		String newH2MainParameters = getH2MainParameters(newDbDir, newTcpPort, newWebPort);
+		String[] oldH2MainParameters = getH2MainParameters(oldDbDir, oldTcpPort);
+		String[] newH2MainParameters = getH2MainParameters(newDbDir, newTcpPort);
 		try {
 			System.out.println("start old db");
-			Server.main(oldH2MainParameters.split(" "));
+			Server.main(oldH2MainParameters);
 		} catch (SQLException e) {
 			throw new SystemException("SYS_DBCOMPARE_OLD_H2DB_START_EXCEPTION")
 					.addScene("parameters:", oldH2MainParameters);
 		}
 		try {
 			System.out.println("start new db");
-			Server.main(newH2MainParameters.split(" "));
+			Server.main(newH2MainParameters);
 		} catch (SQLException e) {
 			throw new SystemException("SYS_DBCOMPARE_NEW_H2DB_START_EXCEPTION")
 			.addScene("parameters:", newH2MainParameters);
 		}
 	}
 	
-	private static String getH2MainParameters(String dir, String tcpPort, String webPort){
-		return ("-ifExists -baseDir " + dir + " -tcp -tcpPort " + tcpPort
-				+ " -tcpAllowOthers -web -webPort " + webPort + " -webAllowOthers -webDaemon");
+	private static String[] getH2MainParameters(String dir, String tcpPort) {
+		return ("-ifExists -baseDir " + dir + " -tcp -tcpPort " + tcpPort + " -tcpAllowOthers").split(" ");
 	}
 	
 	private static void stopH2DB(){
-		String oldTcpPort = prop.getProperty("oldDb.jdbc.tcpPort");
-		String newTcpPort = prop.getProperty("newDb.jdbc.tcpPort");
-		String oldStopStr = getH2StopParameters(oldTcpPort);
-		String newStopStr = getH2StopParameters(newTcpPort);
+		String[] oldStopStr = getH2StopParameters(oldTcpPort);
+		String[] newStopStr = getH2StopParameters(newTcpPort);
 		try {
 			System.out.println("\nstop old db");
-			Server.main(oldStopStr.split(" "));
+			Server.main(oldStopStr);
 		} catch (SQLException e) {
 			throw new SystemException("SYS_DBCOMPARE_OLD_H2DB_STOP_EXCEPTION")
 			.addScene("parameters:", oldStopStr);
 		}
 		try {
 			System.out.println("stop new db");
-			Server.main(newStopStr.split(" "));
+			Server.main(newStopStr);
 		} catch (SQLException e) {
 			throw new SystemException("SYS_DBCOMPARE_NEW_H2DB_STOP_EXCEPTION")
 			.addScene("parameters:", oldStopStr);
 		}
 	}
 	
-	private static String getH2StopParameters(String tcpPort){
-		return "-tcpShutdown tcp://localhost:"+tcpPort;
+	private static String[] getH2StopParameters(String tcpPort){
+		return ("-tcpShutdown tcp://localhost:"+tcpPort).split(" ");
 	}
 	
 	private static String gethrefStr(String channelName, int num, String idName){
@@ -1873,7 +1867,7 @@ public class DBCompare {
 	public static void main(String[] args) throws Exception {
 		long time = System.currentTimeMillis();
 		compareData();
-		System.out.println("compare done!it takes:"+(System.currentTimeMillis()-time));
+		System.out.println("compare done!it takes:"+(System.currentTimeMillis()-time)/1000L+"s");
 		System.exit(0);
 	}
 	

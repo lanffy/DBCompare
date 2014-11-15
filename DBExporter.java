@@ -12,6 +12,10 @@ import com.wk.sdo.ServiceData;
  */
 public class DBExporter extends DBporter{
 	
+	public static void main(String[] args) {
+		doExport();
+	}
+	
 	public static void doExport() {
 		logger.info("***Begin开始导出数据,开始时间:{}***",getTime());
 		/** 导出顺序：EndPoint、服务系统、EndPoint关联交易、服务系统关联交易
