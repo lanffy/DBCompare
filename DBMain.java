@@ -12,10 +12,13 @@ public class DBMain {
 		}
 		if("-e".equalsIgnoreCase(args[0])){
 			DBExporter.doExport();
+			System.exit(0);
 		}
-		if("-m".equalsIgnoreCase(args[0])){
+		if("-i".equalsIgnoreCase(args[0])){
 			DBImporter.doImport();
+			System.exit(0);
 		}
+		help();
 	}
 	
 	private static void help(){
