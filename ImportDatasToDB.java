@@ -199,11 +199,11 @@ public class ImportDatasToDB {
 		MachineInfo info = getMachineInfo(machineData);
 		count = machineDaoService.saveOneMachine(info);
 		//插入服务器下的进程列表
-		if(machineData.size() >= 5){
+		if(machineData.size() >= 4){
 			insertAllInstance(machineData.getServiceData("INSTANCE"));
 		}
 		//如果此服务器下部署了进程
-		if(machineData.size() == 6){
+		if(machineData.size() == 5){
 			insertAllProcessInstance(machineData.getServiceData("PROCESSINSTANCE"));
 		}
 //		logger.info("插入服务器条数:{}", count);
@@ -271,17 +271,23 @@ public class ImportDatasToDB {
 	}
 	
 	/**
-	* @description 插入一个数据字典，如果该字典下有字段，则同时插入该字典下的所有字段
+	* @description 插入一个数据字典，如果该字典下有字段，则同时插入该字典下的所有字段。
+	* 对于数据字典：不存在则插入，存在则忽略；
+	* 对于字段：存在则修改，不存在则插入
 	* @return 成功插入的条数
 	* @author raoliang
 	* @version 2014年11月7日 上午10:13:25
 	*/
-	public int insertOneDict(ServiceData datas){
+	public int insertOrUpdateOneDict(ServiceData datas){
 		DictInfo dictInfo = getDictInfo(datas);
-		int count = dictDaoService._insertOneDict(dictInfo);
-		if(datas.size() == 5){
-			int details = insertAllDictDetail(datas.getServiceData("DICT_DETAIL"));
-			logger.info("成功插入数据字典{}的数据字段{}个", dictInfo.getDict_code(), details);
+		int count = 0;
+		//如果不存在数据字典则插入
+		if(!dictDaoService.hasDict(dictInfo.getDict_code())){
+			logger.info("插入数据字典{}", dictInfo.getDict_code());
+			count = dictDaoService._insertOneDict(dictInfo);
+		}
+		if(datas.size() == 4){
+			insertOrUpdateDictDetail(datas.getServiceData("DICT_DETAIL"));
 		}
 		return count;
 	}
@@ -293,40 +299,49 @@ public class ImportDatasToDB {
 	* @author raoliang
 	* @version 2014年11月7日 上午10:42:27
 	*/
-	public int insertAllDictDetail(ServiceData datas){
+	public int insertOrUpdateDictDetail(ServiceData datas){
 		int count = 0;
 		String[] keys = datas.getKeys();
 		for (String key : keys) {
 			ServiceData data = datas.getServiceData(key);
-			count += insertOneDictDetail(data);
+			count += insertOrUpdateOneDictDetail(data);
 		}
 		return count;
 	}
 	
 	/**
-	* @description 插入一条数据字段
+	* @description 插入一条数据字段,如果不存在，则插入,存在则修改
 	* @param data 数据源
 	* @return 成功插入条数
 	* @author raoliang
 	* @version 2014年11月7日 上午10:42:04
 	*/
-	public int insertOneDictDetail(ServiceData data){
+	public int insertOrUpdateOneDictDetail(ServiceData data) {
 		DictDetailInfo info = getDiceDetailInfo(data);
-		return dictDetailDaoService.insertOneDictDetail(info);
+		// 如果不存在，则插入,存在则修改
+		if ((dictDetailDaoService.getOneDictField(info.getDict_code(),
+				info.getField_code())) == null) {
+			logger.info("插入数据字典{}的数据字段{}", info.getDict_code(), info.getField_code());
+			return dictDetailDaoService.insertOneDictDetail(info);
+		} else {
+			logger.info("修改数据字典{}的数据字段{}", info.getDict_code(), info.getField_code());
+			return dictDetailDaoService.updateOneDictDetail(info);
+		}
 	}
 	
 	/**
-	* @description 插入一个数据字典，当字典下有字段时，会将所有的字段插入
-	* @return 成功插入的字典条数
+	* @description 插入一个模式，如果模式有参数，同时插入参数
+	* @param modeDatas
+	* @return
 	* @author raoliang
-	* @version 2014年11月7日 下午5:43:40
+	* @version 2014年11月17日 下午4:06:11
 	*/
 	public int insertOneMode(ServiceData modeDatas){
 		//TODO:此处使用下面的方法会报错，实际上没有错误
 //		ModeInfo modeInfo = getModeInfo(modeDatas);
 //		int count = modeDaoService.insertOneMode(modeInfo);
 		int count = executeSqlToInsertMode(modeDatas);
-		if(modeDatas.size() == 7){
+		if(modeDatas.size() == 6){
 			ServiceData paramModeData = modeDatas.getServiceData("MODE_PARAM");
 			String[] keys = paramModeData.getKeys();
 			int paramCount = 0;

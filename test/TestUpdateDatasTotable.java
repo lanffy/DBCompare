@@ -3,8 +3,12 @@ package compare.test;
 import com.wk.db.DBSource;
 import com.wk.db.Session;
 import com.wk.lang.Inject;
+import com.wk.logging.Log;
+import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
+import com.wk.util.JSON;
+import com.wk.util.JSONCaseType;
 
 import compare.ExportDatasFromDB;
 import compare.ImportDatasToDB;
@@ -19,6 +23,7 @@ import compare.JSONFileUtil;
 public class TestUpdateDatasTotable extends TestCase {
 	@Inject  ExportDatasFromDB exportService;
 	@Inject  ImportDatasToDB importService;
+	private final Log logger = LogFactory.getLog("dbcompare");
 	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	@Override
@@ -348,6 +353,30 @@ public class TestUpdateDatasTotable extends TestCase {
 		ServiceData confirmData = exportService.getOneMachine("001");
 		assertEquals(confirmData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("BIND_ADDRESS"), "9555");
 		System.out.println("\n************修改后****************\n"+confirmData);	
+	}
+	
+	public void atest_修改数据字典字段(){
+		ServiceData dictData = exportService.getOneDict("global");
+		logger.info("导出数据:\n{}", dictData);
+		JSONFileUtil.storeServiceDataToJsonFile(dictData, filePath);
+		ServiceData updateData = new ServiceData();
+		updateData.putString("DICT_CODE", "global");
+		updateData.putString("DICT_NAME", "全局数据字典");
+		updateData.putString("IS_GLOBAL", "1");
+		ServiceData detailupdateData = new ServiceData();
+		ServiceData detaildictData = new ServiceData();
+		detaildictData.putString("DICT_CODE", "global");
+		detaildictData.putString("FIELD_CODE", "AAA");
+		detaildictData.putString("FIELD_NAME", "aaaname");
+		detaildictData.putString("FIELD_TYPE", "double");
+		detaildictData.putString("FIELD_LENGTH", "10");
+		detaildictData.putString("FIELD_SCALE", "2");
+		detailupdateData.putServiceData("AAA", detaildictData);
+		updateData.putServiceData("DICT_DETAIL", detailupdateData);
+		logger.info("导入数据:\n{}", updateData);
+		int num = importService.insertOrUpdateOneDict(updateData);
+		logger.info("成功插入数据字典{}个", num);
+		assertEquals(num, 0);
 	}
 	
 	@Override

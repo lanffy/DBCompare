@@ -243,7 +243,7 @@ public class ExportDatasFromDB {
 		data.putServiceData("IN_MAPPING", getMap(info.getIn_mapping()));
 		data.putServiceData("OUT_MAPPING", getMap(info.getOut_mapping()));
 		data.putServiceData("ERROR_MAPPING", getMap(info.getError_mapping()));
-		data.putString("VERNO", info.getVerno());
+		
 		return data;
 	}
 
@@ -268,7 +268,7 @@ public class ExportDatasFromDB {
 		data.putServiceData("IN_MAPPING", getMap(info.getIn_mapping()));
 		data.putServiceData("OUT_MAPPING", getMap(info.getOut_mapping()));
 		data.putServiceData("ERROR_MAPPING", getMap(info.getError_mapping()));
-		data.putString("VERNO", info.getVerno());
+		
 		return data;
 	}
 	
@@ -296,7 +296,7 @@ public class ExportDatasFromDB {
 		data.putServiceData("REQ_STRU", getStructure(info.getReq_stru()));
 		data.putServiceData("RESP_STRU", getStructure(info.getResp_stru()));
 		data.putServiceData("ERR_STRU", getStructure(info.getErr_stru()));
-		data.putString("VERNO", info.getVerno());
+		
 		data.putString("IS_PUBLISHED", info.getIs_published());
 		//组合服务
 		if("2".equals(service_type)){
@@ -322,7 +322,7 @@ public class ExportDatasFromDB {
 		data.putString("MACHINE_CODE", info.getMachine_code());
 		data.putString("MACHINE_IP", info.getMachine_ip());
 		data.putString("MACHINE_NAME", info.getMachine_name());
-		data.putString("VERNO", info.getVerno());
+		
 		ServiceData instanceData = getOneInstance(info.getMachine_code());
 		if(instanceData != null && instanceData.size() > 0){
 			data.putServiceData("INSTANCE", instanceData);
@@ -355,7 +355,7 @@ public class ExportDatasFromDB {
 			data.putString("MACHINE_CODE", info.getMachine_code());
 			data.putString("SKEYC", info.getSkeyc());
 			data.putString("SKEYD", info.getSkeyd());
-			data.putString("VERNO", info.getVerno());
+			
 			datas.putServiceData(info.getSkeyc(), data);
 		}
 		return datas;
@@ -381,7 +381,7 @@ public class ExportDatasFromDB {
 			data.putString("CHANNEL_CODE", info.getChannel_code());
 			data.putString("BIND_ADDRESS", info.getBind_address());
 			data.putString("REMOTE_ADDRESS", info.getRemote_address());
-			data.putString("VERNO", info.getVerno());
+			
 			datas.putServiceData(info.getChannel_code(), data);
 		}
 		return datas;
@@ -404,7 +404,7 @@ public class ExportDatasFromDB {
 		data.putString("DICT_CODE", info.getDict_code());
 		data.putString("DICT_NAME", info.getDict_name());
 		data.putString("IS_GLOBAL", info.getIs_global());
-		data.putString("VERNO", info.getVerno());
+		
 		ServiceData dictDetail = getAllDictDetail(info.getDict_code());
 		if(dictDetail != null && dictDetail.size() > 0){
 			data.putServiceData("DICT_DETAIL", dictDetail);
@@ -437,7 +437,7 @@ public class ExportDatasFromDB {
 			data.putString("FIELD_TYPE", info.getField_type());
 			data.putInt("FIELD_LENGTH", info.getField_length());
 			data.putInt("FIELD_SCALE", info.getField_scale());
-			data.putString("VERNO", info.getVerno());
+			
 			datas.putServiceData(info.getField_code(), data);
 		}
 		return datas;
@@ -462,7 +462,7 @@ public class ExportDatasFromDB {
 		data.putString("MODE_TYPE", info.getMode_type());
 		data.putString("MODE_CLASS", info.getMode_class());
 		data.putString("IS_SYS_MODE", info.getIs_sys_mode());
-		data.putString("VERNO", info.getVerno());
+		
 		//模式参数
 		ServiceData modeParam = getModeParam(mode_code);
 		if(modeParam != null && modeParam.size() > 0){
@@ -494,7 +494,7 @@ public class ExportDatasFromDB {
 			data.putString("PARAM_CODE", info.getParam_code());
 			data.putString("PARAM_CLASS", info.getParam_class());
 			data.putString("PARAM_VALUE", info.getParam_value());
-			data.putString("VERNO", info.getVerno());
+			
 			datas.putServiceData(info.getParam_code(), data);
 		}
 		return datas;
@@ -506,7 +506,7 @@ public class ExportDatasFromDB {
 		data.putString("GET_SVC_EXP", info.getGet_svc_exp());
 		data.putString("PUT_SVC_EXP", info.getPut_svc_exp());
 		data.putString("MSG_CLASS", info.getMsg_class());
-		data.putString("VERNO", info.getVerno());
+		
 		data.putString("BIZ_CHANNEL_EXP", info.getBiz_channel_exp());
 	}
 	
@@ -517,7 +517,7 @@ public class ExportDatasFromDB {
 		data.putString("PUT_SVC_EXP", info.getPut_svc_exp());
 		data.putString("MSG_CLASS", info.getMsg_class());
 		data.putString("SERVER_ACTOR_CLASS", info.getServer_actor_class());
-		data.putString("VERNO", info.getVerno());
+		
 	}
 
   	private static ServiceData putComm(String comm_id){
@@ -556,7 +556,6 @@ public class ExportDatasFromDB {
 		commData.putString("MSG_CLASS", info.getMsg_class());
 		commData.putString("IMPL_CLASS", info.getImpl_class());
 		commData.putString("TRUST_HOSTS", info.getTrust_hosts());
-		commData.putString("VERNO", info.getVerno());
 		return commData;
 	}
 
@@ -566,7 +565,6 @@ public class ExportDatasFromDB {
 		structureData.putString("STRUCTURE_TYPE", info.getStructure_type());
 		structureData.putString("STRUCTURE_CATEGORY", info.getStructure_category());
 		structureData.putServiceData("STRUCTURE_CONTENT", getDataServiceData(info.getStructure_content()));
-		structureData.putString("VERNO", info.getVerno());
 		return structureData;
 	}
 
@@ -582,7 +580,7 @@ public class ExportDatasFromDB {
 		data.putString("CTX_DATAS", info.getCtx_datas());
 		data.putString("IN_DATAS", info.getIn_datas());
 		data.putString("OUT_DATAS", info.getOut_datas());
-		data.putString("VERNO", info.getVerno());
+		
 		return data;
 	}
 	

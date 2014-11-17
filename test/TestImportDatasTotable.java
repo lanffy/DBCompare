@@ -128,7 +128,7 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void test_insert部署(){
+	public void atest_insert部署(){
 		ServiceData expandData = exportService.getOneMachine("001");
 		System.out.println("***修改前***\n"+expandData);
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
@@ -152,6 +152,16 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
+//	public void test_数据字典是否存在(){
+//		assertTrue(importService.hasDict("global"));
+//		assertFalse(importService.hasDict("test"));
+//	}
+//	
+//	public void atest_数据字段是否存在(){
+//		assertNotNull(importService.getOneDictField("global", "timeout"));
+//		assertNull(importService.getOneDictField("global", "timeout1"));
+//	}
+	
 	public void atest_insertDict(){
 		ServiceData dictData = exportService.getOneDict("global");
 		logger.info("导出数据:\n{}", dictData);
@@ -165,7 +175,7 @@ public class TestImportDatasTotable extends TestCase {
 		detailData = JSON.toServiceDataByType(detailStr, JSONCaseType.DEFAULT);
 		fileData.putServiceData("DICT_DETAIL", detailData);
 		logger.info("导入数据:\n{}", fileData);
-		int num = importService.insertOneDict(fileData);
+		int num = importService.insertOrUpdateOneDict(fileData);
 		logger.info("成功插入数据字典{}个", num);
 		assertEquals(num, 1);
 	}
@@ -190,9 +200,9 @@ public class TestImportDatasTotable extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-//		Session session = DBSource.getDefault().getSession();
-//		session.commit();
-//		session.close();
-//		System.out.println("Commited!");
+		Session session = DBSource.getDefault().getSession();
+		session.commit();
+		session.close();
+		System.out.println("Commited!");
 	}
 }

@@ -114,7 +114,7 @@ public class DBImporter extends DBporter{
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
-			count += impoter.insertOneDict(data);
+			count += impoter.insertOrUpdateOneDict(data);
 		}
 		logger.info("成功插入数据字典{}条", count);
 	}
