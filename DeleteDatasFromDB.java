@@ -1,11 +1,13 @@
 package compare;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
+import com.wk.eai.webide.dao.DictDetailDaoService;
 import com.wk.eai.webide.dao.MachineDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
 import com.wk.eai.webide.dao.ServiceDaoService;
 import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
+import com.wk.eai.webide.service.DictService;
 import com.wk.lang.Inject;
 
 
@@ -22,6 +24,8 @@ public class DeleteDatasFromDB {
 	@Inject static MachineDaoService machineDaoService;
 	@Inject static ChannelDaoService channelDaoService;
 	@Inject static ServerDaoService serverDaoService;
+	@Inject static DictService dictService;
+	@Inject static DictDetailDaoService dictDetailDaoService;
 	
 	/**
 	* @description 删除一条EndPoint
@@ -143,5 +147,26 @@ public class DeleteDatasFromDB {
 		return machineDaoService.deleteOneMachine(machine_codes);
 	}
 	
+	/**
+	* @description 根据数据字典编码删除数据字典，同时会删除该数据字典下的所有数据字段
+	* @param dict_code
+	* @return
+	* @author raoliang
+	* @version 2014年11月17日 下午6:56:42
+	*/
+	public int deleteOneDict(String dict_code){
+		return dictService.deleteDict(dict_code);
+	}
 	
+	/**
+	* @description 根据数据字典编码和字段编码删除一条数据字段
+	* @param dict_code 数据字典编码
+	* @param field_code 字段编码
+	* @return
+	* @author raoliang
+	* @version 2014年11月17日 下午7:00:18
+	*/
+	public int deleteOneDictDetail(String dict_code, String field_code){
+		return dictDetailDaoService.deleteOneField(dict_code, field_code);
+	}
 }

@@ -59,6 +59,16 @@ public class TestDeleteDatasFromDB extends TestCase {
 		assertEquals(num, 1);
 	}
 	
+	public void atest_删除一条数据字段(){
+		int num = deleteDatasFromDB.deleteOneDictDetail("test", "a");
+		assertEquals(num, 1);
+	}
+	
+	public void atest_删除一个数据字典(){
+		int num = deleteDatasFromDB.deleteOneDict("test");
+		assertEquals(num, 1);
+	}
+	
 	@Override
 	protected void tearDown() throws java.lang.Exception {
 		System.out.println("******华丽丽的测试案例分割线******");
