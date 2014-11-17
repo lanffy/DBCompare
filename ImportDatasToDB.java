@@ -37,12 +37,11 @@ import com.wk.sdo.ServiceData;
 import com.wk.util.StringUtil;
 
 /**
- * @description 从文件中读取数据导入到数据库表中
+ * @description 从文件中读取数据导入到数据库表中,在插入的过程中,当判断被插入对象已经存在与数据库中时,则更新,不存在则插入
  * @author raoliang
  * @version 2014年10月30日 下午7:51:06
  */
 public class ImportDatasToDB {
-//	public class ImportDatasToDB extends DBImpl{
 	private final Log logger = LogFactory.getLog("dbcompare");
 	@Inject static TranServerPackageDaoService tranServerPackageDaoService;
 	@Inject static MappingDaoService mappingDaoService;

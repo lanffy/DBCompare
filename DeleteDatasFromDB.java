@@ -19,7 +19,6 @@ import com.wk.lang.Inject;
  * @version 2014年11月4日 下午2:55:17
  */
 public class DeleteDatasFromDB {
-//	public class DeleteDatasFromDB extends DBImpl{
 	@Inject static TranChannelPackageDaoService tranChannelPackageDaoService;
 	@Inject static TranServerPackageDaoService tranServerPackageDaoService;
 	@Inject static ServiceDaoService serviceDaoService;
@@ -32,7 +31,7 @@ public class DeleteDatasFromDB {
 	@Inject static ModeParamDaoService modeParamDaoService;
 	
 	/**
-	* @description 删除一条EndPoint
+	* @description 删除一条EndPoint,以及其下的关联交易
 	* @param channel_code EndPoint名称
 	* @return 成功删除条数
 	* @author raoliang
@@ -90,28 +89,6 @@ public class DeleteDatasFromDB {
 	*/
 	public int deleteOneTranServerByTranCode(String tran_code){
 		return tranServerPackageDaoService.deleteOneTran(tran_code);
-	}
-	
-	/**
-	* @description 根据服务系统Server名称删除其下的关联交易
-	* @param server_code 服务系统名称
-	* @return 成功删除条数
-	* @author raoliang
-	* @version 2014年11月4日 下午3:22:50
-	*/
-	public int deleteTranServerByServerCode(String server_code){
-		return tranServerPackageDaoService.deleteTranByServerCode(server_code);
-	}
-	
-	/**
-	* @description 根据交易名称删除服务系统相关的关联交易
-	* @param tran_codes 交易名称集合，用逗号分割
-	* @return 成功删除条数
-	* @author raoliang
-	* @version 2014年11月4日 下午3:24:37
-	*/
-	public int deleteTranServerByTranCodes(String tran_codes){
-		return tranServerPackageDaoService.deleteTrans(tran_codes);
 	}
 	
 	/**

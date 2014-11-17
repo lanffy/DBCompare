@@ -51,7 +51,6 @@ import com.wk.util.StringUtil;
  * @version 2014年10月30日 上午11:49:46
  */
 public class ExportDatasFromDB {
-//	public class ExportDatasFromDB extends DBImpl{
 	private final Log logger = LogFactory.getLog("dbcompare");
 	@Inject static CommDaoService commDaoSevice;
 	@Inject static StructureDaoService structureDaoSevice;
