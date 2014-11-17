@@ -1,23 +1,27 @@
 package compare;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
+import com.wk.eai.webide.dao.MachineDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
 import com.wk.eai.webide.dao.ServiceDaoService;
 import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.lang.Inject;
 
+
 /**
- * @description 删除指定的相关数据,目前能删除EndPoint、服务系统、服务相关的数据
+ * @description 删除指定的相关数据,目前能删除EndPoint、服务系统、服务、部署相关的数据
  * @author raoliang
  * @version 2014年11月4日 下午2:55:17
  */
 public class DeleteDatasFromDB {
-	@Inject ChannelDaoService channelDaoService;
-	@Inject ServerDaoService serverDaoService;
-	@Inject TranChannelPackageDaoService tranChannelPackageDaoService; 
-	@Inject TranServerPackageDaoService tranServerPackageDaoService;
-	@Inject ServiceDaoService serviceDaoService;
+//	public class DeleteDatasFromDB extends DBImpl{
+	@Inject static TranChannelPackageDaoService tranChannelPackageDaoService;
+	@Inject static TranServerPackageDaoService tranServerPackageDaoService;
+	@Inject static ServiceDaoService serviceDaoService;
+	@Inject static MachineDaoService machineDaoService;
+	@Inject static ChannelDaoService channelDaoService;
+	@Inject static ServerDaoService serverDaoService;
 	
 	/**
 	* @description 删除一条EndPoint
@@ -127,4 +131,17 @@ public class DeleteDatasFromDB {
 	public int deleteOneService(String service_code){
 		return serviceDaoService.deleteOneService(service_code);
 	}
+	
+	/**
+	* @description 根据服务器编码删除服务器以及服务器的进程列表和部署的进程。
+	* @param machine_codes 多个机器码，用逗号分割
+	* @return
+	* @author raoliang
+	* @version 2014年11月17日 下午2:55:12
+	*/
+	public int deleteOneMachine(String machine_codes){
+		return machineDaoService.deleteOneMachine(machine_codes);
+	}
+	
+	
 }

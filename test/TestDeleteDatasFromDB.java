@@ -54,6 +54,11 @@ public class TestDeleteDatasFromDB extends TestCase {
 		assertEquals(num, 1);
 	}
 	
+	public void atest_删除一个服务器(){
+		int num = deleteDatasFromDB.deleteOneMachine("002");
+		assertEquals(num, 1);
+	}
+	
 	@Override
 	protected void tearDown() throws java.lang.Exception {
 		System.out.println("******华丽丽的测试案例分割线******");

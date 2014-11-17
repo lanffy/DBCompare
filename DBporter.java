@@ -23,6 +23,7 @@ public class DBporter {
 //	@Inject static ImportDatasToDB impoter;
 	static ExportDatasFromDB exporter = Controller.getInstance().getInjector().getBean(ExportDatasFromDB.class);
 	static ImportDatasToDB impoter = Controller.getInstance().getInjector().getBean(ImportDatasToDB.class);
+	static DeleteDatasFromDB deleter = Controller.getInstance().getInjector().getBean(DeleteDatasFromDB.class);
 	protected static final Log logger = LogFactory.getLog("dbcompare");
 	protected static final Properties prop = new Properties();
 	protected static final String dbfile = "/dbcompare.properties";

@@ -5,6 +5,7 @@ import com.wk.db.Session;
 import com.wk.lang.Inject;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
+
 import compare.ExportDatasFromDB;
 import compare.ImportDatasToDB;
 import compare.JSONFileUtil;
@@ -270,7 +271,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		assertEquals(confirmData.getString("SERVICE_NAME"), "0002updated");
 	}
 	
-	public void test_修改扩展服务的扩展服务名称(){
+	public void atest_修改扩展服务的扩展服务名称(){
 		ServiceData service = exportService.getOneService("0002");
 		System.out.println("\n************修改前****************\n"+service);
 		assertEquals(service.getString("SERVICE_CODE"), "0002");
@@ -285,11 +286,75 @@ public class TestUpdateDatasTotable extends TestCase {
 		assertEquals(confirmData.getString("EXTEND_SERVICE_NAME"), "nameUpdated");
 	}
 	
+	public void atest_修改服务器名称(){
+		ServiceData expandData = exportService.getOneMachine("001");
+		System.out.println("\n************修改前****************\n"+expandData);
+		assertEquals(expandData.getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("INSTANCE").getServiceData("001").getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("CHANNEL_CODE"), "tbCHL");
+		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("MACHINE_NAME", "001updated");
+		int num = importService.updateOneMachine(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneMachine("001");
+		assertEquals(confirmData.getString("MACHINE_NAME"), "001updated");
+		System.out.println("\n************修改后****************\n"+confirmData);
+	}
+	
+	public void atest_修改服务器ip(){
+		ServiceData expandData = exportService.getOneMachine("001");
+		System.out.println("\n************修改前****************\n"+expandData);
+		assertEquals(expandData.getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("INSTANCE").getServiceData("001").getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("CHANNEL_CODE"), "tbCHL");
+		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("MACHINE_IP", "localhost");
+		int num = importService.updateOneMachine(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneMachine("001");
+		assertEquals(confirmData.getString("MACHINE_IP"), "localhost");
+		System.out.println("\n************修改后****************\n"+confirmData);
+	}
+	
+	public void atest_修改服务器进程名称(){
+		ServiceData expandData = exportService.getOneMachine("001");
+		System.out.println("\n************修改前****************\n"+expandData);
+		assertEquals(expandData.getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("INSTANCE").getServiceData("001").getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("CHANNEL_CODE"), "tbCHL");
+		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.getServiceData("INSTANCE").getServiceData("001").putString("SKEYD", "001updated2");
+		int num = importService.updateOneMachine(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneMachine("001");
+		assertEquals(confirmData.getServiceData("INSTANCE").getServiceData("001").getString("SKEYD"), "001updated2");
+		System.out.println("\n************修改后****************\n"+confirmData);
+	}
+	
+	public void atest_修改服务器下部署EndPoint的端口(){
+		ServiceData expandData = exportService.getOneMachine("001");
+		System.out.println("\n************修改前****************\n"+expandData);
+		assertEquals(expandData.getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("INSTANCE").getServiceData("001").getString("MACHINE_CODE"), "001");
+		assertEquals(expandData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("CHANNEL_CODE"), "tbCHL");
+		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").putString("BIND_ADDRESS", "9555");
+		int num = importService.updateOneMachine(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneMachine("001");
+		assertEquals(confirmData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("BIND_ADDRESS"), "9555");
+		System.out.println("\n************修改后****************\n"+confirmData);	
+	}
+	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-		Session session = DBSource.getDefault().getSession();
-		session.commit();
-		session.close();
-		System.out.println("Commited!");
+//		Session session = DBSource.getDefault().getSession();
+//		session.commit();
+//		session.close();
+//		System.out.println("Commited!");
 	}
 }

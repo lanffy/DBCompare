@@ -1,5 +1,7 @@
 package compare.test;
 
+import com.wk.db.DBSource;
+import com.wk.db.Session;
 import com.wk.lang.Inject;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
@@ -126,7 +128,7 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void atest_insert部署(){
+	public void test_insert部署(){
 		ServiceData expandData = exportService.getOneMachine("001");
 		System.out.println("***修改前***\n"+expandData);
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);

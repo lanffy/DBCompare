@@ -1,5 +1,6 @@
 package compare;
 
+import com.wk.Controller;
 import com.wk.db.DBSource;
 import com.wk.db.Session;
 import com.wk.eai.webide.dao.ChannelDaoService;
@@ -42,6 +43,7 @@ import com.wk.util.StringUtil;
  * @version 2014年10月30日 下午7:51:06
  */
 public class ImportDatasToDB {
+//	public class ImportDatasToDB extends DBImpl{
 	private final Log logger = LogFactory.getLog("dbcompare");
 	@Inject static TranServerPackageDaoService tranServerPackageDaoService;
 	@Inject static MappingDaoService mappingDaoService;
@@ -57,6 +59,7 @@ public class ImportDatasToDB {
 	@Inject static DictDetailDaoService dictDetailDaoService;
 	@Inject static ModeDaoService modeDaoService;
 	@Inject static ModeParamDaoService modeParamDaoService;
+	private static final DeleteDatasFromDB deleter = Controller.getInstance().getInjector().getBean(DeleteDatasFromDB.class);
 	
 	/**
 	* @description 向数据库插入一个EndPoint
@@ -249,6 +252,22 @@ public class ImportDatasToDB {
 		}
 		logger.info("成功插入部署进程{}个,部署渠道有:{}", count, keysStr);
 		return count;
+	}
+	
+	/**
+	* @description 修改一条服务器数据，包括其下的进程列表和部署的进程
+	* 修改的动作：先删除后插入达到修改的效果。
+	* @param machineData
+	* @return
+	* @author raoliang
+	* @version 2014年11月17日 下午3:06:41
+	*/
+	public int updateOneMachine(ServiceData machineData){
+		MachineInfo info = getMachineInfo(machineData);
+		String machine_code = info.getMachine_code();
+		//先删除后插入，达到修改的效果
+		deleter.deleteOneMachine(machine_code);
+		return insertOneMachine(machineData);
 	}
 	
 	/**
