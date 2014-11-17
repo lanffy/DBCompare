@@ -3,11 +3,13 @@ package compare;
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.DictDetailDaoService;
 import com.wk.eai.webide.dao.MachineDaoService;
+import com.wk.eai.webide.dao.ModeParamDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
 import com.wk.eai.webide.dao.ServiceDaoService;
 import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.eai.webide.service.DictService;
+import com.wk.eai.webide.service.ModeService;
 import com.wk.lang.Inject;
 
 
@@ -26,6 +28,8 @@ public class DeleteDatasFromDB {
 	@Inject static ServerDaoService serverDaoService;
 	@Inject static DictService dictService;
 	@Inject static DictDetailDaoService dictDetailDaoService;
+	@Inject static ModeService modeService;
+	@Inject static ModeParamDaoService modeParamDaoService;
 	
 	/**
 	* @description 删除一条EndPoint
@@ -168,5 +172,30 @@ public class DeleteDatasFromDB {
 	*/
 	public int deleteOneDictDetail(String dict_code, String field_code){
 		return dictDetailDaoService.deleteOneField(dict_code, field_code);
+	}
+	
+	/**
+	* @description 根据模式类型和编码删除模式，包括其下的所有模式参数
+	* @param mode_type
+	* @param mode_codes
+	* @return
+	* @author raoliang
+	* @version 2014年11月17日 下午8:15:03
+	*/
+	public int deleteOneMode(String mode_type, String mode_codes){
+		return modeService.deleteModes(mode_type, mode_codes);
+	}
+	
+	/**
+	* @description 删除一条模式参数
+	* @param mode_code 模式编码
+	* @param mode_type 模式类型
+	* @param params_codes 模式参数编码
+	* @return
+	* @author raoliang
+	* @version 2014年11月17日 下午8:18:00
+	*/
+	public int deleteOneModeParam(String mode_code, String mode_type, String params_codes){
+		return modeParamDaoService.deleteParams(mode_code, mode_type, params_codes);
 	}
 }

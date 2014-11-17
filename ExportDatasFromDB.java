@@ -482,7 +482,7 @@ public class ExportDatasFromDB {
 	public ServiceData getModeParam(String mode_code){
 		Iterator<ModeParamInfo> iterator = modeParamDaoService.getModeParamByModeCode(mode_code);
 		if(iterator == null){
-			logger.warn("模式下不模式参数，模式名称:{}", mode_code);
+			logger.warn("该模式下无模式参数，模式名称:{}", mode_code);
 			return null;
 		}
 		ServiceData datas = new ServiceData();

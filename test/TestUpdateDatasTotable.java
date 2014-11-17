@@ -379,6 +379,63 @@ public class TestUpdateDatasTotable extends TestCase {
 		assertEquals(num, 0);
 	}
 	
+	public void atest_修改模式名称(){
+		ServiceData modeData = exportService.getOneMode("test_mode1");
+		logger.info("导出数据:\n{}", modeData);
+		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("MODE_NAME", "修改了模式名称，，好像很长的名称啊，最长只能50个");
+		logger.info("导入数据:\n{}", fileData);
+		int num = importService.insertOrUpdateOneMode(fileData);
+		logger.info("成功插入模式{}个", num);
+		assertEquals(num, 1);
+	}
+
+	public void atest_修改模式类(){
+		ServiceData modeData = exportService.getOneMode("test_mode1");
+		logger.info("导出数据:\n{}", modeData);
+		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("MODE_CLASS", "com.wk.conv.mode.ISO8583PackageMode");
+		logger.info("导入数据:\n{}", fileData);
+		int num = importService.insertOrUpdateOneMode(fileData);
+		logger.info("成功插入模式{}个", num);
+		assertEquals(num, 1);
+	}
+	
+	public void atest_插入模式参数(){
+		ServiceData modeData = exportService.getOneMode("test_mode1");
+		logger.info("导出数据:\n{}", modeData);
+		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		ServiceData MODE_PARAM = new ServiceData();
+		ServiceData byteData = new ServiceData();
+		byteData.putString("MODE_CODE", "test_mode1");
+		byteData.putString("MODE_TYPE", "1");
+		byteData.putString("PARAM_CODE", "byte");
+		byteData.putString("PARAM_CLASS", "string");
+		byteData.putString("PARAM_VALUE", "stdEBCD");
+		MODE_PARAM.putServiceData("byte", byteData);
+		fileData.putServiceData("MODE_PARAM", MODE_PARAM);
+		logger.info("导入数据:\n{}", fileData);
+		int num = importService.insertOrUpdateOneMode(fileData);
+		logger.info("成功插入模式{}个", num);
+		assertEquals(num, 1);
+	}
+	
+	public void atest_修改模式参数值(){
+		ServiceData modeData = exportService.getOneMode("test_mode1");
+		logger.info("导出数据:\n{}", modeData);
+		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.getServiceData("MODE_PARAM").getServiceData("byte").putString("PARAM_CLASS", "boolean");
+		fileData.getServiceData("MODE_PARAM").getServiceData("byte").putString("PARAM_VALUE", "true");
+		logger.info("导入数据:\n{}", fileData);
+		int num = importService.insertOrUpdateOneMode(fileData);
+		logger.info("成功插入模式{}个", num);
+		assertEquals(num, 1);
+	}
+	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
 //		Session session = DBSource.getDefault().getSession();

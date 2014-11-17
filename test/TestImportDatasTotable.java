@@ -187,8 +187,9 @@ public class TestImportDatasTotable extends TestCase {
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("MODE_CODE", "test_mode1");
 		fileData.putString("MODE_NAME", "VRouter客户端包模式,请求小写,响应大大响应大大响应大大");
+		fileData.putString("IS_SYS_MODE", "0");
 		logger.info("导入数据:\n{}", fileData);
-		int num = importService.insertOneMode(fileData);
+		int num = importService.insertOrUpdateOneMode(fileData);
 		logger.info("成功插入模式{}个", num);
 		assertEquals(num, 1);
 	}
@@ -200,9 +201,9 @@ public class TestImportDatasTotable extends TestCase {
 	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-		Session session = DBSource.getDefault().getSession();
-		session.commit();
-		session.close();
-		System.out.println("Commited!");
+//		Session session = DBSource.getDefault().getSession();
+//		session.commit();
+//		session.close();
+//		System.out.println("Commited!");
 	}
 }

@@ -1,6 +1,5 @@
 package compare;
 
-import com.wk.Controller;
 import com.wk.db.DBSource;
 import com.wk.db.Session;
 import com.wk.eai.webide.dao.ChannelDaoService;
@@ -59,7 +58,6 @@ public class ImportDatasToDB {
 	@Inject static DictDetailDaoService dictDetailDaoService;
 	@Inject static ModeDaoService modeDaoService;
 	@Inject static ModeParamDaoService modeParamDaoService;
-	private static final DeleteDatasFromDB deleter = Controller.getInstance().getInjector().getBean(DeleteDatasFromDB.class);
 	
 	/**
 	* @description 向数据库插入一个EndPoint
@@ -189,6 +187,7 @@ public class ImportDatasToDB {
 	
 	/**
 	* @description 插入服务器信息
+	* 对于服务器、服务器进程列表、服务器部署进程：存在则修改，不存在则插入
 	* @param machineData 服务器单元数据
 	* @return 成功插入条数
 	* @author raoliang
@@ -248,26 +247,10 @@ public class ImportDatasToDB {
 			//得到单个进程的Info
 			ProcessInstanceInfo info = getProcessInstanceInfo(data);
 			//插入单个进程
-			count += processInstanceDaoService.insertOneRecord(info);
+			count += processInstanceDaoService.saveOneRecord(info);
 		}
 		logger.info("成功插入部署进程{}个,部署渠道有:{}", count, keysStr);
 		return count;
-	}
-	
-	/**
-	* @description 修改一条服务器数据，包括其下的进程列表和部署的进程
-	* 修改的动作：先删除后插入达到修改的效果。
-	* @param machineData
-	* @return
-	* @author raoliang
-	* @version 2014年11月17日 下午3:06:41
-	*/
-	public int updateOneMachine(ServiceData machineData){
-		MachineInfo info = getMachineInfo(machineData);
-		String machine_code = info.getMachine_code();
-		//先删除后插入，达到修改的效果
-		deleter.deleteOneMachine(machine_code);
-		return insertOneMachine(machineData);
 	}
 	
 	/**
@@ -331,25 +314,33 @@ public class ImportDatasToDB {
 	
 	/**
 	* @description 插入一个模式，如果模式有参数，同时插入参数
+	* 对于模式：不存在则插入，存在则修改
+	* 对于模式参数：不存在则插入，存在则修改
 	* @param modeDatas
 	* @return
 	* @author raoliang
 	* @version 2014年11月17日 下午4:06:11
 	*/
-	public int insertOneMode(ServiceData modeDatas){
-		//TODO:此处使用下面的方法会报错，实际上没有错误
-//		ModeInfo modeInfo = getModeInfo(modeDatas);
-//		int count = modeDaoService.insertOneMode(modeInfo);
-		int count = executeSqlToInsertMode(modeDatas);
+	public int insertOrUpdateOneMode(ServiceData modeDatas){
+		ModeInfo modeInfo = getModeInfo(modeDatas);
+		int count = 0;
+		if(!modeDaoService.isModeExist(modeInfo.getMode_code(), modeInfo.getMode_type())){
+			logger.info("插入模式：{}", modeDatas.getString("MODE_CODE"));
+			count = executeSqlToInsertMode(modeDatas);
+		}else {
+			logger.info("修改模式：{}", modeDatas.getString("MODE_CODE"));
+			count = executeSqlToupdateMode(modeDatas);
+		}
 		if(modeDatas.size() == 6){
 			ServiceData paramModeData = modeDatas.getServiceData("MODE_PARAM");
 			String[] keys = paramModeData.getKeys();
 			int paramCount = 0;
 			for (String key : keys) {
 				ModeParamInfo paramInfo = getModeParamInfo(paramModeData.getServiceData(key));
-				paramCount += modeParamDaoService.addOneModeParam(paramInfo);
+//				paramCount += modeParamDaoService.addOneModeParam(paramInfo);
+				paramCount += modeParamDaoService.saveOneModeParam(paramInfo);
 			}
-			logger.info("成功插入模式{}，模式参数{}个", modeDatas.getString("MODE_CODE"), paramCount);
+			logger.info("成功插入或修改模式{}，模式参数{}个", modeDatas.getString("MODE_CODE"), paramCount);
 		}
 		return count;
 	}
@@ -515,6 +506,16 @@ public class ImportDatasToDB {
 				"','"+modeData.getString("MODE_CLASS")+
 				"','"+modeData.getString("IS_SYS_MODE")+
 				"','"+modeData.getString("VERNO")+"')";
+		Session session = DBSource.getDefault().getSession();
+		return session.execute(sql);
+	}
+	
+	private static int executeSqlToupdateMode(ServiceData modeData) {
+		String sql = "update sys_mode set mode_name ='"
+				+ modeData.getString("MODE_NAME") + "', mode_class='"
+				+ modeData.getString("MODE_CLASS") + "' where mode_code='"
+				+ modeData.getString("MODE_CODE") + "' and mode_type='"
+				+ modeData.getString("MODE_TYPE") + "';";
 		Session session = DBSource.getDefault().getSession();
 		return session.execute(sql);
 	}

@@ -69,6 +69,16 @@ public class TestDeleteDatasFromDB extends TestCase {
 		assertEquals(num, 1);
 	}
 	
+	public void atest_删除一条模式参数(){
+		int num = deleteDatasFromDB.deleteOneModeParam("test_mode1", "1", "byte");
+		assertEquals(num, 1);
+	}
+	
+	public void atest_删除一条模式(){
+		int num = deleteDatasFromDB.deleteOneMode("1", "test_mode1");
+		assertEquals(num, 1);
+	}
+	
 	@Override
 	protected void tearDown() throws java.lang.Exception {
 		System.out.println("******华丽丽的测试案例分割线******");
