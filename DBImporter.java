@@ -25,7 +25,8 @@ public class DBImporter extends DBporter{
 		 * SYS_SERVICE SYS_STRUCTURE SYS_TRAN_CHANNEL_PACKAGE
 		 * SYS_TRAN_SERVER_PACKAGE
 		 */
-		emptyDataBase();
+		//新的需求：不能全部导出导入，所以不能清空数据库
+//		emptyDataBase();
 		/** 导入顺序：EndPoint、服务系统、EndPoint关联交易、服务系统关联交易
 		 * 服务、部署、数据字典、模式
 		 */

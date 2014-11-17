@@ -37,7 +37,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		assertEquals(endPoint.getString("CHANNEL_CODE"), "testCHL");
 		endPoint.putString("CHANNEL_NAME", "1338修改了EndPoint");
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateEndPoint(endPoint);
+		int num = importService.updateOneEndPoint(endPoint);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
 		assertEquals(confirmData.getString("CHANNEL_NAME"), "1338修改了EndPoint");
@@ -50,7 +50,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		ServiceData commData = endPoint.getServiceData("COMM_ID");
 		commData.putString("CCODE", "test_tcp_updated1");
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateEndPoint(endPoint);
+		int num = importService.updateOneEndPoint(endPoint);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
 		ServiceData confirmCommData = confirmData.getServiceData("COMM_ID");
@@ -66,7 +66,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		assertEquals(reqConfigContentData.getString("SDATAS"), "{fdatas:[], is_strict:\"0\", package_mode:\"vrouterserver\", package_mode_name:\"VRouter服务器包模式\"}");
 		reqConfigContentData.putString("SDATAS", "{fdatas:[], is_strict:\"1\", package_mode:\"vrouterserver\", package_mode_name:\"VRouter服务器包模式\"}");
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateEndPoint(endPoint);
+		int num = importService.updateOneEndPoint(endPoint);
 		assertEquals(num, 1);
 	}
 	
@@ -78,7 +78,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		assertEquals(errMapData.getString("MAPPING_NAME"), "test增加输入映射");
 		errMapData.putString("MAPPING_NAME", "0929test增加输入映射");
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateEndPoint(endPoint);
+		int num = importService.updateOneEndPoint(endPoint);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
 		System.out.println(confirmData);
@@ -95,7 +95,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		errMapData.putString("MAPPING_NAME", "test增加输入映射");
 		endPoint.putServiceData("IN_MAPPING", errMapData);
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateEndPoint(endPoint);
+		int num = importService.updateOneEndPoint(endPoint);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
 		System.out.println(confirmData);

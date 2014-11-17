@@ -60,51 +60,44 @@ public class ImportDatasToDB {
 	@Inject static ModeParamDaoService modeParamDaoService;
 	
 	/**
-	* @description 向数据库插入一个EndPoint
+	* @description 向数据库插入一个EndPoint,存在则更新,不存在则插入
 	* @author raoliang
 	* @version 2014年11月2日 下午2:38:40
 	*/
 	public int insertOneEndPoint(ServiceData endPointData){
 		ChannelInfo channelInfo = getChannelInfo(endPointData);
 		CommInfo commInfo = getCommInfo(endPointData);
-		return channelDaoService.insertOneChannel(channelInfo, commInfo);
+		int count = 0;
+		if(channelDaoService.isChannelExist(channelInfo.getChannel_code())){
+			count = channelDaoService.updateOneChannelAll(channelInfo, commInfo);
+			logger.info("成功修改{}条EndPoint:{}相关数据", count, channelInfo.getChannel_code());
+		}else {
+			count = channelDaoService.insertOneChannel(channelInfo, commInfo);
+			logger.info("成功插入{}条EndPoint:{}相关数据", count, channelInfo.getChannel_code());
+		}
+		return count;
 	}
 	
 	/**
-	* @description 向数据库插入指定EndPoint的一个关联交易
+	* @description 向数据库插入指定EndPoint的一个关联交易,存在则更新,不存在则插入
 	* @author raoliang
 	* @version 2014年11月2日 下午2:37:21
 	*/
 	public int insertOneTranEndPoint(ServiceData tranEndPointData){
 		TranChannelPackageInfo info = getTranChannelPackageInfo(tranEndPointData);
-		return tranChannelPackageDaoService.insertOneTranAll(info);
+		int count = 0;
+		if(tranChannelPackageDaoService.isTranChannelExist(info.getChannel_code(), info.getTran_code())){
+			count = tranChannelPackageDaoService.updateOneTranAll(info);
+			logger.info("成功修改{}条EndPoint:{}关联交易:{}相关数据", count, info.getChannel_code(), info.getTran_code());
+		}else {
+			count = tranChannelPackageDaoService.insertOneTranAll(info);
+			logger.info("成功插入{}条EndPoint:{}关联交易:{}相关数据", count, info.getChannel_code(), info.getTran_code());
+		}
+		return count;
 	}
 	
 	/**
-	* @description 更新数据中的一个EndPoint
-	* @author raoliang
-	* @version 2014年11月3日 上午10:49:04
-	* @return
-	*/
-	public int updateEndPoint(ServiceData endPointData){
-		ChannelInfo channelInfo = getChannelInfo(endPointData);
-		CommInfo commInfo = getCommInfo(endPointData);
-		return channelDaoService.updateOneChannelAll(channelInfo, commInfo);
-	}
-	
-	/**
-	* @description 更新数据库中一个EndPoint的关联交易
-	* @author raoliang
-	* @version 2014年11月3日 上午10:53:56
-	* @return
-	*/
-	public int updateTranEndPoint(ServiceData tranEndPointData){
-		TranChannelPackageInfo tranEndPointInfo = getTranChannelPackageInfo(tranEndPointData);
-		return tranChannelPackageDaoService.updateOneTranAll(tranEndPointInfo);
-	}
-	
-	/**
-	* @description 向数据库中插入一个服务系统Server
+	* @description 向数据库中插入一个服务系统Server,存在则更新,不存在则插入
 	* @author raoliang
 	* @version 2014年11月3日 下午2:33:14
 	* @return
@@ -112,45 +105,38 @@ public class ImportDatasToDB {
 	public int insertOneServer(ServiceData serverData){
 		ServerInfo serverInfo = getServerInfo(serverData);
 		CommInfo commInfo = getCommInfo(serverData);
-		return serverDaoService.insertOneServerAll(serverInfo, commInfo);
+		int count = 0;
+		if(serverDaoService.isServerExist(serverInfo.getServer_code())){
+			count = serverDaoService.updateOneServerAll(serverInfo, commInfo);
+			logger.info("成功修改{}条Server:{}相关数据", count, serverInfo.getServer_code());
+		}else{
+			count = serverDaoService.insertOneServerAll(serverInfo, commInfo);
+			logger.info("成功插入{}条Server:{}相关数据", count, serverInfo.getServer_code());
+		}
+		return count;
 	}
 	
 	/**
-	* @description 向数据路中插入一个服务系统的关联交易
+	* @description 向数据路中插入一个服务系统的关联交易,存在则更新,不存在则插入
 	* @author raoliang
 	* @version 2014年11月3日 下午2:34:48
 	* @return
 	*/
 	public int insertOneTranServer(ServiceData tranServerData){
 		TranServerPackageInfo tranServerInfo = getTranServerPackageInfo(tranServerData);
-		return tranServerPackageDaoService.insertOneTranAll(tranServerInfo);
+		int count = 0;
+		if(tranServerPackageDaoService.isTranServerExist(tranServerInfo.getServer_code(), tranServerInfo.getTran_code())){
+			count = tranServerPackageDaoService.updateOneTranAll(tranServerInfo);
+			logger.info("成功修改{}条Server:{}关联交易:{}相关数据", count, tranServerInfo.getServer_code(), tranServerInfo.getTran_code());
+		}else {
+			count = tranServerPackageDaoService.insertOneTranAll(tranServerInfo);
+			logger.info("成功插入{}条Server:{}关联交易:{}相关数据", count, tranServerInfo.getServer_code(), tranServerInfo.getTran_code());
+		}
+		return count;
 	}
 	
 	/**
-	* @description 更新数据库中的服务系统Server
-	* @author raoliang
-	* @version 2014年11月3日 下午2:37:06
-	* @return
-	*/
-	public int updateServer(ServiceData serverData){
-		ServerInfo serverInfo = getServerInfo(serverData);
-		CommInfo commInfo = getCommInfo(serverData);
-		return serverDaoService.updateOneServerAll(serverInfo, commInfo);
-	}
-	
-	/**
-	* @description 更新数据库中服务系统的某个关联交易
-	* @author raoliang
-	* @version 2014年11月3日 下午2:37:50
-	* @return
-	*/
-	public int updateTranServer(ServiceData tranServerData){
-		TranServerPackageInfo tranServerInfo = getTranServerPackageInfo(tranServerData);
-		return tranServerPackageDaoService.updateOneTranAll(tranServerInfo);
-	}
-	
-	/**
-	* @description 向数据库插入一条服务数据
+	* @description 向数据库插入一条服务数据,存在则更新,不存在则插入
 	* @param serviceData 服务单元数据
 	* @return 成功插入条数
 	* @author raoliang
@@ -158,36 +144,31 @@ public class ImportDatasToDB {
 	*/
 	public int insertOneService(ServiceData serviceData){
 		ServiceInfo info = getServiceInfo(serviceData);
-		//如果是组合服务
-		if("2".equals(info.getService_type())){
-			groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
-			logger.info("成功插入一条组合服务流程图,服务名称:{}", info.getService_code());
+		int count = 0;
+		if(serviceDaoService.isServiceExist(info.getService_code())){
+			//如果是组合服务
+			if("2".equals(info.getService_type())){
+				//先删除,后添加,效果既是修改
+				groupSvcChartDaoService.deleteChartContent(info.getService_code());
+				groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
+				logger.info("成功修改一条组合服务流程图,服务名称:{}", info.getService_code());
+			}
+			count = serviceDaoService.updateOneServiceAll(info);
+			logger.info("成功修改{}条Service:{}相关数据", count, info.getService_code());
+		}else {
+			if("2".equals(info.getService_type())){
+				groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
+				logger.info("成功插入一条组合服务流程图,服务名称:{}", info.getService_code());
+			}
+			count = serviceDaoService.insertOneServiceAll(info);
+			logger.info("成功插入{}条Service:{}相关数据", count, info.getService_code());
 		}
-		return serviceDaoService.insertOneServiceAll(info);
-	}
-	
-	/**
-	* @description 修改一个服务
-	* @param serviceData
-	* @return
-	* @author raoliang
-	* @version 2014年11月15日 下午3:21:04
-	*/
-	public int updateOneService(ServiceData serviceData){
-		ServiceInfo info = getServiceInfo(serviceData);
-		//如果是组合服务
-		if("2".equals(info.getService_type())){
-			//先删除，后添加，效果既是修改
-			groupSvcChartDaoService.deleteChartContent(info.getService_code());
-			groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
-			logger.info("成功修改一条组合服务流程图,服务名称:{}", info.getService_code());
-		}
-		return serviceDaoService.updateOneServiceByServiceCode(info);
+		return count;
 	}
 	
 	/**
 	* @description 插入服务器信息
-	* 对于服务器、服务器进程列表、服务器部署进程：存在则修改，不存在则插入
+	* 对于服务器、服务器进程列表、服务器部署进程：存在则修改,不存在则插入
 	* @param machineData 服务器单元数据
 	* @return 成功插入条数
 	* @author raoliang
@@ -205,7 +186,6 @@ public class ImportDatasToDB {
 		if(machineData.size() == 5){
 			insertAllProcessInstance(machineData.getServiceData("PROCESSINSTANCE"));
 		}
-//		logger.info("插入服务器条数:{}", count);
 		return count;
 	}
 	
@@ -254,9 +234,9 @@ public class ImportDatasToDB {
 	}
 	
 	/**
-	* @description 插入一个数据字典，如果该字典下有字段，则同时插入该字典下的所有字段。
-	* 对于数据字典：不存在则插入，存在则忽略；
-	* 对于字段：存在则修改，不存在则插入
+	* @description 插入一个数据字典,如果该字典下有字段,则同时插入该字典下的所有字段。
+	* 对于数据字典：不存在则插入,存在则忽略；
+	* 对于字段：存在则修改,不存在则插入
 	* @return 成功插入的条数
 	* @author raoliang
 	* @version 2014年11月7日 上午10:13:25
@@ -293,7 +273,7 @@ public class ImportDatasToDB {
 	}
 	
 	/**
-	* @description 插入一条数据字段,如果不存在，则插入,存在则修改
+	* @description 插入一条数据字段,如果不存在,则插入,存在则修改
 	* @param data 数据源
 	* @return 成功插入条数
 	* @author raoliang
@@ -301,7 +281,7 @@ public class ImportDatasToDB {
 	*/
 	public int insertOrUpdateOneDictDetail(ServiceData data) {
 		DictDetailInfo info = getDiceDetailInfo(data);
-		// 如果不存在，则插入,存在则修改
+		// 如果不存在,则插入,存在则修改
 		if ((dictDetailDaoService.getOneDictField(info.getDict_code(),
 				info.getField_code())) == null) {
 			logger.info("插入数据字典{}的数据字段{}", info.getDict_code(), info.getField_code());
@@ -313,9 +293,9 @@ public class ImportDatasToDB {
 	}
 	
 	/**
-	* @description 插入一个模式，如果模式有参数，同时插入参数
-	* 对于模式：不存在则插入，存在则修改
-	* 对于模式参数：不存在则插入，存在则修改
+	* @description 插入一个模式,如果模式有参数,同时插入参数
+	* 对于模式：不存在则插入,存在则修改
+	* 对于模式参数：不存在则插入,存在则修改
 	* @param modeDatas
 	* @return
 	* @author raoliang
@@ -340,7 +320,7 @@ public class ImportDatasToDB {
 //				paramCount += modeParamDaoService.addOneModeParam(paramInfo);
 				paramCount += modeParamDaoService.saveOneModeParam(paramInfo);
 			}
-			logger.info("成功插入或修改模式{}，模式参数{}个", modeDatas.getString("MODE_CODE"), paramCount);
+			logger.info("成功插入或修改模式{},模式参数{}个", modeDatas.getString("MODE_CODE"), paramCount);
 		}
 		return count;
 	}
