@@ -20,7 +20,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		ServiceData tranData = exportService.getOneChannelTran("testCHL", "8802");;
 		tranData.putString("TRAN_NAME", "1114修改8802名称");
 		System.out.println(tranData);
-		int num = importService.updateTranEndPoint(tranData);
+		int num = importService.insertOneTranEndPoint(tranData);
 		assertEquals(num, 1);
 		ServiceData confirmTranData = exportService.getOneChannelTran("testCHL", "8802");
 		assertEquals(confirmTranData.getString("TRAN_NAME"), "1114修改8802名称");
@@ -32,7 +32,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		ServiceData configContentData = configTranData.getServiceData("STRUCTURE_CONTENT");
 		configContentData.putString("SDATAS", "{fdatas:[{field_code:\"O1MGID\", field_name:\"O1MGID\", field_type:\"string\", field_length:7, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:10}], is_strict:\"1\", package_mode:\"outsys_mode\", package_mode_name:\"outsys_mode\"}");
 		System.out.println(tranData);
-		int num = importService.updateTranEndPoint(tranData);
+		int num = importService.insertOneTranEndPoint(tranData);
 		assertEquals(num, 1);
 		ServiceData confirmTranData = exportService.getOneChannelTran("testCHL", "8802");
 		ServiceData confirmConfigTranData = confirmTranData.getServiceData("REQ_PACKAGE_CONFIG");
@@ -45,7 +45,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		ServiceData mapTranData = tranData.getServiceData("IN_MAPPING");
 		mapTranData.putString("MAPPING_NAME", "1410修改8802请求映射名称");
 		System.out.println(tranData);
-		int num = importService.updateTranEndPoint(tranData);
+		int num = importService.insertOneTranEndPoint(tranData);
 		assertEquals(num, 1);
 		ServiceData confirmTranData = exportService.getOneChannelTran("testCHL", "8802");
 		ServiceData confirmMapTranData = confirmTranData.getServiceData("IN_MAPPING");
@@ -57,7 +57,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		ServiceData mapTranData = tranData.getServiceData("IN_MAPPING");
 		tranData.putServiceData("OUT_MAPPING", mapTranData);
 		System.out.println(tranData);
-		int num = importService.updateTranEndPoint(tranData);
+		int num = importService.insertOneTranEndPoint(tranData);
 		assertEquals(num, 1);
 		ServiceData confirmTranData = exportService.getOneChannelTran("testCHL", "8802");
 		ServiceData confirmMapTranData = confirmTranData.getServiceData("OUT_MAPPING");
@@ -69,7 +69,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		System.out.println("\n***修改前***\n"+tranData);
 		tranData.putString("TRAN_NAME", "1421修改核心应用账务前移服务");
 		System.out.println("\n***修改后***\n"+tranData);
-		int num = importService.updateTranServer(tranData);
+		int num = importService.insertOneTranServer(tranData);
 		assertEquals(num, 1);
 		ServiceData confirmData =  exportService.getOneServerTran("testSRV", "3002");
 		assertEquals(confirmData.getString("SERVER_CODE"), "testSRV");
@@ -84,7 +84,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		ServiceData req_config_data = tranData.getServiceData("REQ_PACKAGE_CONFIG");
 		req_config_data.getServiceData("STRUCTURE_CONTENT").putString("SDATAS", "{fdatas:[], is_strict:\"0\", package_mode:\"vrouterserver\", package_mode_name:\"VRouter服务器包模式\"}");
 		System.out.println("\n***修改后***\n"+tranData);
-		int num = importService.updateTranServer(tranData);
+		int num = importService.insertOneTranServer(tranData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneServerTran("testSRV", "3002");
 		ServiceData req_config_confirm_data = confirmData.getServiceData("REQ_PACKAGE_CONFIG");
@@ -98,7 +98,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		ServiceData in_map_data = tranData.getServiceData("IN_MAPPING");
 		in_map_data.putString("MAPPING_NAME", "1435修改请求映射名称");
 		System.out.println("\n***修改后***\n"+tranData);
-		assertEquals(importService.updateTranServer(tranData), 1);
+		assertEquals(importService.insertOneTranServer(tranData), 1);
 		ServiceData confirmData = exportService.getOneServerTran("testSRV", "3002");
 		ServiceData in_map_confirm_data = confirmData.getServiceData("IN_MAPPING");
 		assertEquals(in_map_confirm_data.getString("MAPPING_NAME"), "1435修改请求映射名称");
@@ -110,7 +110,7 @@ public class TestUpdateTranDatasTotable extends TestCase {
 		assertEquals(tranData.getString("SERVER_CODE"), "testSRV");
 		tranData.putServiceData("OUT_MAPPING", tranData.getServiceData("IN_MAPPING"));
 		System.out.println("\n***修改后***\n"+tranData);
-		int num = importService.updateTranServer(tranData);
+		int num = importService.insertOneTranServer(tranData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneServerTran("testSRV", "3002");
 		ServiceData out_map_confirm_data = confirmData.getServiceData("OUT_MAPPING");

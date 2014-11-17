@@ -32,145 +32,145 @@ public class TestUpdateDatasTotable extends TestCase {
 	}
 	
 	public void atest_修改EndPoint基本参数(){
-		ServiceData endPoint = exportService.getOneEndPoint("testCHL");
-		System.out.println("\n*************************************\n"+endPoint);
-		assertEquals(endPoint.getString("CHANNEL_CODE"), "testCHL");
+		ServiceData endPoint = exportService.getOneEndPoint("npCHL");
+		System.out.println("\n************修改前*************************\n"+endPoint);
+		assertEquals(endPoint.getString("CHANNEL_CODE"), "npCHL");
 		endPoint.putString("CHANNEL_NAME", "1338修改了EndPoint");
-		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateOneEndPoint(endPoint);
+		System.out.println("\n************修改后*************************\n"+endPoint);
+		int num = importService.insertOneEndPoint(endPoint);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
+		ServiceData confirmData = exportService.getOneEndPoint("npCHL");
 		assertEquals(confirmData.getString("CHANNEL_NAME"), "1338修改了EndPoint");
 	}
 	
 	public void atest_EndPoint修改通讯参数(){
-		ServiceData endPoint = exportService.getOneEndPoint("testCHL");
+		ServiceData endPoint = exportService.getOneEndPoint("npCHL");
 		System.out.println("\n*************************************\n"+endPoint);
-		assertEquals(endPoint.getString("CHANNEL_CODE"), "testCHL");
+		assertEquals(endPoint.getString("CHANNEL_CODE"), "npCHL");
 		ServiceData commData = endPoint.getServiceData("COMM_ID");
 		commData.putString("CCODE", "test_tcp_updated1");
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateOneEndPoint(endPoint);
+		int num = importService.insertOneEndPoint(endPoint);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
+		ServiceData confirmData = exportService.getOneEndPoint("npCHL");
 		ServiceData confirmCommData = confirmData.getServiceData("COMM_ID");
 		assertEquals(confirmCommData.getString("CCODE"), "test_tcp_updated1");
 	}
 	
 	public void atest_修改EndPoint接口配置(){
-		ServiceData endPoint = exportService.getOneEndPoint("testCHL");
+		ServiceData endPoint = exportService.getOneEndPoint("npCHL");
 		System.out.println("\n*************************************\n"+endPoint);
-		assertEquals(endPoint.getString("CHANNEL_CODE"), "testCHL");
+		assertEquals(endPoint.getString("CHANNEL_CODE"), "npCHL");
 		ServiceData reqConfigData = endPoint.getServiceData("REQ_PACKAGE_CONFIG");
 		ServiceData reqConfigContentData = reqConfigData.getServiceData("STRUCTURE_CONTENT"); 
 		assertEquals(reqConfigContentData.getString("SDATAS"), "{fdatas:[], is_strict:\"0\", package_mode:\"vrouterserver\", package_mode_name:\"VRouter服务器包模式\"}");
 		reqConfigContentData.putString("SDATAS", "{fdatas:[], is_strict:\"1\", package_mode:\"vrouterserver\", package_mode_name:\"VRouter服务器包模式\"}");
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateOneEndPoint(endPoint);
+		int num = importService.insertOneEndPoint(endPoint);
 		assertEquals(num, 1);
 	}
 	
 	public void atest_修改EndPoint映射(){
-		ServiceData endPoint = exportService.getOneEndPoint("testCHL");
+		ServiceData endPoint = exportService.getOneEndPoint("npCHL");
 		System.out.println("\n*************************************\n"+endPoint);
-		assertEquals(endPoint.getString("CHANNEL_CODE"), "testCHL");
-		ServiceData errMapData = endPoint.getServiceData("IN_MAPPING");
-		assertEquals(errMapData.getString("MAPPING_NAME"), "test增加输入映射");
+		assertEquals(endPoint.getString("CHANNEL_CODE"), "npCHL");
+		ServiceData errMapData = endPoint.getServiceData("ERROR_MAPPING");
 		errMapData.putString("MAPPING_NAME", "0929test增加输入映射");
+		endPoint.putServiceData("IN_MAPPING", errMapData);
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateOneEndPoint(endPoint);
+		int num = importService.insertOneEndPoint(endPoint);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
+		ServiceData confirmData = exportService.getOneEndPoint("npCHL");
 		System.out.println(confirmData);
 		ServiceData confirmErrMapData = confirmData.getServiceData("IN_MAPPING");
 		assertEquals(confirmErrMapData.getString("MAPPING_NAME"), "0929test增加输入映射");
 	}
 	
 	public void atest_增加EndPoint映射(){
-		ServiceData endPoint = exportService.getOneEndPoint("testCHL");
+		ServiceData endPoint = exportService.getOneEndPoint("npCHL");
 		System.out.println("\n*************************************\n"+endPoint);
-		assertEquals(endPoint.getString("CHANNEL_CODE"), "testCHL");
+		assertEquals(endPoint.getString("CHANNEL_CODE"), "npCHL");
 		ServiceData errMapData = endPoint.getServiceData("ERROR_MAPPING");
-		assertEquals(errMapData.getString("MAPPING_NAME"), "test错误映射");
+		assertEquals(errMapData.getString("MAPPING_NAME"), "互联支付错误映射");
 		errMapData.putString("MAPPING_NAME", "test增加输入映射");
 		endPoint.putServiceData("IN_MAPPING", errMapData);
 		System.out.println("\n*************************************\n"+endPoint);
-		int num = importService.updateOneEndPoint(endPoint);
+		int num = importService.insertOneEndPoint(endPoint);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneEndPoint("testCHL");
+		ServiceData confirmData = exportService.getOneEndPoint("npCHL");
 		System.out.println(confirmData);
 		ServiceData confirmErrMapData = confirmData.getServiceData("IN_MAPPING");
 		assertEquals(confirmErrMapData.getString("MAPPING_NAME"), "test增加输入映射");
 	}
 	
 	public void atest_修改Server基本参数(){
-		ServiceData server = exportService.getOneServer("testSRV");
+		ServiceData server = exportService.getOneServer("bzfwptSRV");
 		System.out.println(server+"\n*************************************\n");
-		assertEquals(server.getString("SERVER_CODE"), "testSRV");
+		assertEquals(server.getString("SERVER_CODE"), "bzfwptSRV");
 		server.putString("SERVER_NAME", "1703修改了Server名称");
 		System.out.println(server+"\n*************************************\n");
-		int num = importService.updateServer(server);
+		int num = importService.insertOneServer(server);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneServer("testSRV");
+		ServiceData confirmData = exportService.getOneServer("bzfwptSRV");
 		assertEquals(confirmData.getString("SERVER_NAME"), "1703修改了Server名称");
 	}
 	
 	public void atest_修改Server的通讯参数(){
-		ServiceData server = exportService.getOneServer("testSRV");
+		ServiceData server = exportService.getOneServer("bzfwptSRV");
 		System.out.println(server+"\n*************************************\n");
-		assertEquals(server.getString("SERVER_CODE"), "testSRV");
+		assertEquals(server.getString("SERVER_CODE"), "bzfwptSRV");
 		ServiceData commData = server.getServiceData("COMM_ID");
 		commData.putString("CCODE", "test_srv_updated");
 		System.out.println(server+"\n*************************************\n");
-		int num = importService.updateServer(server);
+		int num = importService.insertOneServer(server);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneServer("testSRV");
+		ServiceData confirmData = exportService.getOneServer("bzfwptSRV");
 		assertEquals(confirmData.getServiceData("COMM_ID").getString("CCODE"), "test_srv_updated");
 	}
 	
 	public void atest_修改Server配置接口(){
-		ServiceData server = exportService.getOneServer("testSRV");
+		ServiceData server = exportService.getOneServer("bzfwptSRV");
 		System.out.println(server+"\n*************************************\n");
-		assertEquals(server.getString("SERVER_CODE"), "testSRV");
+		assertEquals(server.getString("SERVER_CODE"), "bzfwptSRV");
 		ServiceData configData = server.getServiceData("REQ_PACKAGE_CONFIG");
 		ServiceData contentData = configData.getServiceData("STRUCTURE_CONTENT");
 		contentData.putString("SDATAS", "{fdatas:[{field_code:\"O1MGID\", field_name:\"O1MGID\", field_type:\"string\", field_length:7, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:10}], is_strict:\"1\", package_mode:\"outsys_mode\", package_mode_name:\"outsys_mode\"}");
 		System.out.println(server+"\n*************************************\n");
-		int num = importService.updateServer(server);
+		int num = importService.insertOneServer(server);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneServer("testSRV");
+		ServiceData confirmData = exportService.getOneServer("bzfwptSRV");
 		ServiceData configConfirmData = confirmData.getServiceData("REQ_PACKAGE_CONFIG");
 		assertEquals(configConfirmData.getServiceData("STRUCTURE_CONTENT").getString("SDATAS"), "{fdatas:[{field_code:\"O1MGID\", field_name:\"O1MGID\", field_type:\"string\", field_length:7, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:10}], is_strict:\"1\", package_mode:\"outsys_mode\", package_mode_name:\"outsys_mode\"}");
 	}
 	
 	public void atest_修改Server映射(){
-		ServiceData server = exportService.getOneServer("testSRV");
+		ServiceData server = exportService.getOneServer("inbankSRV");
 		System.out.println("\n************修改前****************\n"+server);
-		assertEquals(server.getString("SERVER_CODE"), "testSRV");
+		assertEquals(server.getString("SERVER_CODE"), "inbankSRV");
 		ServiceData mapData = server.getServiceData("IN_MAPPING");
 		assertEquals(mapData.getString("MAPPING_NAME"), "核心服务系统响应映射");
 		mapData.putString("MAPPING_NAME", "0952修改核心服务系统响应映射");
 		System.out.println("\n************修改后*******************\n"+server);
-		int num = importService.updateServer(server);
+		int num = importService.insertOneServer(server);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneServer("testSRV");
-		System.out.println("\n***********updateServer后***********\n"+confirmData);
+		ServiceData confirmData = exportService.getOneServer("inbankSRV");
+		System.out.println("\n***********insertOneServer后***********\n"+confirmData);
 		ServiceData mapConfirmData = confirmData.getServiceData("IN_MAPPING");
 		assertEquals(mapConfirmData.getString("MAPPING_NAME"), "0952修改核心服务系统响应映射");
 	}
 	
 	public void atest_增加Server映射(){
-		ServiceData server = exportService.getOneServer("testSRV");
+		ServiceData server = exportService.getOneServer("xdcoreSRV");
 		System.out.println("\n************修改前****************\n"+server);
-		assertEquals(server.getString("SERVER_CODE"), "testSRV");
+		assertEquals(server.getString("SERVER_CODE"), "xdcoreSRV");
 		ServiceData mapData = server.getServiceData("ERROR_MAPPING");
 		server.putServiceData("OUT_MAPPING", mapData);
 		System.out.println("\n************修改后*******************\n"+server);
-		int num = importService.updateServer(server);
+		int num = importService.insertOneServer(server);
 		assertEquals(num, 1);
-		ServiceData confirmData = exportService.getOneServer("testSRV");
+		ServiceData confirmData = exportService.getOneServer("xdcoreSRV");
 		ServiceData mapConfirmData = confirmData.getServiceData("OUT_MAPPING");
-		assertEquals(mapConfirmData.getString("MAPPING_NAME"), "核心服务系统错误映射");
+		assertEquals(mapConfirmData.getString("MAPPING_NAME"), "信贷服务系统错误映射");
 	}
 	
 	public void atest_修改组合服务的服务名称(){
@@ -181,7 +181,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("SERVICE_NAME", "0033updated");
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0033");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -197,7 +197,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		ServiceData errData = fileData.getServiceData("ERR_STRU");
 		errData.putServiceData("STRUCTURE_CONTENT", fileData.getServiceData("RESP_STRU").getServiceData("STRUCTURE_CONTENT"));
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0033");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -211,7 +211,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putServiceData("ERR_STRU", null);
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0033");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -226,7 +226,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("CONTENT", service8310.getString("CONTENT"));
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0033");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -240,7 +240,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("CONTENT", "");
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0033");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -254,7 +254,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("SERVICE_NAME", "0001updated");
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0001");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -269,7 +269,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("SERVICE_NAME", "0002updated");
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0002");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -284,7 +284,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("EXTEND_SERVICE_NAME", "nameUpdated");
-		int num = importService.updateOneService(fileData);
+		int num = importService.insertOneService(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneService("0002");
 		System.out.println("\n************修改后****************\n"+confirmData);
@@ -300,7 +300,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("MACHINE_NAME", "001updated");
-		int num = importService.updateOneMachine(fileData);
+		int num = importService.insertOneMachine(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneMachine("001");
 		assertEquals(confirmData.getString("MACHINE_NAME"), "001updated");
@@ -316,7 +316,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.putString("MACHINE_IP", "localhost");
-		int num = importService.updateOneMachine(fileData);
+		int num = importService.insertOneMachine(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneMachine("001");
 		assertEquals(confirmData.getString("MACHINE_IP"), "localhost");
@@ -332,7 +332,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.getServiceData("INSTANCE").getServiceData("001").putString("SKEYD", "001updated2");
-		int num = importService.updateOneMachine(fileData);
+		int num = importService.insertOneMachine(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneMachine("001");
 		assertEquals(confirmData.getServiceData("INSTANCE").getServiceData("001").getString("SKEYD"), "001updated2");
@@ -348,7 +348,7 @@ public class TestUpdateDatasTotable extends TestCase {
 		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
 		fileData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").putString("BIND_ADDRESS", "9555");
-		int num = importService.updateOneMachine(fileData);
+		int num = importService.insertOneMachine(fileData);
 		assertEquals(num, 1);
 		ServiceData confirmData = exportService.getOneMachine("001");
 		assertEquals(confirmData.getServiceData("PROCESSINSTANCE").getServiceData("tbCHL").getString("BIND_ADDRESS"), "9555");
