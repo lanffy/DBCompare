@@ -2,12 +2,13 @@ package compare;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
+import com.wk.eai.webide.dao.ServiceDaoService;
 import com.wk.eai.webide.dao.TranChannelPackageDaoService;
 import com.wk.eai.webide.dao.TranServerPackageDaoService;
 import com.wk.lang.Inject;
 
 /**
- * @description 删除指定的相关数据,目前能删除EndPoint和服务系统相关的数据
+ * @description 删除指定的相关数据,目前能删除EndPoint、服务系统、服务相关的数据
  * @author raoliang
  * @version 2014年11月4日 下午2:55:17
  */
@@ -16,6 +17,7 @@ public class DeleteDatasFromDB {
 	@Inject ServerDaoService serverDaoService;
 	@Inject TranChannelPackageDaoService tranChannelPackageDaoService; 
 	@Inject TranServerPackageDaoService tranServerPackageDaoService;
+	@Inject ServiceDaoService serviceDaoService;
 	
 	/**
 	* @description 删除一条EndPoint
@@ -113,5 +115,16 @@ public class DeleteDatasFromDB {
 			count += deleteOneTranServerByTranCode(code);
 		}
 		return count;
+	}
+	
+	/**
+	* @description 删除一个Service，如果是组合服务还会删除其组合服务流程图
+	* @param service_code
+	* @return
+	* @author raoliang
+	* @version 2014年11月15日 下午2:53:35
+	*/
+	public int deleteOneService(String service_code){
+		return serviceDaoService.deleteOneService(service_code);
 	}
 }

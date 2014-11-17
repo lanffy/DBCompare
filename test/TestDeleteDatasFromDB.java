@@ -1,5 +1,7 @@
 package compare.test;
 
+import com.wk.db.DBSource;
+import com.wk.db.Session;
 import com.wk.lang.Inject;
 import com.wk.test.TestCase;
 import compare.DeleteDatasFromDB;
@@ -34,6 +36,21 @@ public class TestDeleteDatasFromDB extends TestCase {
 	
 	public void atest删除一个Server(){
 		int num = deleteDatasFromDB.deleteOneServer("testSRV");
+		assertEquals(num, 1);
+	}
+	
+	public void atest_删除一个原子服务(){
+		int num = deleteDatasFromDB.deleteOneService("0001");
+		assertEquals(num, 1);
+	}
+	
+	public void atest_删除一个扩展服务(){
+		int num = deleteDatasFromDB.deleteOneService("0002");
+		assertEquals(num, 1);
+	}
+	
+	public void atest_删除一个组合服务(){
+		int num = deleteDatasFromDB.deleteOneService("0003");
 		assertEquals(num, 1);
 	}
 	

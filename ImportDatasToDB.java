@@ -166,6 +166,25 @@ public class ImportDatasToDB {
 	}
 	
 	/**
+	* @description 修改一个服务
+	* @param serviceData
+	* @return
+	* @author raoliang
+	* @version 2014年11月15日 下午3:21:04
+	*/
+	public int updateOneService(ServiceData serviceData){
+		ServiceInfo info = getServiceInfo(serviceData);
+		//如果是组合服务
+		if("2".equals(info.getService_type())){
+			//先删除，后添加，效果既是修改
+			groupSvcChartDaoService.deleteChartContent(info.getService_code());
+			groupSvcChartDaoService.insertChartContent(serviceData.getString("CONTENT"), info.getService_code());
+			logger.info("成功修改一条组合服务流程图,服务名称:{}", info.getService_code());
+		}
+		return serviceDaoService.updateOneServiceByServiceCode(info);
+	}
+	
+	/**
 	* @description 插入服务器信息
 	* @param machineData 服务器单元数据
 	* @return 成功插入条数

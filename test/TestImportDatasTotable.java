@@ -168,7 +168,7 @@ public class TestImportDatasTotable extends TestCase {
 		assertEquals(num, 1);
 	}
 	
-	public void test_insertMode() {
+	public void atest_insertMode() {
 		ServiceData modeData = exportService.getOneMode("vrouterclient_lu");
 		logger.info("导出数据:\n{}", modeData);
 		JSONFileUtil.storeServiceDataToJsonFile(modeData, filePath);

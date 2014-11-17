@@ -1,10 +1,13 @@
 package compare.test;
 
+import com.wk.db.DBSource;
+import com.wk.db.Session;
 import com.wk.lang.Inject;
 import com.wk.sdo.ServiceData;
 import com.wk.test.TestCase;
 import compare.ExportDatasFromDB;
 import compare.ImportDatasToDB;
+import compare.JSONFileUtil;
 
 
 /**
@@ -15,6 +18,7 @@ import compare.ImportDatasToDB;
 public class TestUpdateDatasTotable extends TestCase {
 	@Inject  ExportDatasFromDB exportService;
 	@Inject  ImportDatasToDB importService;
+	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	@Override
 	protected void setUp() throws java.lang.Exception {
@@ -163,11 +167,129 @@ public class TestUpdateDatasTotable extends TestCase {
 		assertEquals(mapConfirmData.getString("MAPPING_NAME"), "核心服务系统错误映射");
 	}
 	
+	public void atest_修改组合服务的服务名称(){
+		ServiceData service = exportService.getOneService("0033");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0033");
+		assertEquals(service.getString("SERVICE_NAME"), "0033");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("SERVICE_NAME", "0033updated");
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0033");
+		System.out.println("\n************修改后****************\n"+confirmData);
+		assertEquals(confirmData.getString("SERVICE_NAME"), "0033updated");
+	}
+	
+	public void atest_修改组合服务的接口(){
+		ServiceData service = exportService.getOneService("0033");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0033");
+		assertEquals(service.getString("SERVICE_NAME"), "0033updated");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		ServiceData errData = fileData.getServiceData("ERR_STRU");
+		errData.putServiceData("STRUCTURE_CONTENT", fileData.getServiceData("RESP_STRU").getServiceData("STRUCTURE_CONTENT"));
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0033");
+		System.out.println("\n************修改后****************\n"+confirmData);
+	}
+	
+	public void atest_删除组合服务的接口(){
+		ServiceData service = exportService.getOneService("0033");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0033");
+		assertEquals(service.getString("SERVICE_NAME"), "0033updated");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putServiceData("ERR_STRU", null);
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0033");
+		System.out.println("\n************修改后****************\n"+confirmData);
+	}
+	
+	public void atest_修改组合服务的流程图(){
+		ServiceData service = exportService.getOneService("0033");
+		ServiceData service8310 = exportService.getOneService("8310");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0033");
+		assertEquals(service.getString("SERVICE_NAME"), "0033updated");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("CONTENT", service8310.getString("CONTENT"));
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0033");
+		System.out.println("\n************修改后****************\n"+confirmData);
+	}
+	
+	public void atest_删除组合服务的流程图(){
+		ServiceData service = exportService.getOneService("0033");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0033");
+		assertEquals(service.getString("SERVICE_NAME"), "0033updated");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("CONTENT", "");
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0033");
+		System.out.println("\n************修改后****************\n"+confirmData);
+	}
+	
+	public void atest_修改原子服务名称(){
+		ServiceData service = exportService.getOneService("0001");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0001");
+		assertEquals(service.getString("SERVICE_NAME"), "0001");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("SERVICE_NAME", "0001updated");
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0001");
+		System.out.println("\n************修改后****************\n"+confirmData);
+		assertEquals(confirmData.getString("SERVICE_NAME"), "0001updated");
+	}
+	
+	public void atest_修改扩展服务名称(){
+		ServiceData service = exportService.getOneService("0002");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0002");
+		assertEquals(service.getString("SERVICE_NAME"), "0002");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("SERVICE_NAME", "0002updated");
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0002");
+		System.out.println("\n************修改后****************\n"+confirmData);
+		assertEquals(confirmData.getString("SERVICE_NAME"), "0002updated");
+	}
+	
+	public void test_修改扩展服务的扩展服务名称(){
+		ServiceData service = exportService.getOneService("0002");
+		System.out.println("\n************修改前****************\n"+service);
+		assertEquals(service.getString("SERVICE_CODE"), "0002");
+		assertEquals(service.getString("EXTEND_SERVICE_NAME"), "name");
+		JSONFileUtil.storeServiceDataToJsonFile(service, filePath);
+		ServiceData fileData = JSONFileUtil.loadJsonFileToServiceData(filePath);
+		fileData.putString("EXTEND_SERVICE_NAME", "nameUpdated");
+		int num = importService.updateOneService(fileData);
+		assertEquals(num, 1);
+		ServiceData confirmData = exportService.getOneService("0002");
+		System.out.println("\n************修改后****************\n"+confirmData);
+		assertEquals(confirmData.getString("EXTEND_SERVICE_NAME"), "nameUpdated");
+	}
+	
 	@Override
 	protected void tearDownOnce() throws java.lang.Exception {
-//		Session session = DBSource.getDefault().getSession();
-//		session.commit();
-//		session.close();
-//		System.out.println("Commited!");
+		Session session = DBSource.getDefault().getSession();
+		session.commit();
+		session.close();
+		System.out.println("Commited!");
 	}
 }
