@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.wk.lang.SystemException;
 import com.wk.logging.Log;
@@ -12,6 +14,7 @@ import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
 import com.wk.util.JSON;
 import com.wk.util.JSONCaseType;
+import com.wk.util.StringUtil;
 
 /**
  * @description 
@@ -124,6 +127,30 @@ public class JSONFileUtil {
 		}
 		reader.close();
 		return sb.toString();
+	}
+	
+	/**
+	* @description 从文件读取内容到队列中，每一行为一个元素
+	* @param file
+	* @return
+	* @author raoliang
+	* @version 2014年11月18日 上午11:31:46
+	*/
+	public static List<String> readFileToStringArray(File file){
+		BufferedReader reader = null;
+		String line = "";
+		List<String> list = new ArrayList<String>();
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			while(StringUtil.isEmpty((line = reader.readLine()))){
+				list.add(line);
+			}
+			reader.close();
+		} catch (IOException e) {
+			throw new SystemException("SYS_DB_COMPARE_READ_FILE_TO_STRING_ARRAY_ERROR")
+			.addScene("filePath", file.getAbsolutePath());
+		}
+		return list;
 	}
 	
 	private static void isFileExist(String filePath){

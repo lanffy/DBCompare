@@ -46,6 +46,10 @@ public class DBporter {
 		return DBDataDir+prop.getProperty(fileNameProp)+File.separator;
 	}
 	
+	protected static String getDeletedFileDir(String fileNameProp){
+		return prop.getProperty(fileNameProp);
+	}
+	
 	protected static File createFile(String dir){
 		return DBCompare.createFile(dir);
 	}

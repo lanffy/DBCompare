@@ -21,26 +21,12 @@ public class TestH2 {
 //	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	public static void main(String[] args) throws IOException {
-		String sql = "delete from SYS_CHANNEL;"
-				+ "delete from SYS_COMM;"
-				+ "delete from SYS_DICT;"
-				+ "delete from SYS_DICT_DETAIL;"
-				+ "delete from SYS_GROUP_SVC_CHART;"
-				+ "delete from SYS_INSTANCE;"
-				+ "delete from SYS_MACHINE;"
-				+ "delete from SYS_MAPPING;"
-				+ "delete from SYS_MODE;"
-				+ "delete from SYS_MODE_PARAM;"
-				+ "delete from SYS_PROCESS_INSTANCE;"
-				+ "delete from SYS_SAVE_DATAS;"
-				+ "delete from SYS_SERVER;"
-				+ "delete from SYS_SERVICE;"
-				+ "delete from SYS_STRUCTURE;"
-				+ "delete from SYS_TRAN_CHANNEL_PACKAGE;"
-				+ "delete from SYS_TRAN_SERVER_PACKAGE;";
-		Session session = DBSource.getDefault().openSession();
-		int num = session.execute(sql);
-		System.out.println(num);
+		String a = "a>>b>>";
+		String[] array = a.split(">");
+		System.out.println(array.length);
+		for (String string : array) {
+			System.out.println(string);
+		}
 	}
 	
 	private static String replace(String fileName){
@@ -69,11 +55,11 @@ public class TestH2 {
 		System.out.println("Commited!");
 	}
 	
-	private void init() {
-		Controller.getInstance().getInjector().inject(this);
-	}
-
-	static {
-		new TestH2().init();
-	}
+//	private void init() {
+//		Controller.getInstance().getInjector().inject(this);
+//	}
+//
+//	static {
+//		new TestH2().init();
+//	}
 }

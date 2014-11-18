@@ -124,8 +124,8 @@ public class DeleteDatasFromDB {
 	* @author raoliang
 	* @version 2014年11月17日 下午2:55:12
 	*/
-	public int deleteOneMachine(String machine_codes){
-		return machineDaoService.deleteOneMachine(machine_codes);
+	public int deleteOneMachine(String machine_code){
+		return machineDaoService.deleteOneMachine(machine_code);
 	}
 	
 	/**

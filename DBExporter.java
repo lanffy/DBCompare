@@ -41,6 +41,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneEndPoint(channel_code);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出EndPoint数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
@@ -52,6 +54,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneServer(server_code);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出服务系统数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
@@ -63,6 +67,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneChannelTran(splitTrab(code)[0], splitTrab(code)[1]);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出EndPoint关联交易数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
@@ -74,6 +80,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneServerTran(splitTrab(code)[0], splitTrab(code)[1]);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出服务系统关联交易数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
@@ -85,6 +93,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneService(service_code);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出服务数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
@@ -96,6 +106,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneMachine(machine_code);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出部署数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
@@ -107,6 +119,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneDict(dict_code);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出数据字典数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
@@ -118,6 +132,8 @@ public class DBExporter extends DBporter{
 			ServiceData data = exporter.getOneMode(mode_code);
 			JSONFileUtil.storeServiceDataToJsonFile(data, file);
 		}
+		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
+		createFile(delFileDir);
 		logger.info("导出模式数据{}条,存储路径{}", list.size(), fileDir);
 	}
 	
