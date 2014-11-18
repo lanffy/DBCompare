@@ -85,7 +85,7 @@ public class TestDeleteDatasFromDB extends TestCase {
 	}
 	
 	@Override
-	protected void tearDownOnce() throws java.lang.Exception {
+	protected void tearDownOnce() {
 //		Session session = DBSource.getDefault().getSession();
 //		session.commit();
 //		session.close();

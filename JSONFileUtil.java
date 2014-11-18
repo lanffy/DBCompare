@@ -142,7 +142,7 @@ public class JSONFileUtil {
 		List<String> list = new ArrayList<String>();
 		try {
 			reader = new BufferedReader(new FileReader(file));
-			while(StringUtil.isEmpty((line = reader.readLine()))){
+			while(!StringUtil.isEmpty((line = reader.readLine()))){
 				list.add(line);
 			}
 			reader.close();

@@ -1,13 +1,15 @@
 package compare.test;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import com.wk.Controller;
 import com.wk.db.DBSource;
 import com.wk.db.Session;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
+import compare.JSONFileUtil;
 
 /**
  * @description
@@ -18,15 +20,14 @@ public class TestH2 {
 //	@Inject static ExportDatasFromDB exportService;
 //	@Inject static ImportDatasToDB importService;
 	private static final Log logger = LogFactory.getLog("dbcompare");
-//	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
+	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
 	public static void main(String[] args) throws IOException {
-		String a = "a>>b>>";
-		String[] array = a.split(">");
-		System.out.println(array.length);
-		for (String string : array) {
+		List<String> list = JSONFileUtil.readFileToStringArray(new File(filePath));
+		for (String string : list) {
 			System.out.println(string);
 		}
+		System.out.println("done!");
 	}
 	
 	private static String replace(String fileName){

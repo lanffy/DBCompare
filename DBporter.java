@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.wk.Controller;
@@ -52,6 +54,20 @@ public class DBporter {
 	
 	protected static File createFile(String dir){
 		return DBCompare.createFile(dir);
+	}
+	
+	public static List<File> listAllFiles(File dir) {
+		final List<File> file_list = new ArrayList<File>();
+		listAllFiles(dir, file_list);
+		return file_list;
+	}
+
+	public static void listAllFiles(File dir, List<File> file_list) {
+		for (File file : dir.listFiles()) {
+			if (file.isFile()) {
+				file_list.add(file);
+			}
+		}
 	}
 	
 	protected static String[] splitTrab(String tran){

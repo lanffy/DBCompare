@@ -48,7 +48,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertEndPoint(){
 		String fileDir = getFileDir("db.endPointDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
@@ -66,7 +66,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertServer(){
 		String fileDir = getFileDir("db.serverDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
@@ -84,7 +84,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertTranEndPoint(){
 		String fileDir = getFileDir("db.endPointTranDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
@@ -102,7 +102,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertTranServer() {
 		String fileDir = getFileDir("db.serverTranDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
@@ -120,7 +120,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertService(){
 		String fileDir = getFileDir("db.serviceDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
@@ -138,7 +138,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertMachine(){
 		String fileDir = getFileDir("db.deployDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
@@ -152,7 +152,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertDict(){
 		String fileDir = getFileDir("db.dictDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
@@ -178,7 +178,7 @@ public class DBImporter extends DBporter{
 	
 	public static void insertMode(){
 		String fileDir = getFileDir("db.modeDir");
-		List<File> fileList = FileUtil.listAllFiles(new File(fileDir));
+		List<File> fileList = listAllFiles(new File(fileDir));
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
