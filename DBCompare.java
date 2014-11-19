@@ -1201,7 +1201,7 @@ public class DBCompare {
 		StringBuilder process = new StringBuilder();
 		String[] columnNames = {"SKEYC", "CHANNEL_CODE", "BIND_ADDRESS", "REMOTE_ADDRESS"};
 		String[] columnNamesCh = {"近程标识代码", "Endpoint编码", "服务器监听端口", "远程访问地址"};
-		String sql="SELECT CHANNEL_CODE FROM SYS_PROCESS_INSTANCE";
+		String sql="SELECT CHANNEL_CODE,BIND_ADDRESS FROM SYS_PROCESS_INSTANCE";
 		ResultSet old_process_rs = null;
 		ResultSet new_process_rs = null;
 		try {
@@ -1213,10 +1213,10 @@ public class DBCompare {
 			List<String> old_process_list = new ArrayList<String>();
 			List<String> new_process_list = new ArrayList<String>();
 			while(old_process_rs.next()){
-				old_process_list.add(old_process_rs.getString("CHANNEL_CODE"));
+				old_process_list.add(old_process_rs.getString("CHANNEL_CODE")+">"+old_process_rs.getString("BIND_ADDRESS"));
 			}
 			while(new_process_rs.next()){
-				new_process_list.add(new_process_rs.getString("CHANNEL_CODE"));
+				new_process_list.add(new_process_rs.getString("CHANNEL_CODE")+">"+new_process_rs.getString("BIND_ADDRESS"));
 			}
 			//是否有新增,删除
 			AtomicInteger num = new AtomicInteger(0);
@@ -1226,7 +1226,7 @@ public class DBCompare {
 					num.incrementAndGet();
 					addProcess.append("["+string+"] ");
 				}else{
-					samelist.add(string);
+					samelist.add(splitTrab(string)[0]);
 				}
 			}
 			if(addProcess.length()>0){
