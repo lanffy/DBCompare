@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import com.wk.Controller;
 import com.wk.db.DBSource;
 import com.wk.db.Session;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
 import com.wk.sdo.ServiceData;
+
+import compare.ExportDatasFromDB;
 import compare.JSONFileUtil;
 
 /**
@@ -22,12 +25,9 @@ public class TestH2 {
 	private static final Log logger = LogFactory.getLog("dbcompare");
 	private static String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
 	
+	static ExportDatasFromDB exporter = Controller.getInstance().getInjector().getBean(ExportDatasFromDB.class);
 	public static void main(String[] args) throws IOException {
-		List<String> list = JSONFileUtil.readFileToStringArray(new File(filePath));
-		for (String string : list) {
-			System.out.println(string);
-		}
-		System.out.println("done!");
+		System.out.println("done");
 	}
 	
 	private static String replace(String fileName){

@@ -1777,7 +1777,7 @@ public class DBCompare {
 		}
 	}
 	
-	public static String[] getH2MainParameters(String dir, String tcpPort) {
+	private static String[] getH2MainParameters(String dir, String tcpPort) {
 		return ("-ifExists -baseDir " + dir + " -tcp -tcpPort " + tcpPort + " -tcpAllowOthers").split(" ");
 	}
 	

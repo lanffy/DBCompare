@@ -1,12 +1,8 @@
 package compare;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.List;
 
-import org.h2.tools.Server;
-
-import com.wk.lang.SystemException;
 import com.wk.sdo.ServiceData;
 
 /**
