@@ -1760,46 +1760,41 @@ public class DBCompare {
 	}
 	
 	private static void startH2DB(){
-		String oldDbDir = prop.getProperty("oldDb.jdbc.basedir");
-		String newDbDir = prop.getProperty("newDb.jdbc.basedir");
-		String[] oldH2MainParameters = getH2MainParameters(oldDbDir, oldTcpPort);
-		String[] newH2MainParameters = getH2MainParameters(newDbDir, newTcpPort);
+		System.out.println("start old db");
+		startH2DB(prop.getProperty("oldDb.jdbc.basedir"), oldTcpPort);
+		System.out.println("start new db");
+		startH2DB(prop.getProperty("newDb.jdbc.basedir"), newTcpPort);
+	}
+	
+	private static void startH2DB(String dbDir, String dbTcpPort){
+		String[] H2MainParameters = getH2MainParameters(dbDir, dbTcpPort);
 		try {
-			System.out.println("start old db");
-			Server.main(oldH2MainParameters);
+			Server.main(H2MainParameters);
 		} catch (SQLException e) {
-			throw new SystemException("SYS_DBCOMPARE_OLD_H2DB_START_EXCEPTION")
-					.addScene("parameters:", oldH2MainParameters);
-		}
-		try {
-			System.out.println("start new db");
-			Server.main(newH2MainParameters);
-		} catch (SQLException e) {
-			throw new SystemException("SYS_DBCOMPARE_NEW_H2DB_START_EXCEPTION")
-			.addScene("parameters:", newH2MainParameters);
+			throw new SystemException("SYS_DBCOMPARE_H2DB_START_EXCEPTION")
+			.addScene("dbDir:", dbDir)
+			.addScene("dbTcpPort:", dbTcpPort);
 		}
 	}
 	
-	private static String[] getH2MainParameters(String dir, String tcpPort) {
+	public static String[] getH2MainParameters(String dir, String tcpPort) {
 		return ("-ifExists -baseDir " + dir + " -tcp -tcpPort " + tcpPort + " -tcpAllowOthers").split(" ");
 	}
 	
 	private static void stopH2DB(){
-		String[] oldStopStr = getH2StopParameters(oldTcpPort);
-		String[] newStopStr = getH2StopParameters(newTcpPort);
+		System.out.println("\nstop old db");
+		stopH2DB(oldTcpPort);
+		System.out.println("stop new db");
+		stopH2DB(newTcpPort);
+	}
+	
+	private static void stopH2DB(String dbTcpPort){
+		String[] StopStr = getH2StopParameters(dbTcpPort);
 		try {
-			System.out.println("\nstop old db");
-			Server.main(oldStopStr);
+			Server.main(StopStr);
 		} catch (SQLException e) {
-			throw new SystemException("SYS_DBCOMPARE_OLD_H2DB_STOP_EXCEPTION")
-			.addScene("parameters:", oldStopStr);
-		}
-		try {
-			System.out.println("stop new db");
-			Server.main(newStopStr);
-		} catch (SQLException e) {
-			throw new SystemException("SYS_DBCOMPARE_NEW_H2DB_STOP_EXCEPTION")
-			.addScene("parameters:", oldStopStr);
+			throw new SystemException("SYS_DBCOMPARE_H2DB_STOP_EXCEPTION")
+			.addScene("dbTcpPort:", dbTcpPort);
 		}
 	}
 	
