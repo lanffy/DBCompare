@@ -51,7 +51,7 @@ import com.wk.util.StringUtil;
  * @version 2014年10月30日 上午11:49:46
  */
 public class ExportDatasFromDB {
-	private final Log logger = LogFactory.getLog("dbcompare");
+	private static final Log logger = LogFactory.getLog("dbcompare");
 	@Inject static CommDaoService commDaoSevice;
 	@Inject static StructureDaoService structureDaoSevice;
 	@Inject static SaveDatasDaoService saveDatasDaoSevice;
@@ -217,7 +217,7 @@ public class ExportDatasFromDB {
 		//映射
 		serverData.putServiceData("IN_MAPPING", getMap(serverInfo.getIn_mapping()));
 		serverData.putServiceData("OUT_MAPPING", getMap(serverInfo.getOut_mapping()));
-		serverData.putServiceData("ERROR_MAPPING", getMap(serverInfo.getError_mapping()));
+		serverData.putServiceData("ERROR_MAPPING", getMap(serverInfo.getOut_mapping()));
 		return serverData;
 	}
 	
@@ -505,7 +505,6 @@ public class ExportDatasFromDB {
 		data.putString("GET_SVC_EXP", info.getGet_svc_exp());
 		data.putString("PUT_SVC_EXP", info.getPut_svc_exp());
 		data.putString("MSG_CLASS", info.getMsg_class());
-		
 		data.putString("BIZ_CHANNEL_EXP", info.getBiz_channel_exp());
 	}
 	
@@ -516,7 +515,6 @@ public class ExportDatasFromDB {
 		data.putString("PUT_SVC_EXP", info.getPut_svc_exp());
 		data.putString("MSG_CLASS", info.getMsg_class());
 		data.putString("SERVER_ACTOR_CLASS", info.getServer_actor_class());
-		
 	}
 
   	private static ServiceData putComm(String comm_id){
@@ -532,6 +530,9 @@ public class ExportDatasFromDB {
   	}
   	
 	private static ServiceData getCommData(CommInfo info){
+		if(info == null){
+			return null;
+		}
 		ServiceData commData = new ServiceData();
 		commData.putString("CATEGORY", info.getCategory());
 		commData.putString("CCODE", info.getCcode());
@@ -559,6 +560,9 @@ public class ExportDatasFromDB {
 	}
 
 	private static ServiceData getStructureServiceData(StructureInfo info){
+		if(info == null){
+			return null;
+		}
 		ServiceData structureData = new ServiceData();
 		structureData.putString("SERVICE_CODE", info.getService_code());
 		structureData.putString("STRUCTURE_TYPE", info.getStructure_type());
@@ -568,6 +572,9 @@ public class ExportDatasFromDB {
 	}
 
 	private static ServiceData getMapData(MappingInfo info){
+		if(info == null){
+			return null;
+		}
 		ServiceData data = new ServiceData();
 		data.putString("MAPPING_CATEGORY", info.getMapping_category());
 		data.putString("REF_CODE", info.getRef_code());
