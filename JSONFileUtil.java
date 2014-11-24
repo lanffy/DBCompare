@@ -137,9 +137,12 @@ public class JSONFileUtil {
 	* @version 2014年11月18日 上午11:31:46
 	*/
 	public static List<String> readFileToStringArray(File file){
+		List<String> list = new ArrayList<String>();
+		if(!file.exists()){
+			return list;
+		}
 		BufferedReader reader = null;
 		String line = "";
-		List<String> list = new ArrayList<String>();
 		try {
 			reader = new BufferedReader(new FileReader(file));
 			while(!StringUtil.isEmpty((line = reader.readLine()))){
