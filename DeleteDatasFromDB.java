@@ -2,6 +2,7 @@ package compare;
 
 import com.wk.eai.webide.dao.ChannelDaoService;
 import com.wk.eai.webide.dao.DictDetailDaoService;
+import com.wk.eai.webide.dao.InstanceDaoService;
 import com.wk.eai.webide.dao.MachineDaoService;
 import com.wk.eai.webide.dao.ModeParamDaoService;
 import com.wk.eai.webide.dao.ServerDaoService;
@@ -29,6 +30,7 @@ public class DeleteDatasFromDB {
 	@Inject static DictDetailDaoService dictDetailDaoService;
 	@Inject static ModeService modeService;
 	@Inject static ModeParamDaoService modeParamDaoService;
+	@Inject static InstanceDaoService instanceDaoService;
 	
 	/**
 	* @description 删除一条EndPoint,以及其下的关联交易
@@ -126,6 +128,31 @@ public class DeleteDatasFromDB {
 	*/
 	public int deleteOneMachine(String machine_code){
 		return machineDaoService.deleteOneMachine(machine_code);
+	}
+	
+	/**
+	* @description 根据服务器编码和进程标识代码删除服务器下的进程列表，会删除该进程列表下已经部署的所有EndPoint
+	* @param machine_code 服务器编码
+	* @param skeyc 进程标识代码
+	* @return
+	* @author raoliang
+	* @version 2014年11月25日 下午4:25:26
+	*/
+	public int deleteOneInstance(String machine_code, String skeyc){
+		return instanceDaoService.deleteInstanceByMachineCodeAndSkeyc(machine_code, skeyc);
+	}
+	
+	/**
+	* @description 根据服务器编码、进程标识代码、EndPoint编码删除指定的服务器下执行的进程下部署的EndPoint
+	* @param machine_code 服务器编码
+	* @param skeyc 进程标识代码
+	* @param channel_code EndPoint编码
+	* @return
+	* @author raoliang
+	* @version 2014年11月25日 下午4:49:17
+	*/
+	public int deleteOneProcessInstance(String machine_code, String skeyc, String channel_code){
+		return instanceDaoService.deleteProcessInstance(machine_code, skeyc, channel_code);
 	}
 	
 	/**

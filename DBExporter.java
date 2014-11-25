@@ -102,9 +102,31 @@ public class DBExporter extends DBporter{
 		List<String> list = exporter.getAllMachineCode();
 		String fileDir = getFileDir("db.deployDir");
 		for (String machine_code : list) {
-			File file = createFile(fileDir+replace(machine_code));
 			ServiceData data = exporter.getOneMachine(machine_code);
-			JSONFileUtil.storeServiceDataToJsonFile(data, file);
+			ServiceData INSTANCE = data.getServiceData("INSTANCE");
+			ServiceData PROCESSINSTANCE = data.getServiceData("PROCESSINSTANCE");
+			for (String keyInstance : INSTANCE.getKeys()) {
+				ServiceData SKEYC = INSTANCE.getServiceData(keyInstance);
+				for (String keyProcessInstance : PROCESSINSTANCE.getKeys()) {
+					ServiceData singlInstance = new ServiceData();
+					ServiceData processInstance = PROCESSINSTANCE.getServiceData(keyProcessInstance);
+					if(SKEYC.getString("SKEYC").equals(processInstance.getString("SKEYC"))){
+						singlInstance.putString("MACHINE_CODE", data.getString("MACHINE_CODE"));
+						singlInstance.putString("MACHINE_IP", data.getString("MACHINE_IP"));
+						singlInstance.putString("MACHINE_NAME", data.getString("MACHINE_NAME"));
+						
+						ServiceData instance = new ServiceData();
+						instance.putServiceData(keyInstance, SKEYC);
+						singlInstance.putServiceData("INSTANCE", instance);
+						
+						ServiceData pInstance = new ServiceData();
+						pInstance.putServiceData(keyProcessInstance, processInstance);
+						singlInstance.putServiceData("PROCESSINSTANCE", pInstance);
+						File file = createFile(fileDir+replace(machine_code+"_"+keyInstance+"_"+keyProcessInstance));
+						JSONFileUtil.storeServiceDataToJsonFile(singlInstance, file);
+					}
+				}
+			}
 		}
 		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
 		createFile(delFileDir);

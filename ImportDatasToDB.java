@@ -200,12 +200,11 @@ public class ImportDatasToDB {
 		String[] keys = instanceData.getKeys();
 		for (String key : keys) {
 			ServiceData data = instanceData.getServiceData(key);
-			//得到单个进程列表的Info
+			// 得到单个进程列表的Info
 			InstanceInfo info = getInstanceInfo(data);
-			//插入单个进程列表
+			// 插入单个进程列表
 			count += instanceDaoService.saveOneInstance(info);
 		}
-		logger.info("成功插入进程列表{}个", count);
 		return count;
 	}
 	
@@ -226,9 +225,9 @@ public class ImportDatasToDB {
 			//得到单个进程的Info
 			ProcessInstanceInfo info = getProcessInstanceInfo(data);
 			//插入单个进程
-			count += processInstanceDaoService.saveOneRecord(info);
+			count += processInstanceDaoService.updateOneRecord(info);
+			logger.info("成功插入部署进程{},部署渠道{},部署端口{}", info.getSkeyc(), keysStr, info.getBind_address());
 		}
-		logger.info("成功插入部署进程{}个,部署渠道有:{}", count, keysStr);
 		return count;
 	}
 	

@@ -53,7 +53,7 @@ public class DBImporter extends DBporter{
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
 			count += impoter.insertOneEndPoint(data);
 		}
-		logger.info("成功插入EndPoint数据{}条", count);
+		logger.info("成功插入或修改EndPoint数据{}条", count);
 		// 删除EndPoint,根据channel_code删除
 		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
 		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
@@ -71,7 +71,7 @@ public class DBImporter extends DBporter{
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
 			count += impoter.insertOneServer(data);
 		}
-		logger.info("成功插入服务系统数据{}条", count);
+		logger.info("成功插入或修改服务系统数据{}条", count);
 		//删除server,根据server_code删除
 		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
 		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
@@ -89,7 +89,7 @@ public class DBImporter extends DBporter{
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
 			count += impoter.insertOneTranEndPoint(data);
 		}
-		logger.info("成功插入EndPoint关联交易数据{}条", count);
+		logger.info("成功插入或修改EndPoint关联交易数据{}条", count);
 		//删除EndPoint关联交易,根据channel_code和tran_code删除
 		String delFileDir = fileDir+getDeletedFileDir("db.deletedFile");
 		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
@@ -107,7 +107,7 @@ public class DBImporter extends DBporter{
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
 			count += impoter.insertOneTranServer(data);
 		}
-		logger.info("成功插入服务系统关联交易数据{}条", count);
+		logger.info("成功插入或修改服务系统关联交易数据{}条", count);
 		// 删除服务关联交易,根据tran_code删除
 		String delFileDir = fileDir + getDeletedFileDir("db.deletedFile");
 		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
@@ -125,7 +125,7 @@ public class DBImporter extends DBporter{
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
 			count += impoter.insertOneService(data);
 		}
-		logger.info("成功插入服务数据{}条", count);
+		logger.info("成功插入或修改服务数据{}条", count);
 		// 删除服务,根据service_code删除
 		String delFileDir = fileDir + getDeletedFileDir("db.deletedFile");
 		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
@@ -141,12 +141,26 @@ public class DBImporter extends DBporter{
 		int count = 0;
 		for (File file : fileList) {
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
-			//插入前先删除已经存在的服务器
-			deleter.deleteOneMachine(data.getString("MACHINE_CODE"));
 			count += impoter.insertOneMachine(data);
 		}
-		logger.info("成功插入部署数据{}条", count);
-		//TODO: 部署进程不提供删除操作
+		logger.info("成功插入或修改部署数据{}条", count);
+		String delFileDir = fileDir + getDeletedFileDir("db.deletedFile");
+		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
+		for (String string : pkey) {
+			String[] keyarray = splitTrab(string);
+			if(keyarray.length == 1){
+				deleter.deleteOneMachine(keyarray[0]);
+				logger.info("成功删除服务器：{}", keyarray[0]);
+			}else if(keyarray.length == 2){
+				deleter.deleteOneInstance(keyarray[0], keyarray[1]);
+				logger.info("成功删除服务器{}下的进程{}", keyarray[0], keyarray[1]);
+			}else if(keyarray.length == 3){
+				deleter.deleteOneProcessInstance(keyarray[0], keyarray[1], keyarray[2]);
+				logger.info("成功删除服务器{}下的进程{}的部署的EndPoint:{}", keyarray[0], keyarray[1], keyarray[2]);
+			}else{
+				logger.error("删除部署数据文件中的主键格式不正确：{}", string);
+			}
+		}
 	}
 	
 	public static void insertDict(){
@@ -157,7 +171,7 @@ public class DBImporter extends DBporter{
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
 			count += impoter.insertOrUpdateOneDict(data);
 		}
-		logger.info("成功插入数据字典{}条", count);
+		logger.info("成功插入或修改数据字典{}条", count);
 		// 删除数据字典，可以删除整个数据字典，也可以删除字典中的一个字段
 		String delFileDir = fileDir + getDeletedFileDir("db.deletedFile");
 		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
@@ -171,6 +185,8 @@ public class DBImporter extends DBporter{
 				//删除数据字典中的一个字段
 				deleter.deleteOneDictDetail(keys[0], keys[1]);
 				logger.info("成功数据字典{}中的字段：{}", keys[0], keys[1]);
+			}else{
+				logger.error("删除数据字典数据文件中的主键格式不正确：{}", string);
 			}
 		}
 	}
@@ -183,7 +199,7 @@ public class DBImporter extends DBporter{
 			ServiceData data = JSONFileUtil.loadJsonFileToServiceData(file);
 			count += impoter.insertOrUpdateOneMode(data);
 		}
-		logger.info("成功插入模式{}条", count);
+		logger.info("成功插入或修改模式{}条", count);
 		//TODO: 模式暂不提供删除
 	}
 	
