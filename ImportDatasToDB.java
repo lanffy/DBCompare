@@ -167,7 +167,7 @@ public class ImportDatasToDB {
 	
 	/**
 	* @description 插入服务器信息
-	* 对于服务器、服务器进程列表、服务器部署进程：存在则修改,不存在则插入
+	* 对于服务器、服务器进程列表、服务器部署进程:存在则修改,不存在则插入
 	* @param machineData 服务器单元数据
 	* @return 成功插入条数
 	* @author raoliang
@@ -233,8 +233,8 @@ public class ImportDatasToDB {
 	
 	/**
 	* @description 插入一个数据字典,如果该字典下有字段,则同时插入该字典下的所有字段。
-	* 对于数据字典：不存在则插入,存在则忽略；
-	* 对于字段：存在则修改,不存在则插入
+	* 对于数据字典:不存在则插入,存在则忽略；
+	* 对于字段:存在则修改,不存在则插入
 	* @return 成功插入的条数
 	* @author raoliang
 	* @version 2014年11月7日 上午10:13:25
@@ -292,8 +292,8 @@ public class ImportDatasToDB {
 	
 	/**
 	* @description 插入一个模式,如果模式有参数,同时插入参数
-	* 对于模式：不存在则插入,存在则修改
-	* 对于模式参数：不存在则插入,存在则修改
+	* 对于模式:不存在则插入,存在则修改
+	* 对于模式参数:不存在则插入,存在则修改
 	* @param modeDatas
 	* @return
 	* @author raoliang
@@ -303,10 +303,10 @@ public class ImportDatasToDB {
 		ModeInfo modeInfo = getModeInfo(modeDatas);
 		int count = 0;
 		if(!modeDaoService.isModeExist(modeInfo.getMode_code(), modeInfo.getMode_type())){
-			logger.info("插入模式：{}", modeDatas.getString("MODE_CODE"));
+			logger.info("插入模式:{}", modeDatas.getString("MODE_CODE"));
 			count = executeSqlToInsertMode(modeDatas);
 		}else {
-			logger.info("修改模式：{}", modeDatas.getString("MODE_CODE"));
+			logger.info("修改模式:{}", modeDatas.getString("MODE_CODE"));
 			count = executeSqlToupdateMode(modeDatas);
 		}
 		if(modeDatas.size() == 6){

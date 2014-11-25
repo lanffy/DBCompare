@@ -144,19 +144,25 @@ public class DBImporter extends DBporter{
 			count += impoter.insertOneMachine(data);
 		}
 		logger.info("成功插入或修改部署数据{}条", count);
+		/**
+		 * 删除文件主键格式
+		 * 001 服务器编码 
+		 * 001>001 服务器编码>进程标识代码 
+		 * 001>001>CHL 服务器编码>进程标识代码>EndPoint编码
+		 */
 		String delFileDir = fileDir + getDeletedFileDir("db.deletedFile");
 		List<String> pkey = JSONFileUtil.readFileToStringArray(new File(delFileDir));
 		for (String string : pkey) {
 			String[] keyarray = splitTrab(string);
 			if(keyarray.length == 1){
-				deleter.deleteOneMachine(keyarray[0]);
-				logger.info("成功删除服务器：{}", keyarray[0]);
+				int del = deleter.deleteOneMachine(keyarray[0]);
+				logger.info("删除服务器{}数据{}条", keyarray[0], del);
 			}else if(keyarray.length == 2){
-				deleter.deleteOneInstance(keyarray[0], keyarray[1]);
-				logger.info("成功删除服务器{}下的进程{}", keyarray[0], keyarray[1]);
+				int del = deleter.deleteOneInstance(keyarray[0], keyarray[1]);
+				logger.info("删除服务器{}下的进程{}数据{}条", keyarray[0], keyarray[1], del);
 			}else if(keyarray.length == 3){
-				deleter.deleteOneProcessInstance(keyarray[0], keyarray[1], keyarray[2]);
-				logger.info("成功删除服务器{}下的进程{}的部署的EndPoint:{}", keyarray[0], keyarray[1], keyarray[2]);
+				int del = deleter.deleteOneProcessInstance(keyarray[0], keyarray[1], keyarray[2]);
+				logger.info("删除服务器{}下的进程{}的部署的EndPoint:{}数据{}条", keyarray[0], keyarray[1], keyarray[2], del);
 			}else{
 				logger.error("删除部署数据文件中的主键格式不正确：{}", string);
 			}
