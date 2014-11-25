@@ -1,5 +1,7 @@
 package compare.test;
 
+import java.util.List;
+
 import com.wk.lang.Inject;
 import com.wk.logging.Log;
 import com.wk.logging.LogFactory;
@@ -16,99 +18,221 @@ import compare.JSONFileUtil;
  */
 public class TestExportDatasFromTable extends TestCase {
 	@Inject static ExportDatasFromDB exporter;
-	ServiceData data;
-	ServiceData tran_data;
-	ServiceData service_data;
 	private final Log logger = LogFactory.getLog("dbcompare");
 	String filePath = "C:\\Users\\Administrator\\Desktop\\serviceData.json";
-	@Override
-	protected void setUpOnce() throws java.lang.Exception {
-		data = exporter.getOneEndPoint("vmenu2cardCHL");
-//		System.out.println("\n******data******\n"+data);
-		tran_data = exporter.getOneChannelTran("cardCHL", "0052");
-		service_data = exporter.getOneService("8808");
-//		System.out.println("\n******service_data******\n"+service_data);
-	}
 	
 	@Override
 	protected void setUp() throws java.lang.Exception {
 		System.out.println("***华丽丽的测试案例分割线***");
 	}
 	
-	public void atest_endPoint基本属性(){
-		assertEquals(data.getString("CHANNEL_NAME"), "vmenu2cardCHL");
-	}
-	
-	public void atest_不存在的EndPoint(){
-		try {
-			exporter.getOneEndPoint("vmenu2cardCHLaaa");
-		} catch (Exception e) {
-			assertTrue(true);
+	public void atest_getAllChannel_code(){
+		List<String> listcode = exporter.getAllChannelCode();
+		System.out.println("get channel_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
 		}
 	}
 	
-	public void atest_endpoint_comm(){
-		ServiceData commData = data.getServiceData("COMM_ID");
-		assertEquals(commData.getString("CCODE"), "vmenu_tcp_adapter");
+	public void atest_getAllServer_code(){
+		List<String> listcode = exporter.getAllServerCode();
+		System.out.println("get server_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
+		}
 	}
 	
-	public void atest_structure(){
-		ServiceData structureData = data.getServiceData("REQ_PACKAGE_CONFIG");
-		assertEquals(structureData.getString("STRUCTURE_CATEGORY"), "0");
+	public void atest_getAllTranChannel_code(){
+		List<String> listcode = exporter.getAllChannelTranChannelCodeAndTranCode();
+		System.out.println("get tran channel_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
+		}
 	}
 	
-	public void atest_structure_config(){
-		ServiceData structureData = data.getServiceData("REQ_PACKAGE_CONFIG");
-		ServiceData structureContent = structureData.getServiceData("STRUCTURE_CONTENT");
-		assertEquals(structureContent.getString("STYPE"), "5");
+	public void atest_getAllTranServer_code(){
+		List<String> listcode = exporter.getAllServerTranServerCodeAndTranCode();
+		System.out.println("get tran server_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
+		}
 	}
 	
-	public void atest_mapping(){
-		ServiceData mapData = data.getServiceData("OUT_MAPPING");
-		assertEquals(mapData.getString("MAPPING_SCRIPT"), "out=out.getServiceData(\"appdata\");");
+	public void atest_getAllServiceCode(){
+		List<String> listcode = exporter.getAllServiceCode();
+		System.out.println("get service_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
+		}
 	}
 	
-	public void atest_tran(){
-		assertEquals(tran_data.getString("CHANNEL_CODE"), "cardCHL");
-		assertEquals(tran_data.getString("TRAN_CODE"), "0052");
+	public void atest_getAllMachineCode(){
+		List<String> listcode = exporter.getAllMachineCode();
+		System.out.println("get machine_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
+		}
 	}
 	
-	public void atest_tran_config(){
-		ServiceData tran_config_data = tran_data.getServiceData("REQ_PACKAGE_CONFIG");
-		assertEquals(tran_config_data.getString("STRUCTURE_CATEGORY"), "3");
-		
-		ServiceData tran_config_content_data = tran_config_data.getServiceData("STRUCTURE_CONTENT");
-		assertEquals(tran_config_content_data.getString("STYPE"), "5");
+	public void atest_getAllDictCode(){
+		List<String> listcode = exporter.getAllDictCode();
+		System.out.println("get dict_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
+		}
 	}
 	
-	public void atest_tran_map(){
-		ServiceData tran_map_data = tran_data.getServiceData("IN_MAPPING");
-		assertEquals(tran_map_data.getString("MAPPING_NAME"), "0052请求映射");
+	public void atest_getAllModeCode(){
+		List<String> listcode = exporter.getAllModeCode();
+		System.out.println("get mode_code:"+listcode.size());
+		for (String string : listcode) {
+			System.out.println(string);
+		}
 	}
 	
+	public void atest_不存在的EndPoint(){
+		ServiceData data = exporter.getOneEndPoint("vmenu2cardCHLaaa");
+		assertNull(data);
+	}
+	
+	public void atest_存在的EndPoint(){
+		ServiceData data = exporter.getOneEndPoint("ATMCHL");
+		assertNotNull(data);
+	}
+	
+	public void atest_EndPoint通讯参数不存在(){
+		ServiceData data = exporter.getOneEndPoint("ATMCHL");
+		assertNull(data.getServiceData("COMM_ID"));
+	}
+	
+	public void atest_EndPoint报文配置为空(){
+		ServiceData data = exporter.getOneEndPoint("ATMCHL");
+		assertNull(data.getServiceData("REQ_PACKAGE_CONFIG"));
+		assertNull(data.getServiceData("RESP_PACKAGE_CONFIG"));
+		assertNull(data.getServiceData("ERR_PACKAGE_CONFIG"));
+	}
+	
+	public void atest_EndPoint系统映射为空(){
+		ServiceData data = exporter.getOneEndPoint("ATMCHL");
+		assertNull(data.getServiceData("IN_MAPPING"));
+		assertNull(data.getServiceData("OUT_MAPPING"));
+		assertNull(data.getServiceData("ERROR_MAPPING"));
+	}
+	
+	
+	public void atest_不存在的服务系统(){
+		ServiceData data = exporter.getOneServer("aaaa");
+		assertNull(data);
+	}
+	
+	public void atest_存在的服务系统(){
+		ServiceData data = exporter.getOneServer("appblocksSRV");
+		assertNotNull(data);
+	}
+	
+	public void atest服务系统通讯参数不存在(){
+		ServiceData data = exporter.getOneServer("appblocksSRV");
+		assertNull(data.getServiceData("COMM_ID"));
+	}
+	
+	public void atest服务系统报文配置为空(){
+		ServiceData data = exporter.getOneServer("appblocksSRV");
+		assertNull(data.getServiceData("REQ_PACKAGE_CONFIG"));
+		assertNull(data.getServiceData("RESP_PACKAGE_CONFIG"));
+		assertNull(data.getServiceData("ERR_PACKAGE_CONFIG"));
+	}
+	
+	public void atest服务系统系统映射为空(){
+		ServiceData data = exporter.getOneServer("appblocksSRV");
+		assertNull(data.getServiceData("IN_MAPPING"));
+		assertNull(data.getServiceData("OUT_MAPPING"));
+		assertNull(data.getServiceData("ERROR_MAPPING"));
+	}
+	
+	public void atest_不存在的EndPoint关联交易(){
+		ServiceData data = exporter.getOneChannelTran("cardCHL", "0000");
+		assertNull(data);
+		ServiceData data2 = exporter.getOneChannelTran("aCHL", "0052");
+		assertNull(data2);
+	}
+	
+	public void atest_存在的EndPoint关联交易(){
+		ServiceData data = exporter.getOneChannelTran("cardCHL", "0061");
+		assertNotNull(data);
+	}
+	
+	public void atest_EndPoint关联交易报文配置错误(){
+		ServiceData data = exporter.getOneChannelTran("cardCHL", "0052");
+		assertNull(data.getServiceData("REQ_PACKAGE_CONFIG"));
+		assertNull(data.getServiceData("RESP_PACKAGE_CONFIG"));
+	}
+	
+	public void atest_EndPoint关联交易映射配置错误(){
+		ServiceData data = exporter.getOneChannelTran("cardCHL", "0052");
+		assertNull(data.getServiceData("IN_MAPPING"));
+		assertNull(data.getServiceData("OUT_MAPPING"));
+		assertNull(data.getServiceData("ERROR_MAPPING"));
+	}
+	
+	public void atest_不存在的服务系统关联交易(){
+		ServiceData data = exporter.getOneServerTran("appblocksSRV", "0000");
+		assertNull(data);
+		ServiceData data2 = exporter.getOneServerTran("aCHL", "00aa");
+		assertNull(data2);
+	}
+	
+	public void atest_存在的服务系统关联交易(){
+		ServiceData data = exporter.getOneServerTran("appblocksSRV", "3001");
+		assertNotNull(data);
+	}
+	
+	public void atest_服务系统关联交易报文配置错误(){
+		ServiceData data = exporter.getOneServerTran("appblocksSRV", "3000");
+		assertNull(data.getServiceData("REQ_PACKAGE_CONFIG"));
+		assertNull(data.getServiceData("RESP_PACKAGE_CONFIG"));
+	}
+	
+	public void atest_服务系统关联交易映射配置错误(){
+		ServiceData data = exporter.getOneServerTran("appblocksSRV", "3000");
+		assertNull(data.getServiceData("IN_MAPPING"));
+		assertNull(data.getServiceData("OUT_MAPPING"));
+		assertNull(data.getServiceData("ERROR_MAPPING"));
+	}
+	
+	public void atest_导出正常的渠道(){
+		ServiceData endPoint = exporter.getOneEndPoint("chCHL");
+		assertNotNull(endPoint);
+		ServiceData server = exporter.getOneServer("locoreSRV");
+		assertNotNull(server);
+		ServiceData endPointTran = exporter.getOneChannelTran("cardCHL", "0611");
+		assertNotNull(endPointTran);
+		ServiceData serverTran = exporter.getOneServerTran("inbankSRV", "0052");
+		assertNotNull(serverTran);
+	}
+	
+	public void test_不存在的服务(){
+		ServiceData date = exporter.getOneService("0000");
+		assertNull(date);
+	}
+	
+	public void test_存在的服务(){
+		ServiceData date = exporter.getOneService("3001");
+		assertNotNull(date);
+		ServiceData date2 = exporter.getOneService("0652");
+		assertNotNull(date2);
+	}
+	
+	public void test_服务报文配置错误(){
+		ServiceData date = exporter.getOneService("3000");
+		assertNotNull(date);
+		ServiceData date2 = exporter.getOneService("8310");
+		assertNotNull(date2);
+	}
+	
+	//TODO:
 	public void atest_导出服务系统关联交易(){
 		ServiceData data = exporter.getOneServerTran("", "9219");
 		System.out.println(data);
-	}
-	
-	public void atest_原子服务服务基本参数(){
-		assertEquals(service_data.getString("SERVICE_CODE"), "8808");
-		assertEquals(service_data.getString("SERVER_CODE"), "inbankSRV");
-		assertEquals(service_data.getString("SERVICE_NAME"), "8808");
-		assertEquals(service_data.getString("SERVICE_TYPE"), "0");
-		assertEquals(service_data.getString("CATEGORY_CODE"), "");
-		assertNull(service_data.getString("EXTEND_SERVICE_NAME"));
-		assertNull(service_data.getString("IS_PUBLISHED"));
-	}
-	
-	public void atest_原子服务服务接口参数(){
-		ServiceData req_service_config_data = service_data.getServiceData("REQ_STRU");
-		assertEquals(req_service_config_data.getString("SERVICE_CODE"), "8808");
-		assertEquals(req_service_config_data.getString("STRUCTURE_TYPE"), "0");
-		assertEquals(req_service_config_data.getString("STRUCTURE_CATEGORY"), "2");
-		ServiceData req_service_config_content_data = req_service_config_data.getServiceData("STRUCTURE_CONTENT");
-		assertEquals(req_service_config_content_data.getString("SDATAS"), "[{field_code:\"I1TRCD\", field_name:\"I1TRCD\", field_type:\"string\", field_length:4, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:5}, {field_code:\"I1SBNO\", field_name:\"I1SBNO\", field_type:\"string\", field_length:10, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:4}, {field_code:\"I1USID\", field_name:\"I1USID\", field_type:\"string\", field_length:6, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:6}, {field_code:\"I1AUUS\", field_name:\"I1AUUS\", field_type:\"string\", field_length:6, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:2}, {field_code:\"I1AUPS\", field_name:\"I1AUPS\", field_type:\"string\", field_length:6, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:1}, {field_code:\"I1WSNO\", field_name:\"I1WSNO\", field_type:\"string\", field_length:40, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:7}, {field_code:\"I1PYNO\", field_name:\"I1PYNO\", field_type:\"string\", field_length:4, field_scale:0, field_category:\"2\", field_parent:\"\", field_id:3}]");
-		assertEquals(req_service_config_content_data.getString("STYPE"), "5");
 	}
 	
 	public void atest_导出原子服务到文件(){

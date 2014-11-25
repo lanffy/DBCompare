@@ -81,7 +81,12 @@ public class ExportDatasFromDB {
 	* @version 2014年11月9日 下午2:21:46
 	*/
 	public List<String> getAllChannelCode(){
-		return channelSevice.getAllChannelCode();
+		List<ChannelInfo> itinfo = channelSevice.getAllChannelCode();
+		List<String> retList = new ArrayList<String>();
+		for (ChannelInfo channelInfo : itinfo) {
+			retList.add(channelInfo.getChannel_code());
+		}
+		return retList;
 	}
 	
 	/**
@@ -91,7 +96,12 @@ public class ExportDatasFromDB {
 	* @version 2014年11月9日 下午2:22:07
 	*/
 	public List<String> getAllServerCode(){
-		return serverSevice.getAllServerCode();
+		List<ServerInfo> serverCodelist = serverSevice.getAllServerCode();
+		List<String> list = new ArrayList<String>();
+		for (ServerInfo serverInfo : serverCodelist) {
+			list.add(serverInfo.getServer_code());
+		}
+		return list;
 	}
 	
 	/**
@@ -101,7 +111,12 @@ public class ExportDatasFromDB {
 	* @version 2014年11月9日 下午2:33:40
 	*/
 	public List<String> getAllChannelTranChannelCodeAndTranCode(){
-		return tranChannelPackageDaoService.getAllChannelCodeAndTranCode();
+		List<TranChannelPackageInfo> it = tranChannelPackageDaoService.getAllChannelCodeAndTranCode();
+		List<String> list = new ArrayList<String>();
+		for (TranChannelPackageInfo info : it) {
+			list.add(info.getChannel_code()+">"+info.getTran_code());
+		}
+		return list;
 	}
 	
 	/**
@@ -111,7 +126,12 @@ public class ExportDatasFromDB {
 	* @version 2014年11月9日 下午2:43:43
 	*/
 	public List<String> getAllServerTranServerCodeAndTranCode(){
-		return tranServerPackageDaoService.getAllServerCodeAndeTranCode();
+		List<TranServerPackageInfo> it = tranServerPackageDaoService.getAllServerCodeAndeTranCode();
+		List<String> list = new ArrayList<String>();
+		for (TranServerPackageInfo info : it) {
+			list.add(info.getServer_code()+">"+info.getTran_code());
+		}
+		return list;
 	}
 	
 	/**
@@ -121,7 +141,12 @@ public class ExportDatasFromDB {
 	* @version 2014年11月9日 下午3:25:09
 	*/
 	public List<String> getAllServiceCode(){
-		return serviceDaoService.getAllServiceCode();
+		List<ServiceInfo> it = serviceDaoService.getAllServiceCode();
+		List<String> list = new ArrayList<String>();
+		for (ServiceInfo info : it) {
+			list.add(info.getService_code());
+		}
+		return list;
 	}
 	
 	/**
@@ -177,24 +202,57 @@ public class ExportDatasFromDB {
 	public ServiceData getOneEndPoint(String channel_code){
 		ChannelInfo channelInfo = channelSevice.getOneChannel(channel_code);
 		if(channelInfo == null){
-			logger.warn("此ENdPoint不存在，channel_code：{}", channel_code);
+			logger.error("此ENdPoint不存在，channel_code：{}", channel_code);
 			return null;
 		}
 		ServiceData channelData = new ServiceData();
 		putChannelBasicPar(channelData, channelInfo);
 		//通讯
-		channelData.putServiceData("COMM_ID", putComm(channelInfo.getComm_id()));
-		//接口
-		channelData.putServiceData("REQ_PACKAGE_CONFIG", getStructure(channelInfo.getReq_package_config()));
-		channelData.putServiceData("RESP_PACKAGE_CONFIG", getStructure(channelInfo.getResp_package_config()));
-		channelData.putServiceData("ERR_PACKAGE_CONFIG", getStructure(channelInfo.getErr_package_config()));
-		//映射
-		channelData.putServiceData("IN_MAPPING", getMap(channelInfo.getIn_mapping()));
-		channelData.putServiceData("OUT_MAPPING", getMap(channelInfo.getOut_mapping()));
-		channelData.putServiceData("ERROR_MAPPING", getMap(channelInfo.getError_mapping()));
+		ServiceData commData = getCommData(channelInfo.getComm_id());
+		if(commData == null){
+			logger.error("此EndPoint({})的通讯参数为空，此现象不应该出现", channelInfo.getChannel_code());
+		}
+		channelData.putServiceData("COMM_ID", commData);
+		//请求报文配置
+		ServiceData reqConfData = getStructure(channelInfo.getReq_package_config());
+		if(!StringUtil.isEmpty(channelInfo.getReq_package_config()) && reqConfData == null){
+			logger.error("EndPoint({})请求报文配置错误，检查REQ_PACKAGE_CONFIG是否正常", channelInfo.getChannel_code());
+		}
+		channelData.putServiceData("REQ_PACKAGE_CONFIG", reqConfData);
+		//响应报文配置
+		ServiceData respConfData = getStructure(channelInfo.getResp_package_config());
+		if(!StringUtil.isEmpty(channelInfo.getResp_package_config()) && respConfData == null){
+			logger.error("EndPoint({})响应报文配置错误，检查RESP_PACKAGE_CONFIG是否正常", channelInfo.getChannel_code());
+		}
+		channelData.putServiceData("RESP_PACKAGE_CONFIG", respConfData);
+		//错误报文配置
+		ServiceData errConfData = getStructure(channelInfo.getErr_package_config());
+		if(!StringUtil.isEmpty(channelInfo.getErr_package_config()) && errConfData == null){
+			logger.error("EndPoint({})错误报文配置错误，检查ERR_PACKAGE_CONFIG是否正常", channelInfo.getChannel_code());
+		}
+		channelData.putServiceData("ERR_PACKAGE_CONFIG", errConfData);
+		
+		//请求映射
+		ServiceData inMapData = getMap(channelInfo.getIn_mapping());
+		if(!StringUtil.isEmpty(channelInfo.getIn_mapping()) && inMapData == null){
+			logger.error("EndPoint({})系统请求映射配置错误，检查IN_MAPPING是否正常", channelInfo.getChannel_code());
+		}
+		channelData.putServiceData("IN_MAPPING", inMapData);
+		//响应映射
+		ServiceData outMapData = getMap(channelInfo.getOut_mapping());
+		if(!StringUtil.isEmpty(channelInfo.getOut_mapping()) && outMapData == null){
+			logger.error("EndPoint({})系统响应映射配置错误，检查OUT_MAPPING是否正常", channelInfo.getChannel_code());
+		}
+		channelData.putServiceData("OUT_MAPPING", outMapData);
+		//错误映射
+		ServiceData errMapData = getMap(channelInfo.getError_mapping());
+		if(!StringUtil.isEmpty(channelInfo.getError_mapping()) && errMapData == null){
+			logger.error("EndPoint({})系统错误映射配置错误，检查ERROR_MAPPING是否正常", channelInfo.getChannel_code());
+		}
+		channelData.putServiceData("ERROR_MAPPING", errMapData);
 		return channelData;
 	}
-
+	
 	/**
 	* @description 得到指定服务系统的单元数据
 	* @author raoliang
@@ -203,21 +261,55 @@ public class ExportDatasFromDB {
 	public ServiceData getOneServer(String server_code){
 		ServerInfo serverInfo = serverSevice.getOneServer(server_code);
 		if(serverInfo == null){
-			logger.warn("服务系统不存在，server_code：{}", server_code);
+			logger.error("服务系统不存在，server_code：{}", server_code);
 			return null;
 		}
 		ServiceData serverData = new ServiceData();
 		putServerBasicPar(serverData, serverInfo);
 		//通讯
-		serverData.putServiceData("COMM_ID", putComm(serverInfo.getComm_id()));
-		//接口
-		serverData.putServiceData("REQ_PACKAGE_CONFIG", getStructure(serverInfo.getReq_package_config()));
-		serverData.putServiceData("RESP_PACKAGE_CONFIG", getStructure(serverInfo.getResp_package_config()));
-		serverData.putServiceData("ERR_PACKAGE_CONFIG", getStructure(serverInfo.getErr_package_config()));
-		//映射
-		serverData.putServiceData("IN_MAPPING", getMap(serverInfo.getIn_mapping()));
-		serverData.putServiceData("OUT_MAPPING", getMap(serverInfo.getOut_mapping()));
-		serverData.putServiceData("ERROR_MAPPING", getMap(serverInfo.getOut_mapping()));
+		ServiceData commData = getCommData(serverInfo.getComm_id());
+		if(commData == null){
+			logger.error("此服务系统({})的通讯参数为空，此现象不应该出现", serverInfo.getServer_code());
+		}
+		serverData.putServiceData("COMM_ID", commData);
+		
+		//请求报文配置
+		ServiceData reqConfData = getStructure(serverInfo.getReq_package_config());
+		if(!StringUtil.isEmpty(serverInfo.getReq_package_config()) && reqConfData == null){
+			logger.error("服务系统({})请求报文配置错误，检查REQ_PACKAGE_CONFIG是否正常", serverInfo.getServer_code());
+		}
+		serverData.putServiceData("REQ_PACKAGE_CONFIG", reqConfData);
+		//响应报文配置
+		ServiceData respConfData = getStructure(serverInfo.getResp_package_config());
+		if(!StringUtil.isEmpty(serverInfo.getResp_package_config()) && respConfData == null){
+			logger.error("服务系统({})响应报文配置错误，检查RESP_PACKAGE_CONFIG是否正常", serverInfo.getServer_code());
+		}
+		serverData.putServiceData("RESP_PACKAGE_CONFIG", respConfData);
+		//错误报文配置
+		ServiceData errConfData = getStructure(serverInfo.getErr_package_config());
+		if(!StringUtil.isEmpty(serverInfo.getErr_package_config()) && errConfData == null){
+			logger.error("服务系统({})错误报文配置错误，检查ERR_PACKAGE_CONFIG是否正常", serverInfo.getServer_code());
+		}
+		serverData.putServiceData("ERR_PACKAGE_CONFIG", errConfData);
+		
+		//请求映射
+		ServiceData inMapData = getMap(serverInfo.getIn_mapping());
+		if(!StringUtil.isEmpty(serverInfo.getIn_mapping()) && inMapData == null){
+			logger.error("服务系统({})系统请求映射配置错误，检查IN_MAPPING是否正常", serverInfo.getServer_code());
+		}
+		serverData.putServiceData("IN_MAPPING", inMapData);
+		//响应映射
+		ServiceData outMapData = getMap(serverInfo.getOut_mapping());
+		if(!StringUtil.isEmpty(serverInfo.getOut_mapping()) && outMapData == null){
+			logger.error("服务系统({})系统响应映射配置错误，检查OUT_MAPPING是否正常", serverInfo.getServer_code());
+		}
+		serverData.putServiceData("OUT_MAPPING", outMapData);
+		//错误映射
+		ServiceData errMapData = getMap(serverInfo.getError_mapping());
+		if(!StringUtil.isEmpty(serverInfo.getError_mapping()) && errMapData == null){
+			logger.error("服务系统({})系统错误映射配置错误，检查ERROR_MAPPING是否正常", serverInfo.getServer_code());
+		}
+		serverData.putServiceData("ERROR_MAPPING", errMapData);
 		return serverData;
 	}
 	
@@ -230,19 +322,44 @@ public class ExportDatasFromDB {
 	public ServiceData getOneChannelTran(String channel_code, String tran_code){
 		TranChannelPackageInfo info = tranChannelPackageDaoService.getOneTran(channel_code, tran_code);
 		if(info == null){
-			logger.warn("ENdPoint下无此关联交易，channel_code：{},tran_code:{}", channel_code, tran_code);
+			logger.error("ENdPoint下无此关联交易，channel_code：{},tran_code:{}", channel_code, tran_code);
 			return null;
 		}
 		ServiceData data = new ServiceData();
 		data.putString("CHANNEL_CODE", info.getChannel_code());
 		data.putString("TRAN_CODE", info.getTran_code());
 		data.putString("TRAN_NAME", info.getTran_name());
-		data.putServiceData("REQ_PACKAGE_CONFIG", getStructure(info.getReq_package_config()));
-		data.putServiceData("RESP_PACKAGE_CONFIG", getStructure(info.getResp_package_config()));
-		data.putServiceData("IN_MAPPING", getMap(info.getIn_mapping()));
-		data.putServiceData("OUT_MAPPING", getMap(info.getOut_mapping()));
-		data.putServiceData("ERROR_MAPPING", getMap(info.getError_mapping()));
+		//请求报文配置
+		ServiceData reqConfData = getStructure(info.getReq_package_config());
+		if(!StringUtil.isEmpty(info.getReq_package_config()) && reqConfData == null){
+			logger.error("EndPoint({})关联交易({})请求报文配置错误，检查REQ_PACKAGE_CONFIG是否正常", channel_code, tran_code);
+		}
+		data.putServiceData("REQ_PACKAGE_CONFIG", reqConfData);
+		//响应报文配置
+		ServiceData respConfData = getStructure(info.getResp_package_config());
+		if(!StringUtil.isEmpty(info.getResp_package_config()) && respConfData == null){
+			logger.error("EndPoint({})关联交易({})响应报文配置错误，检查RESP_PACKAGE_CONFIG是否正常", channel_code, tran_code);
+		}
+		data.putServiceData("RESP_PACKAGE_CONFIG", respConfData);
 		
+		//请求映射
+		ServiceData inMapData = getMap(info.getIn_mapping());
+		if(!StringUtil.isEmpty(info.getIn_mapping()) && inMapData == null){
+			logger.error("EndPoint({})关联交易({})请求映射配置错误，检查IN_MAPPING是否正常", channel_code, tran_code);
+		}
+		data.putServiceData("IN_MAPPING", inMapData);
+		//响应映射
+		ServiceData outMapData = getMap(info.getOut_mapping());
+		if(!StringUtil.isEmpty(info.getOut_mapping()) && outMapData == null){
+			logger.error("EndPoint({})关联交易({})响应映射配置错误，检查OUT_MAPPING是否正常", channel_code, tran_code);
+		}
+		data.putServiceData("OUT_MAPPING", outMapData);
+		//错误映射
+		ServiceData errMapData = getMap(info.getError_mapping());
+		if(!StringUtil.isEmpty(info.getError_mapping()) && errMapData == null){
+			logger.error("EndPoint({})关联交易({})错误映射配置错误，检查ERROR_MAPPING是否正常", channel_code, tran_code);
+		}
+		data.putServiceData("ERROR_MAPPING", errMapData);
 		return data;
 	}
 
@@ -255,19 +372,44 @@ public class ExportDatasFromDB {
 	public ServiceData getOneServerTran(String server_code, String tran_code){
 		TranServerPackageInfo info = tranServerPackageDaoService.getOneTran(server_code, tran_code);
 		if(info == null){
-			logger.warn("服务系统关联交易不存在，server_code：{}，tran_code：{}", server_code, tran_code);
+			logger.error("服务系统关联交易不存在，server_code：{}，tran_code：{}", server_code, tran_code);
 			return null;
 		}
 		ServiceData data = new ServiceData();
 		data.putString("SERVER_CODE", info.getServer_code());
 		data.putString("TRAN_CODE", info.getTran_code());
 		data.putString("TRAN_NAME", info.getTran_name());
-		data.putServiceData("REQ_PACKAGE_CONFIG", getStructure(info.getReq_package_config()));
-		data.putServiceData("RESP_PACKAGE_CONFIG", getStructure(info.getResp_package_config()));
-		data.putServiceData("IN_MAPPING", getMap(info.getIn_mapping()));
-		data.putServiceData("OUT_MAPPING", getMap(info.getOut_mapping()));
-		data.putServiceData("ERROR_MAPPING", getMap(info.getError_mapping()));
+		//请求报文配置
+		ServiceData reqConfData = getStructure(info.getReq_package_config());
+		if(!StringUtil.isEmpty(info.getReq_package_config()) && reqConfData == null){
+			logger.error("服务系统({})关联交易({})请求报文配置错误，检查REQ_PACKAGE_CONFIG是否正常", server_code, tran_code);
+		}
+		data.putServiceData("REQ_PACKAGE_CONFIG", reqConfData);
+		//响应报文配置
+		ServiceData respConfData = getStructure(info.getResp_package_config());
+		if(!StringUtil.isEmpty(info.getResp_package_config()) && respConfData == null){
+			logger.error("服务系统({})关联交易({})响应报文配置错误，检查RESP_PACKAGE_CONFIG是否正常", server_code, tran_code);
+		}
+		data.putServiceData("RESP_PACKAGE_CONFIG", respConfData);
 		
+		//请求映射
+		ServiceData inMapData = getMap(info.getIn_mapping());
+		if(!StringUtil.isEmpty(info.getIn_mapping()) && inMapData == null){
+			logger.error("服务系统({})关联交易({})请求映射配置错误，检查IN_MAPPING是否正常", server_code, tran_code);
+		}
+		data.putServiceData("IN_MAPPING", inMapData);
+		//响应映射
+		ServiceData outMapData = getMap(info.getOut_mapping());
+		if(!StringUtil.isEmpty(info.getOut_mapping()) && outMapData == null){
+			logger.error("服务系统({})关联交易({})响应映射配置错误，检查OUT_MAPPING是否正常", server_code, tran_code);
+		}
+		data.putServiceData("OUT_MAPPING", outMapData);
+		//错误映射
+		ServiceData errMapData = getMap(info.getError_mapping());
+		if(!StringUtil.isEmpty(info.getError_mapping()) && errMapData == null){
+			logger.error("服务系统({})关联交易({})错误映射配置错误，检查ERROR_MAPPING是否正常", server_code, tran_code);
+		}
+		data.putServiceData("ERROR_MAPPING", errMapData);
 		return data;
 	}
 	
@@ -281,7 +423,7 @@ public class ExportDatasFromDB {
 	public ServiceData getOneService(String service_code) {
 		ServiceInfo info = serviceDaoService.getOneServiceByCode(service_code);
 		if (info == null) {
-			logger.warn("服务不存在，service_code：{}", service_code);
+			logger.error("服务不存在，service_code：{}", service_code);
 			return null;
 		}
 		ServiceData data = new ServiceData();
@@ -292,10 +434,24 @@ public class ExportDatasFromDB {
 		data.putString("SERVICE_NAME", info.getService_name());
 		data.putString("SERVER_CODE", info.getServer_code());
 		data.putString("EXTEND_SERVICE_NAME", info.getExtend_service_name());
-		data.putServiceData("REQ_STRU", getStructure(info.getReq_stru()));
-		data.putServiceData("RESP_STRU", getStructure(info.getResp_stru()));
-		data.putServiceData("ERR_STRU", getStructure(info.getErr_stru()));
-		
+		//请求报文配置
+		ServiceData reqConfData = getStructure(info.getReq_stru());
+		if(!StringUtil.isEmpty(info.getReq_stru()) && reqConfData == null){
+			logger.error("服务({})请求报文配置错误，检查REQ_STRU是否正常", info.getService_code());
+		}
+		data.putServiceData("REQ_STRU", reqConfData);
+		//响应报文配置
+		ServiceData respConfData = getStructure(info.getResp_stru());
+		if(!StringUtil.isEmpty(info.getResp_stru()) && respConfData == null){
+			logger.error("服务({})响应报文配置错误，检查RESP_STRU是否正常", info.getService_code());
+		}
+		data.putServiceData("RESP_STRU", respConfData);
+		//错误报文配置
+		ServiceData errConfData = getStructure(info.getErr_stru());
+		if(!StringUtil.isEmpty(info.getErr_stru()) && errConfData == null){
+			logger.error("服务({})错误报文配置错误，检查ERR_STRU是否正常", info.getService_code());
+		}
+		data.putServiceData("ERR_STRU", errConfData);
 		data.putString("IS_PUBLISHED", info.getIs_published());
 		//组合服务
 		if("2".equals(service_type)){
@@ -314,7 +470,7 @@ public class ExportDatasFromDB {
 	public ServiceData getOneMachine(String machine_code){
 		MachineInfo info = machineDaoService.getOneMachine(machine_code);
 		if (info == null) {
-			logger.warn("服务器列表下无此服务器，machine_code：{}", machine_code);
+			logger.error("服务器列表下无此服务器，machine_code：{}", machine_code);
 			return null;
 		}
 		ServiceData data = new ServiceData();
@@ -396,7 +552,7 @@ public class ExportDatasFromDB {
 	public ServiceData getOneDict(String dict_code){
 		DictInfo info = dictDaoService.findOneDict(dict_code);
 		if(info == null){
-			logger.warn("数据字典{}不存在", dict_code);
+			logger.error("数据字典{}不存在", dict_code);
 			return null;
 		}
 		ServiceData data = new ServiceData();
@@ -452,7 +608,7 @@ public class ExportDatasFromDB {
 	public ServiceData getOneMode(String mode_code) {
 		ModeInfo info = modeDaoService.getOneMode(mode_code);
 		if(info == null){
-			logger.warn("模式不存在，模式名称:{}", mode_code);
+			logger.error("模式不存在，模式名称:{}", mode_code);
 			return null;
 		}
 		ServiceData data = new ServiceData();
@@ -517,7 +673,7 @@ public class ExportDatasFromDB {
 		data.putString("SERVER_ACTOR_CLASS", info.getServer_actor_class());
 	}
 
-  	private static ServiceData putComm(String comm_id){
+  	private static ServiceData getCommData(String comm_id){
   		return getCommData(commDaoSevice.findOneComm(comm_id));
   	}
   	
