@@ -210,26 +210,25 @@ public class TestExportDatasFromTable extends TestCase {
 		assertNotNull(serverTran);
 	}
 	
-	public void test_不存在的服务(){
+	public void atest_不存在的服务(){
 		ServiceData date = exporter.getOneService("0000");
 		assertNull(date);
 	}
 	
-	public void test_存在的服务(){
+	public void atest_存在的服务(){
 		ServiceData date = exporter.getOneService("3001");
 		assertNotNull(date);
 		ServiceData date2 = exporter.getOneService("0652");
 		assertNotNull(date2);
 	}
 	
-	public void test_服务报文配置错误(){
+	public void atest_服务报文配置错误(){
 		ServiceData date = exporter.getOneService("3000");
 		assertNotNull(date);
 		ServiceData date2 = exporter.getOneService("8310");
 		assertNotNull(date2);
 	}
 	
-	//TODO:
 	public void atest_导出服务系统关联交易(){
 		ServiceData data = exporter.getOneServerTran("", "9219");
 		System.out.println(data);
@@ -281,10 +280,16 @@ public class TestExportDatasFromTable extends TestCase {
 		assertEquals(fileData.getString("CONTENT"), "{nodes:[{id:\"node_0\", name:\"开始\", code:\"cstart\", node_type:\"img\", left:-2, top:0, width:64, height:64, img_url:\"cstart.png\", point_type:2, in_nums:0, out_nums:1, can_resize:true, bindable:false, properties:{}}, {id:\"node_2\", name:\"映射(int a = 0;)(R S E)\", code:\"cmap\", node_type:\"img\", left:133, top:29, width:64, height:64, img_url:\"cmapping.png\", point_type:2, in_nums:1, out_nums:1, can_resize:true, bindable:false, properties:{mapping_code:\"int a = 0;\"}}, {id:\"node_3\", name:\"服务(0052)\", code:\"cservice\", node_type:\"img\", left:40, top:128, width:64, height:64, img_url:\"cservice.png\", point_type:2, in_nums:10, out_nums:0, can_resize:true, bindable:false, properties:{select_mode:\"1\", service_code:\"0052\"}}], lines:[{from:\"node_0\", to:\"node_2\", type:\"line\", properties:{}}, {from:\"node_2\", to:\"node_3\", type:\"line\", properties:{}}]}");
 	}
 	
-	public void atest_导出部署数据到文件(){
-		ServiceData expandData = exporter.getOneMachine("001");
-		System.out.println(expandData);
-		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
+	//TODO:
+	public void test_导出部署数据到文件(){
+		List<String> listcode = exporter.getAllMachineCode();
+		System.out.println("get machine_code:"+listcode.size());
+		for (String string : listcode) {
+			ServiceData expandData = exporter.getOneMachine(string);
+			System.out.println("****AAAA*****");
+			System.out.println(expandData);
+		}
+//		JSONFileUtil.storeServiceDataToJsonFile(expandData, filePath);
 	}
 	
 	public void atest_从文件读取部署数据(){

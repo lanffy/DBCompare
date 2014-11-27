@@ -474,17 +474,24 @@ public class ExportDatasFromDB {
 		data.putString("MACHINE_CODE", info.getMachine_code());
 		data.putString("MACHINE_IP", info.getMachine_ip());
 		data.putString("MACHINE_NAME", info.getMachine_name());
-		
 		ServiceData instanceData = getOneInstance(info.getMachine_code());
 		if(instanceData != null && instanceData.size() > 0){
 			data.putServiceData("INSTANCE", instanceData);
+			logger.info("导出服务器:{}下的进程列表数据{}条", machine_code, instanceData.size());
 		}
-		logger.info("导出服务器:{}下的进程列表数据{}条", machine_code, instanceData.size());
-		ServiceData processInstanceData = getAllProcessInstance(info.getMachine_code());
-		if(processInstanceData != null && processInstanceData.size() > 0){
-			data.putServiceData("PROCESSINSTANCE", processInstanceData);
+		
+		String[] skeycs = instanceData.getKeys();
+		ServiceData pid = new ServiceData();
+		for (String skeyc : skeycs) {
+			ServiceData processInstanceData = getAllProcessInstance(skeyc);
+			if(processInstanceData != null && processInstanceData.size() > 0){
+				pid.putServiceData(skeyc, processInstanceData);
+				logger.info("导出服务器:{}下的进程{}下部署的EndPoint数据{}条", machine_code, skeyc, processInstanceData.size());
+			}
 		}
-		logger.info("导出机器号:{}下部署的EndPoint数据{}条", machine_code, processInstanceData.size());
+		if(pid.size() > 0){
+			data.putServiceData("PROCESSINSTANCE", pid);
+		}
 		return data;
 	}
 	
@@ -498,7 +505,7 @@ public class ExportDatasFromDB {
 	public ServiceData getOneInstance(String machineCode){
 		List<InstanceInfo> infos = instanceDaoService.getInstances(machineCode);
 		if(infos == null){
-			logger.warn("vrouter实例不存在,进程标识代码:{}", machineCode);
+			logger.warn("服务器下进程列表不存在,服务器编码:{}", machineCode);
 			return null;
 		}
 		ServiceData datas = new ServiceData();
@@ -507,7 +514,6 @@ public class ExportDatasFromDB {
 			data.putString("MACHINE_CODE", info.getMachine_code());
 			data.putString("SKEYC", info.getSkeyc());
 			data.putString("SKEYD", info.getSkeyd());
-			
 			datas.putServiceData(info.getSkeyc(), data);
 		}
 		return datas;
