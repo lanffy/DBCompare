@@ -19,7 +19,8 @@ public class DBImporter extends DBporter{
 	}
 	
 	public static void doImport() {
-		logger.info("***Begin开始向数据库导入数据,开始时间:{}***",getTime());
+		System.out.println("begin Import...");
+		logger.info("\n***Begin开始向数据库导入数据,开始时间:{}***",getTime());
 		//清空数据库
 		//新的需求：不能全部导出导入，所以不能清空数据库
 		/**
@@ -41,7 +42,7 @@ public class DBImporter extends DBporter{
 		insertDict();
 		insertMode();
 		commit();
-		logger.info("***End向数据库导入数据结束,结束时间:{}***", getTime());
+		logger.info("\n***End向数据库导入数据结束,结束时间:{}***", getTime());
 		System.out.println("Import done!");
 	}
 	

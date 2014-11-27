@@ -176,6 +176,7 @@ public class ImportDatasToDB {
 	public int insertOneMachine(ServiceData machineData){
 		int count = 0;
 		MachineInfo info = getMachineInfo(machineData);
+		//服务器，有则更新，无则新增
 		count = machineDaoService.saveOneMachine(info);
 		//插入服务器下的进程列表
 		if(machineData.size() >= 4){
@@ -225,8 +226,13 @@ public class ImportDatasToDB {
 			//得到单个进程的Info
 			ProcessInstanceInfo info = getProcessInstanceInfo(data);
 			//插入单个进程
-			count += processInstanceDaoService.updateOneRecord(info);
-			logger.info("成功插入部署进程{},部署渠道{},部署端口{}", info.getSkeyc(), keysStr, info.getBind_address());
+			if(processInstanceDaoService.isProcessInstanceIsExist(info)){
+				count += processInstanceDaoService.updateOneRecord(info);
+				logger.info("成功修改部署进程{},部署渠道{},部署端口{}", info.getSkeyc(), keysStr, info.getBind_address());
+			}else {
+				count += processInstanceDaoService.insertOneRecord(info);
+				logger.info("成功插入部署进程{},部署渠道{},部署端口{}", info.getSkeyc(), keysStr, info.getBind_address());
+			}
 		}
 		return count;
 	}

@@ -17,7 +17,8 @@ public class DBExporter extends DBporter{
 	}
 	
 	public static void doExport() {
-		logger.info("***Begin开始导出数据,开始时间:{}***",getTime());
+		System.out.println("begin Export...");
+		logger.info("\n***Begin开始导出数据,开始时间:{}***",getTime());
 		/** 导出顺序：EndPoint、服务系统、EndPoint关联交易、服务系统关联交易
 		 * 服务、部署、数据字典、模式
 		 */
@@ -29,7 +30,7 @@ public class DBExporter extends DBporter{
 		exportMachine();
 		exportDict();
 		exportMode();
-		logger.info("***End导出数据结束,结束时间:{}***", getTime());
+		logger.info("\n***End导出数据结束,结束时间:{}***", getTime());
 		System.out.println("Export done!");
 	}
 	
@@ -106,27 +107,31 @@ public class DBExporter extends DBporter{
 			if(data.size() >= 5){
 				ServiceData INSTANCE = data.getServiceData("INSTANCE");
 				ServiceData PROCESSINSTANCE = data.getServiceData("PROCESSINSTANCE");
-				//服务器下的进程
-				for (String keyInstance : INSTANCE.getKeys()) {
-					ServiceData SKEYC = INSTANCE.getServiceData(keyInstance);
-					ServiceData provessInstanceAll = PROCESSINSTANCE.getServiceData(keyInstance);
-					//进程下部署的EndPoint
-					for (String pkey : provessInstanceAll.getKeys()) {
-						ServiceData processData = provessInstanceAll.getServiceData(pkey);
-						ServiceData singlInstance = new ServiceData();
-						singlInstance.putString("MACHINE_CODE", data.getString("MACHINE_CODE"));
-						singlInstance.putString("MACHINE_IP", data.getString("MACHINE_IP"));
-						singlInstance.putString("MACHINE_NAME", data.getString("MACHINE_NAME"));
-						
-						ServiceData instance = new ServiceData();
-						instance.putServiceData(keyInstance, SKEYC);
-						singlInstance.putServiceData("INSTANCE", instance);
-						
-						ServiceData pInstance = new ServiceData();
-						pInstance.putServiceData(pkey, processData);
-						singlInstance.putServiceData("PROCESSINSTANCE", pInstance);
-						File file = createFile(fileDir+replace(machine_code+"_"+keyInstance+"_"+pkey));
-						JSONFileUtil.storeServiceDataToJsonFile(singlInstance, file);
+				if(INSTANCE.size() > 0){
+					//服务器下的进程
+					for (String keyInstance : INSTANCE.getKeys()) {
+						ServiceData SKEYC = INSTANCE.getServiceData(keyInstance);
+						ServiceData provessInstanceAll = PROCESSINSTANCE.getServiceData(keyInstance);
+						if(provessInstanceAll.size() > 0){
+							//进程下部署的EndPoint
+							for (String pkey : provessInstanceAll.getKeys()) {
+								ServiceData processData = provessInstanceAll.getServiceData(pkey);
+								ServiceData singlInstance = new ServiceData();
+								singlInstance.putString("MACHINE_CODE", data.getString("MACHINE_CODE"));
+								singlInstance.putString("MACHINE_IP", data.getString("MACHINE_IP"));
+								singlInstance.putString("MACHINE_NAME", data.getString("MACHINE_NAME"));
+								
+								ServiceData instance = new ServiceData();
+								instance.putServiceData(keyInstance, SKEYC);
+								singlInstance.putServiceData("INSTANCE", instance);
+								
+								ServiceData pInstance = new ServiceData();
+								pInstance.putServiceData(pkey, processData);
+								singlInstance.putServiceData("PROCESSINSTANCE", pInstance);
+								File file = createFile(fileDir+replace(machine_code+"_"+keyInstance+"_"+pkey));
+								JSONFileUtil.storeServiceDataToJsonFile(singlInstance, file);
+							}
+						}
 					}
 				}
 			} else {
