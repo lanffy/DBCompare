@@ -58,7 +58,9 @@ public class DBporter {
 	
 	public static List<File> listAllFiles(File dir) {
 		final List<File> file_list = new ArrayList<File>();
-		listAllFiles(dir, file_list);
+		if(dir.exists()){
+			listAllFiles(dir, file_list);
+		}
 		return file_list;
 	}
 
