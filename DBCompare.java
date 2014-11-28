@@ -1111,7 +1111,7 @@ public class DBCompare {
 		ResultSet old_machine_rs = null;
 		ResultSet new_machine_rs = null;
 		try {
-			menuwriter.write("&nbsp;<a href=\""+reportfile.getAbsolutePath()+"#"+machineName+"\" target=\"show\">"+machineName+"</a></br>");
+			menuwriter.write("&nbsp;<a href=\""+reportfile.getName()+"#"+machineName+"\" target=\"show\">"+machineName+"</a></br>");
 			//获得结果集
 			old_machine_rs = oldst.executeQuery(sql);
 			new_machine_rs = newst.executeQuery(sql);
@@ -1205,7 +1205,7 @@ public class DBCompare {
 		ResultSet old_process_rs = null;
 		ResultSet new_process_rs = null;
 		try {
-			menuwriter.write("&nbsp;<a href=\""+reportfile.getAbsolutePath()+"#"+processName+"\" target=\"show\">"+processName+"</a></br>");
+			menuwriter.write("&nbsp;<a href=\""+reportfile.getName()+"#"+processName+"\" target=\"show\">"+processName+"</a></br>");
 			//获得结果集
 			old_process_rs = oldst.executeQuery(sql);
 			new_process_rs = newst.executeQuery(sql);
@@ -1339,7 +1339,7 @@ public class DBCompare {
 		ResultSet old_mode_rs = null;
 		ResultSet new_mode_rs = null;
 		try {
-			menuwriter.write("&nbsp;<a href=\""+reportfile.getAbsolutePath()+"#"+modeCh+"\" target=\"show\">"+modeCh+"</a></br>");
+			menuwriter.write("&nbsp;<a href=\""+reportfile.getName()+"#"+modeCh+"\" target=\"show\">"+modeCh+"</a></br>");
 			//获得结果集
 			old_mode_rs = oldst.executeQuery(sql);
 			new_mode_rs = newst.executeQuery(sql);
@@ -1455,7 +1455,7 @@ public class DBCompare {
 		ResultSet old_mode_rs = null;
 		ResultSet new_mode_rs = null;
 		try {
-			menuwriter.write("&nbsp;<a href=\""+reportfile.getAbsolutePath()+"#"+modeParameters+"\" target=\"show\">"+modeParameters+"</a></br>");
+			menuwriter.write("&nbsp;<a href=\""+reportfile.getName()+"#"+modeParameters+"\" target=\"show\">"+modeParameters+"</a></br>");
 			//获得结果集
 			old_mode_rs = oldst.executeQuery(sql);
 			new_mode_rs = newst.executeQuery(sql);
@@ -1563,7 +1563,7 @@ public class DBCompare {
 		ResultSet old_dict_rs = null;
 		ResultSet new_dict_rs = null;
 		try {
-			menuwriter.write("&nbsp;<a href=\""+reportfile.getAbsolutePath()+"#"+dictCh+"\" target=\"show\">"+dictCh+"</a></br>");
+			menuwriter.write("&nbsp;<a href=\""+reportfile.getName()+"#"+dictCh+"\" target=\"show\">"+dictCh+"</a></br>");
 			//获得结果集
 			old_dict_rs = oldst.executeQuery(sql);
 			new_dict_rs = newst.executeQuery(sql);
@@ -1630,7 +1630,7 @@ public class DBCompare {
 		ResultSet old_dict_detail_rs = null;
 		ResultSet new_dict_detail_rs = null;
 		try {
-			menuwriter.write("&nbsp;<a href=\""+reportfile.getAbsolutePath()+"#"+dictParameters+"\" target=\"show\">"+dictParameters+"</a></br>");
+			menuwriter.write("&nbsp;<a href=\""+reportfile.getName()+"#"+dictParameters+"\" target=\"show\">"+dictParameters+"</a></br>");
 			//获得结果集
 			old_dict_detail_rs = oldst.executeQuery(sql);
 			new_dict_detail_rs = newst.executeQuery(sql);
@@ -1803,11 +1803,11 @@ public class DBCompare {
 	}
 	
 	private static String gethrefStr(String channelName, int num, String idName){
-		return "<a href=\""+reportfile.getAbsolutePath()+"#"+channelName+"_"+idName+"\" target=\"show\"><b>"+num+"</b></a>个<br/>";
+		return "<a href=\""+reportfile.getName()+"#"+channelName+"_"+idName+"\" target=\"show\"><b>"+num+"</b></a>个<br/>";
 	}
 	
 	private static String liHref(String channelNameCh){
-		return "<li><a href=\""+reportfile.getAbsolutePath()+"#"+channelNameCh+"\" target=\"show\">"+channelNameCh+"</a></li>";
+		return "<li><a href=\""+reportfile.getName()+"#"+channelNameCh+"\" target=\"show\">"+channelNameCh+"</a></li>";
 	}
 	
 	private static String liNoHref(String channelNameCh){
