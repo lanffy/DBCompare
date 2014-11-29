@@ -652,33 +652,33 @@ public class DBCompare {
 			}else{
 				new_map_id_list.add(new_map_id);
 				old_map_id_list.add(old_map_id);
-				//获得关联交易结果集,进行比较
+				
 				new_map_rs = newst.executeQuery("SELECT * FROM sys_mapping where ID ='"+new_map_id+"'");
 				old_map_rs = oldst.executeQuery("SELECT * FROM sys_mapping where ID ='"+old_map_id+"'");
 				old_map_rs.next();new_map_rs.next();
 				if(old_map_rs.getRow()==0||new_map_rs.getRow()==0){
+					//TODO:
 					return "";
 				}
 				String oldcolumn = "";
 				String newcolumn = "";
 				StringBuilder mapModifyed = new StringBuilder();
 				for (int i = 0; i < columnNames.length; i++) {
-					if("MAPPING_SCRIPT".equalsIgnoreCase(columnNames[i])){
-						oldcolumn = old_map_rs.getString(columnNames[i]);
-						newcolumn = new_map_rs.getString(columnNames[i]);
+					oldcolumn = old_map_rs.getString(columnNames[i]);
+					newcolumn = new_map_rs.getString(columnNames[i]);
+					String changedStr = "<tr class=\"modify\"><td>["+code+"]>["+configNameMap.get(mappingName)+"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>";
+					if(i < 3){
 						if(!oldcolumn.equals(newcolumn)){
 							modNum.incrementAndGet();
-							mapModifyed.append("<tr class=\"modify\"><td>["+code+"]>["+configNameMap.get(mappingName)+"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
+							mapModifyed.append(changedStr);
 						}
 					}else {
 						//对比映射的属性
-						oldcolumn = old_map_rs.getString(columnNames[i]);
-						newcolumn = new_map_rs.getString(columnNames[i]);
 						String old_map_parameter = getSaveDatasById(oldcolumn, "old");
 						String new_map_parameter = getSaveDatasById(newcolumn, "new");
 						if(!old_map_parameter.equals(new_map_parameter)){
 							modNum.incrementAndGet();
-							mapModifyed.append("<tr class=\"modify\"><td>["+code+"]>["+configNameMap.get(mappingName)+"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
+							mapModifyed.append(changedStr);
 						}
 					}
 				}
@@ -711,6 +711,8 @@ public class DBCompare {
 			return dataSb.toString();
 		} catch (SQLException e) {
 			throw new SystemException("EXECUTE_SQL_ERROR", e).addScene("sql", sql);
+		}finally {
+			closeResultSet(rs);
 		}
 	}
 	
