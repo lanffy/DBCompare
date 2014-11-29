@@ -1214,11 +1214,15 @@ public class DBCompare {
 			//将主键放入array中
 			List<String> old_process_list = new ArrayList<String>();
 			List<String> new_process_list = new ArrayList<String>();
+			Map<String, String> old_process_map_with_address = new HashMap<String, String>();
+			Map<String, String> new_process_map_with_address = new HashMap<String, String>();
 			while(old_process_rs.next()){
-				old_process_list.add(old_process_rs.getString("CHANNEL_CODE")+">"+old_process_rs.getString("BIND_ADDRESS"));
+				old_process_list.add(old_process_rs.getString("CHANNEL_CODE"));
+				old_process_map_with_address.put(old_process_rs.getString("CHANNEL_CODE"), old_process_rs.getString("BIND_ADDRESS"));
 			}
 			while(new_process_rs.next()){
-				new_process_list.add(new_process_rs.getString("CHANNEL_CODE")+">"+new_process_rs.getString("BIND_ADDRESS"));
+				new_process_list.add(new_process_rs.getString("CHANNEL_CODE"));
+				new_process_map_with_address.put(new_process_rs.getString("CHANNEL_CODE"), new_process_rs.getString("BIND_ADDRESS"));
 			}
 			//是否有新增,删除
 			AtomicInteger num = new AtomicInteger(0);
@@ -1226,9 +1230,9 @@ public class DBCompare {
 			for (String string : new_process_list) {
 				if(!old_process_list.contains(string)){
 					num.incrementAndGet();
-					addProcess.append("["+string+"] ");
+					addProcess.append("["+string+">"+ new_process_map_with_address.get(string)+"] ");
 				}else{
-					samelist.add(splitTrab(string)[0]);
+					samelist.add(string);
 				}
 			}
 			if(addProcess.length()>0){
@@ -1242,7 +1246,7 @@ public class DBCompare {
 			for (String string : old_process_list) {
 				if(!new_process_list.contains(string)){
 					num.incrementAndGet();
-					delProcess.append("["+string+"] ");
+					delProcess.append("["+string+">"+ old_process_map_with_address.get(string)+"] ");
 				}
 			}
 			if(delProcess.length()>0){
@@ -1267,7 +1271,7 @@ public class DBCompare {
 					newcolumn = new_process_rs.getString(columnNames[i]);
 					if(!oldcolumn.equals(newcolumn)){
 						num.incrementAndGet();
-						modifyProcess.append("<tr class=\"modify\"><td>["+string+"]的部署参数["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
+						modifyProcess.append("<tr class=\"modify\"><td>["+string+"]>["+columnNamesCh[i]+"]</td><td>"+oldcolumn+"</td><td>"+newcolumn+"</td></tr>");
 					}
 				}
 			}
