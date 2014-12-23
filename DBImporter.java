@@ -29,6 +29,24 @@ public class DBImporter extends DBporter{
 		 * SYS_MODE_PARAM SYS_PROCESS_INSTANCE SYS_SAVE_DATAS SYS_SERVER
 		 * SYS_SERVICE SYS_STRUCTURE SYS_TRAN_CHANNEL_PACKAGE
 		 * SYS_TRAN_SERVER_PACKAGE
+delete from SYS_CHANNEL;
+delete from SYS_COMM;
+delete from SYS_DICT;
+delete from SYS_DICT_DETAIL;
+delete from SYS_GROUP_SVC_CHART;
+delete from SYS_INSTANCE;
+delete from SYS_MACHINE;
+delete from SYS_MAPPING;
+delete from SYS_MODE;
+delete from SYS_MODE_PARAM;
+delete from SYS_PROCESS_INSTANCE;
+delete from SYS_SAVE_DATAS;
+delete from SYS_SERVER;
+delete from SYS_SERVICE;
+delete from SYS_STRUCTURE;
+delete from SYS_TRAN_CHANNEL_PACKAGE;
+delete from SYS_TRAN_SERVER_PACKAG;
+
 		 */
 		/** 导入顺序:EndPoint、服务系统、EndPoint关联交易、服务系统关联交易
 		 * 服务、部署、数据字典、模式

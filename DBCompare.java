@@ -31,7 +31,6 @@ import com.wk.util.StringUtil;
 public class DBCompare {
 	private static final Properties prop = new Properties();
 	private static final String dbfile = "/dbcompare.properties";
-	private static String reportDirStr = "";
 	private static File reportfile = null;
 	private static File menufile = null;
 	private static FileWriter menuwriter = null;
@@ -90,9 +89,7 @@ public class DBCompare {
 		try {
 			InputStream in = new FileInputStream(dbfile);
 			prop.load(in);
-			reportDirStr = prop.getProperty("db.reportDirStr");
-			
-			reportfile = createFile(reportDirStr);
+			reportfile = createFile(prop.getProperty("db.reportDirStr"));
 			menufile = createFile(reportfile.getParent()+File.separator+"menu.html");
 			writer = new FileWriter(reportfile, true);
 			menuwriter = new FileWriter(menufile, true);
@@ -656,9 +653,16 @@ public class DBCompare {
 				new_map_rs = newst.executeQuery("SELECT * FROM sys_mapping where ID ='"+new_map_id+"'");
 				old_map_rs = oldst.executeQuery("SELECT * FROM sys_mapping where ID ='"+old_map_id+"'");
 				old_map_rs.next();new_map_rs.next();
-				if(old_map_rs.getRow()==0||new_map_rs.getRow()==0){
-					//TODO:
-					return "";
+				//ID存在，但没有映射数据，报出异常
+				if(old_map_rs.getRow()==0){
+					System.out.println("映射数据为空,渠道名:" + flagStr + ",配置名:" + code
+							+ ",映射名:" + mappingName + ",映射ID:" + old_map_id);
+//					throw new SystemException("SYS_MAP_CINFIG_IS_NULL").addScene("old_map_id", old_map_id);
+				}
+				if(new_map_rs.getRow()==0){
+					System.out.println("映射数据为空,渠道名:" + flagStr + ",配置名:" + code
+							+ ",映射名:" + mappingName + ",映射ID:" + new_map_id);
+//					throw new SystemException("SYS_MAP_CINFIG_IS_NULL").addScene("new_map_id", new_map_id);
 				}
 				String oldcolumn = "";
 				String newcolumn = "";
@@ -1836,35 +1840,6 @@ public class DBCompare {
 		}.start();
 	}
 
-	/**
-	private static void writeTempDataToFile(){
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(menufile)));
-			String line = "";
-			while((line = reader.readLine())!=null){
-				menuwriter.write(line);
-			}
-		} catch (FileNotFoundException e) {
-			throw new SystemException("SYS_DBCOMPARE_FILE_NOT_FOUND").addScene("FileName", menufile);
-		} catch (IOException e) {
-			throw new SystemException("SYS_DBCOMPARE_READE_FILE_ERROR").addScene("FileName", menufile);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-				menuwriter.flush();
-				if(menuwriter!=null){
-					menuwriter.close();
-				}
-			} catch (IOException e) {
-				throw new SystemException("SYS_DBCOMPARE_CLOSE_FILE_ERROR");
-			}
-		}
-	}
-	*/
-	
 	public static void main(String[] args) throws Exception {
 		long time = System.currentTimeMillis();
 		compareData();

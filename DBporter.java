@@ -56,6 +56,15 @@ public class DBporter {
 		return DBCompare.createFile(dir);
 	}
 	
+	protected static void createDeleteFile(String dir){
+		boolean isCreateDeleteFile = false;
+		String isCreateDeleteFileStr = prop.getProperty("db.isCreateDeleteFile");
+		isCreateDeleteFile = isCreateDeleteFileStr == null ? false : Boolean.valueOf(isCreateDeleteFileStr);
+		if(isCreateDeleteFile){
+			DBCompare.createFile(dir);
+		}
+	}
+	
 	public static List<File> listAllFiles(File dir) {
 		final List<File> file_list = new ArrayList<File>();
 		if(dir.exists()){
