@@ -288,10 +288,10 @@ public class ImportDatasToDB {
 		// 如果不存在,则插入,存在则修改
 		if ((dictDetailDaoService.getOneDictField(info.getDict_code(),
 				info.getField_code())) == null) {
-			logger.info("插入数据字典{}的数据字段{}", info.getDict_code(), info.getField_code());
+//			logger.debug("插入数据字典{}的数据字段{}", info.getDict_code(), info.getField_code());
 			return dictDetailDaoService.insertOneDictDetail(info);
 		} else {
-			logger.info("修改数据字典{}的数据字段{}", info.getDict_code(), info.getField_code());
+//			logger.debug("修改数据字典{}的数据字段{}", info.getDict_code(), info.getField_code());
 			return dictDetailDaoService.updateOneDictDetail(info);
 		}
 	}
